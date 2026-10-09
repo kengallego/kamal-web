@@ -1,0 +1,89 @@
+class ProjectsController < ApplicationController
+  before_action :require_admin, except: %i[ index show sync ]
+  before_action :require_deployer, only: :sync
+  before_action :set_project, only: %i[ show edit update destroy sync ]
+
+  def index
+    redirect_to root_path
+  end
+
+  def show
+    @destination = selected_destination
+    @config = @project.config_for(@destination)
+    @recent_runs = @project.command_runs.includes(:user).where(destination: @destination).latest_first.limit(10)
+    @latest_metrics = @project.server_metrics.where(id: @project.server_metrics.recent.group(:host).select("MAX(id)")).index_by(&:host)
+  end
+
+  def new
+    @project = Project.new
+  end
+
+  def create
+    @project = Project.new(project_params)
+
+    if @project.save
+      sync_after_save
+      redirect_to @project, notice: sync_notice("Project created.")
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+
+  def edit
+  end
+
+  def update
+    attributes = project_params
+    # Leaving a secret field empty keeps the stored value.
+    %i[ ssh_private_key git_ssh_private_key git_access_token ].each { |key| attributes.delete(key) if attributes[key].blank? }
+
+    if @project.update(attributes)
+      sync_after_save
+      redirect_to @project, notice: sync_notice("Project updated.")
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    @project.destroy!
+    redirect_to root_path, notice: "Project deleted.", status: :see_other
+  end
+
+  def sync
+    ProjectWorkspace.new(@project).sync!
+    redirect_back fallback_location: @project, notice: "Project synced."
+  rescue ProjectWorkspace::Error, SshAgent::Error => error
+    redirect_back fallback_location: @project, alert: "Sync failed: #{error.message.truncate(500)}"
+  end
+
+  private
+    def set_project
+      @project = Project.find(params[:id])
+    end
+
+    def require_deployer
+      require_role "deployer"
+    end
+
+    def selected_destination
+      requested = params[:destination].presence
+      @project.destinations.include?(requested) ? requested : @project.destinations.first
+    end
+
+    def project_params
+      params.expect(project: [ :name, :source_kind, :repository_url, :branch, :local_path, :config_file,
+        :ssh_private_key, :git_ssh_private_key, :git_access_token, :notification_webhook_url,
+        :notification_format, :monitoring_enabled ])
+    end
+
+    def sync_after_save
+      ProjectWorkspace.new(@project).sync!
+    rescue ProjectWorkspace::Error, SshAgent::Error
+      # The error is stored on the project and shown on its page.
+    end
+
+    def sync_notice(message)
+      @project.sync_error.present? ? "#{message} The first sync failed, see the details below." : message
+    end
+end

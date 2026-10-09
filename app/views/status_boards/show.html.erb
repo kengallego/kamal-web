@@ -1,0 +1,38 @@
+<div class="mb-6 flex items-center justify-between">
+  <h1 class="text-2xl font-semibold text-zinc-100">Deploy status</h1>
+  <span class="text-sm text-zinc-500">Updated <%= l(Time.current, format: :short) %> · refreshes every 30s</span>
+</div>
+
+<div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+  <% @projects.each do |project| %>
+    <div class="card p-5">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-zinc-100"><%= project.name %></h2>
+        <% if (operation = project.active_operation) %>
+          <span class="badge badge-info"><%= operation.command.label.downcase %>…</span>
+        <% end %>
+      </div>
+      <div class="mt-4 space-y-2">
+        <% project.destinations.each do |destination| %>
+          <% deploy = project.last_deploy(destination) %>
+          <div class="flex items-center justify-between">
+            <span class="text-zinc-300"><%= destination_label(destination) %></span>
+            <span class="flex items-center gap-2 text-sm text-zinc-500">
+              <% if deploy %><%= time_ago_in_words(deploy.created_at) %> ago <%= status_badge(deploy.status) %><% else %>–<% end %>
+            </span>
+          </div>
+        <% end %>
+      </div>
+      <% (@latest_metrics[project.id] || []).each do |metric| %>
+        <div class="mt-3 flex items-center justify-between border-t border-zinc-800 pt-3 text-sm">
+          <span class="font-mono text-zinc-400"><%= metric.host %></span>
+          <% if metric.error %>
+            <span class="badge badge-danger">unreachable</span>
+          <% else %>
+            <span class="text-zinc-500">CPU <%= metric.cpu_percent&.round %>% · RAM <%= metric.memory_percent&.round %>% · Disk <%= metric.disk_percent&.round %>%</span>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

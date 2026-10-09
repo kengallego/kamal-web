@@ -18,6 +18,8 @@ require "action_cable/engine"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+require_relative "instance_secrets"
+
 module KamalUi
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
@@ -38,5 +40,15 @@ module KamalUi
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+
+    config.secret_key_base = InstanceSecrets.secret_key_base
+    config.active_record.encryption.primary_key = InstanceSecrets.encryption_key("primary_key")
+    config.active_record.encryption.deterministic_key = InstanceSecrets.encryption_key("deterministic_key")
+    config.active_record.encryption.key_derivation_salt = InstanceSecrets.encryption_key("key_derivation_salt")
+
+    # Where git-backed projects are cloned and where local projects may be mounted.
+    config.x.workspaces_path = Pathname.new(ENV.fetch("KAMAL_UI_WORKSPACES_PATH", Rails.root.join("storage/workspaces").to_s))
+    # Outside Docker, local projects can live anywhere in your home directory.
+    config.x.projects_path = Pathname.new(ENV.fetch("KAMAL_UI_PROJECTS_PATH") { Rails.env.production? ? "/projects" : Dir.home })
   end
 end

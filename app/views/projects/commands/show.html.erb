@@ -1,0 +1,62 @@
+<% content_for :title, "Commands · #{@project.name}" %>
+<%= render "projects/header", project: @project, destination: @destination %>
+
+<p class="mb-4 text-sm text-zinc-500">
+  Commands run against <span class="text-zinc-300"><%= destination_label(@destination) %></span>.
+  Only one command that changes servers can run at a time per project.
+</p>
+
+<div class="space-y-8">
+  <% CommandCatalog.grouped.each do |group, commands| %>
+    <section>
+      <h2 class="mb-3 text-sm font-semibold text-zinc-300"><%= CommandCatalog::GROUPS[group] %></h2>
+      <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        <% commands.each do |command| %>
+          <% allowed = current_user.can?(command.role) %>
+          <%= form_with url: project_command_runs_path(@project), class: "card flex flex-col gap-3 p-4 #{"opacity-60" unless allowed}",
+            data: (command.mutating? ? { turbo_confirm: "#{command.label} on #{destination_label(@destination)}?" } : {}) do |form| %>
+            <%= hidden_field_tag :kind, command.key, id: nil %>
+            <%= hidden_field_tag :destination, @destination, id: nil %>
+
+            <div class="flex items-start justify-between gap-2">
+              <div>
+                <p class="font-medium text-zinc-100"><%= command.label %></p>
+                <p class="font-mono text-xs text-zinc-500">kamal <%= command.arguments(command.fields.to_h { |f| [ f.name, f.required ? "…" : "" ] }).join(" ") rescue command.key.tr("_", " ") %></p>
+              </div>
+              <% if command.mutating? %><span class="badge badge-warning">changes servers</span><% end %>
+            </div>
+
+            <% if command.description %>
+              <p class="text-xs text-zinc-400"><%= command.description %></p>
+            <% end %>
+
+            <% command.fields.each do |field| %>
+              <div>
+                <label class="label"><%= field.label %></label>
+                <% case field.type %>
+                <% when :code %>
+                  <%= text_area_tag "options[#{field.name}]", nil, rows: 4, required: field.required, placeholder: field.placeholder, class: "input font-mono", id: nil %>
+                <% when :number %>
+                  <%= number_field_tag "options[#{field.name}]", nil, min: 1, max: 5000, placeholder: field.placeholder, class: "input", id: nil %>
+                <% when :accessory %>
+                  <%= select_tag "options[#{field.name}]", options_for_select(@config.accessories.keys),
+                    include_blank: (field.required ? false : "All accessories"), class: "input", id: nil %>
+                <% else %>
+                  <%= text_field_tag "options[#{field.name}]", nil, required: field.required, placeholder: field.placeholder, class: "input", id: nil %>
+                <% end %>
+              </div>
+            <% end %>
+
+            <div class="mt-auto pt-1">
+              <% if allowed %>
+                <%= form.submit "Run", class: command.mutating? ? "btn btn-primary" : "btn" %>
+              <% else %>
+                <span class="text-xs text-zinc-500">Requires <%= command.role %> role</span>
+              <% end %>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+</div>

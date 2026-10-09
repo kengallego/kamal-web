@@ -1,0 +1,111 @@
+<% content_for :title, "Settings · #{@project.name}" %>
+<%= render "projects/header", project: @project %>
+
+<div class="max-w-4xl space-y-6">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Project</h2>
+      <%= link_to "Edit", edit_project_path(@project), class: "btn btn-sm" %>
+    </div>
+    <dl class="card-body grid gap-3 text-sm sm:grid-cols-2">
+      <div><dt class="label">Source</dt><dd><%= @project.git? ? "Git: #{@project.repository_url} (#{@project.branch})" : "Folder: #{@project.local_path}" %></dd></div>
+      <div><dt class="label">Config file</dt><dd class="font-mono"><%= @project.config_file %></dd></div>
+      <div><dt class="label">SSH key</dt><dd><%= @project.ssh_private_key.present? ? "Stored" : "Not set" %></dd></div>
+      <div><dt class="label">Notifications</dt><dd><%= @project.notification_webhook_url.present? ? @project.notification_format.capitalize : "Off" %></dd></div>
+    </dl>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <h2 class="card-title">Environment variables</h2>
+        <p class="text-xs text-zinc-500">Available to Kamal, its hooks and <code>.kamal/secrets</code>, e.g. <code>KAMAL_REGISTRY_PASSWORD</code>. Values are encrypted.</p>
+      </div>
+      <%= link_to "Add variable", new_project_environment_variable_path(@project), class: "btn btn-sm" %>
+    </div>
+    <% if @project.environment_variables.empty? %>
+      <p class="px-4 py-6 text-center text-sm text-zinc-500">No variables yet.</p>
+    <% else %>
+      <table class="table">
+        <thead><tr><th>Name</th><th>Destination</th><th>Value</th><th></th></tr></thead>
+        <tbody>
+          <% @project.environment_variables.each do |variable| %>
+            <tr>
+              <td class="font-mono text-xs text-zinc-100"><%= variable.key %></td>
+              <td class="text-zinc-400"><%= variable.destination || "all" %></td>
+              <td class="text-zinc-500">••••••••</td>
+              <td class="text-right">
+                <div class="flex justify-end gap-2">
+                  <%= link_to "Edit", edit_project_environment_variable_path(@project, variable), class: "btn btn-sm" %>
+                  <%= button_to "Delete", project_environment_variable_path(@project, variable), method: :delete, class: "btn btn-sm btn-danger", form: { data: { turbo_confirm: "Delete #{variable.key}?" } } %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <h2 class="card-title">Secret files</h2>
+        <p class="text-xs text-zinc-500">Written into the project before every command, for files that aren't in git such as <code>config/master.key</code>.</p>
+      </div>
+      <div class="flex gap-2">
+        <% unless @project.project_files.any? { |file| file.path == "config/master.key" } %>
+          <%= link_to "Add master.key", new_project_project_file_path(@project, path: "config/master.key"), class: "btn btn-sm" %>
+        <% end %>
+        <%= link_to "Add file", new_project_project_file_path(@project), class: "btn btn-sm" %>
+      </div>
+    </div>
+    <% if @project.project_files.empty? %>
+      <p class="px-4 py-6 text-center text-sm text-zinc-500">No files yet.</p>
+    <% else %>
+      <table class="table">
+        <thead><tr><th>Path</th><th>Updated</th><th></th></tr></thead>
+        <tbody>
+          <% @project.project_files.each do |file| %>
+            <tr>
+              <td class="font-mono text-xs text-zinc-100"><%= file.path %></td>
+              <td class="text-zinc-500"><%= time_ago_in_words(file.updated_at) %> ago</td>
+              <td>
+                <div class="flex justify-end gap-2">
+                  <%= link_to "Replace", edit_project_project_file_path(@project, file), class: "btn btn-sm" %>
+                  <%= button_to "Delete", project_project_file_path(@project, file), method: :delete, class: "btn btn-sm btn-danger", form: { data: { turbo_confirm: "Delete #{file.path}?" } } %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <h2 class="card-title">Deploy webhook</h2>
+        <p class="text-xs text-zinc-500">POST to this URL from CI or a GitHub/GitLab push webhook to deploy. Pushes to other branches than <code><%= @project.branch %></code> are ignored.</p>
+      </div>
+      <%= button_to "Regenerate", project_webhook_token_path(@project), class: "btn btn-sm", form: { data: { turbo_confirm: "The current URL will stop working. Continue?" } } %>
+    </div>
+    <div class="card-body space-y-2">
+      <% hook_url = deploy_hook_url(@project.deploy_webhook_token) %>
+      <div class="flex gap-2">
+        <input type="text" readonly value="<%= hook_url %>" class="input font-mono text-xs">
+        <button class="btn" data-controller="clipboard" data-clipboard-text-value="<%= hook_url %>" data-action="clipboard#copy">Copy</button>
+      </div>
+      <p class="hint">Add <code>?destination=staging</code> to deploy a specific destination. Example: <code>curl -X POST "<%= hook_url %>?destination=<%= @project.destinations.compact.first || "production" %>"</code></p>
+    </div>
+  </div>
+
+  <div class="card border-red-500/30">
+    <div class="card-header"><h2 class="card-title text-red-300">Danger zone</h2></div>
+    <div class="card-body flex items-center justify-between gap-4">
+      <p class="text-sm text-zinc-400">Deletes the project, its history, variables, files and its local clone. Nothing changes on your servers.</p>
+      <%= button_to "Delete project", project_path(@project), method: :delete, class: "btn btn-danger", form: { data: { turbo_confirm: "Delete #{@project.name}? This cannot be undone." } } %>
+    </div>
+  </div>
+</div>

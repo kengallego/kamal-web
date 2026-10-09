@@ -1,8 +1,30 @@
 #!/bin/bash -e
 
+# Started as root: give the rails user access to the storage volume and to the
+# Docker socket (whose group id differs between hosts), then drop privileges.
+if [ "$(id -u)" = "0" ]; then
+  mkdir -p /rails/storage/home /rails/storage/workspaces
+  chown rails:rails /rails/storage /rails/storage/home /rails/storage/workspaces
+  find /rails/storage -maxdepth 1 ! -user rails -exec chown rails:rails {} +
+  find /rails/storage/home /rails/storage/workspaces ! -user rails -exec chown rails:rails {} +
+
+  if [ -S /var/run/docker.sock ]; then
+    socket_gid=$(stat -c '%g' /var/run/docker.sock)
+    if [ "$socket_gid" = "0" ]; then
+      usermod -aG root rails
+    else
+      getent group "$socket_gid" >/dev/null || groupadd --gid "$socket_gid" docker-host
+      usermod -aG "$(getent group "$socket_gid" | cut -d: -f1)" rails
+    fi
+  fi
+
+  exec gosu rails "$0" "$@"
+fi
+
 # If running the rails server then create or migrate existing database
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
   ./bin/rails db:prepare
+  ./bin/rails kamal_ui:bootstrap
 fi
 
 exec "${@}"

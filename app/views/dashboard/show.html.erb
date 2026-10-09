@@ -1,0 +1,73 @@
+<% content_for :title, "Dashboard" %>
+
+<div class="mb-6 flex items-center justify-between">
+  <h1 class="text-xl font-semibold text-zinc-100">Dashboard</h1>
+  <% if current_user.admin? %>
+    <%= link_to "New project", new_project_path, class: "btn btn-primary" %>
+  <% end %>
+</div>
+
+<% if @projects.empty? %>
+  <div class="card card-body py-16 text-center">
+    <h2 class="text-lg font-semibold text-zinc-100">No projects yet</h2>
+    <p class="mx-auto mt-2 max-w-md text-sm text-zinc-400">
+      A project points at a repository (or a mounted folder) with a Kamal <code>config/deploy.yml</code>.
+      Kamal UI runs Kamal for it and shows what is happening on your servers.
+    </p>
+    <% if current_user.admin? %>
+      <%= link_to "Add your first project", new_project_path, class: "btn btn-primary mt-6" %>
+    <% else %>
+      <p class="mt-4 text-sm text-zinc-500">Ask an admin to add one.</p>
+    <% end %>
+  </div>
+<% else %>
+  <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+    <% @projects.each do |project| %>
+      <%= link_to project_path(project), class: "card block p-4 hover:border-zinc-600" do %>
+        <div class="flex items-start justify-between gap-2">
+          <div class="min-w-0">
+            <h2 class="truncate font-semibold text-zinc-100"><%= project.name %></h2>
+            <p class="truncate text-xs text-zinc-500"><%= project.git? ? "#{project.repository_url} · #{project.branch}" : project.local_path %></p>
+          </div>
+          <% if project.sync_error.present? %>
+            <span class="badge badge-danger">sync error</span>
+          <% elsif (operation = project.active_operation) %>
+            <span class="badge badge-info"><%= operation.command.label.downcase %>…</span>
+          <% end %>
+        </div>
+
+        <div class="mt-4 space-y-2">
+          <% project.destinations.each do |destination| %>
+            <% deploy = project.last_deploy(destination) %>
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-zinc-300"><%= destination_label(destination) %></span>
+              <span class="flex items-center gap-2 text-xs text-zinc-500">
+                <% if deploy %>
+                  <%= short_sha(deploy.git_revision) %> · <%= time_ago_in_words(deploy.created_at) %> ago <%= status_badge(deploy.status) %>
+                <% else %>
+                  never deployed
+                <% end %>
+              </span>
+            </div>
+          <% end %>
+        </div>
+
+        <% if (metrics = @latest_metrics[project.id]).present? %>
+          <div class="mt-4 grid grid-cols-3 gap-3 border-t border-zinc-800 pt-3 text-xs text-zinc-500">
+            <% { "CPU" => metrics.filter_map(&:cpu_percent).max, "RAM" => metrics.filter_map(&:memory_percent).max, "Disk" => metrics.filter_map(&:disk_percent).max }.each do |label, value| %>
+              <div>
+                <div class="mb-1 flex justify-between"><span><%= label %></span><span><%= value ? "#{value.round}%" : "–" %></span></div>
+                <%= meter(value) %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="card mt-8">
+    <div class="card-header"><h2 class="card-title">Recent activity</h2></div>
+    <%= render "command_runs/table", runs: @recent_runs, show_project: true %>
+  </div>
+<% end %>

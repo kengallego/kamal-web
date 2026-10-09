@@ -1,0 +1,110 @@
+<% content_for :title, @project.name %>
+<%= render "projects/header", project: @project, destination: @destination %>
+
+<div class="grid gap-6 lg:grid-cols-3">
+  <div class="space-y-6 lg:col-span-2">
+    <% if current_user.deployer? %>
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Deploy <span class="font-normal text-zinc-500">to <%= destination_label(@destination) %></span></h2>
+        </div>
+        <div class="card-body flex flex-wrap items-end gap-3">
+          <%= button_to "Deploy", project_command_runs_path(@project), params: { kind: "deploy", destination: @destination },
+            class: "btn btn-primary", form: { data: { turbo_confirm: "Deploy #{@project.name} to #{destination_label(@destination)}?" } } %>
+          <%= button_to "Redeploy", project_command_runs_path(@project), params: { kind: "redeploy", destination: @destination },
+            class: "btn", form: { data: { turbo_confirm: "Redeploy #{@project.name} to #{destination_label(@destination)}?" } } %>
+
+          <%= form_with url: project_command_runs_path(@project), class: "flex items-end gap-2", data: { turbo_confirm: "Roll back #{destination_label(@destination)}?" } do |form| %>
+            <%= hidden_field_tag :kind, "rollback" %>
+            <%= hidden_field_tag :destination, @destination %>
+            <div>
+              <label class="label" for="rollback_version">Rollback to</label>
+              <% candidates = @project.rollback_candidates(@destination) %>
+              <%= text_field_tag "options[version]", nil, id: "rollback_version", list: "rollback_candidates", placeholder: "version", class: "input w-48 font-mono", required: true %>
+              <datalist id="rollback_candidates">
+                <% candidates.each do |sha| %><option value="<%= sha %>"><% end %>
+              </datalist>
+            </div>
+            <%= form.submit "Rollback", class: "btn btn-danger" %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Recent activity</h2>
+        <%= link_to "All activity", project_command_runs_path(@project), class: "text-xs text-zinc-400 hover:text-zinc-100" %>
+      </div>
+      <%= render "command_runs/table", runs: @recent_runs %>
+    </div>
+  </div>
+
+  <div class="space-y-6">
+    <% if @config.present? %>
+      <div class="card">
+        <div class="card-header"><h2 class="card-title">Servers</h2></div>
+        <div class="divide-y divide-zinc-800">
+          <% @config.roles.each do |role, hosts| %>
+            <div class="px-4 py-3">
+              <p class="label"><%= role %></p>
+              <% hosts.each do |host| %>
+                <% metric = @latest_metrics[host] %>
+                <div class="flex items-center justify-between py-1 text-sm">
+                  <span class="font-mono text-zinc-200" data-controller="clipboard" data-clipboard-text-value="<%= host %>" data-action="click->clipboard#copy" title="Click to copy"><%= host %></span>
+                  <% if metric&.error %>
+                    <span class="badge badge-danger" title="<%= metric.error %>">unreachable</span>
+                  <% elsif metric %>
+                    <span class="text-xs text-zinc-500">CPU <%= metric.cpu_percent&.round || "–" %>% · RAM <%= metric.memory_percent&.round || "–" %>%</span>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <% if @config.accessories.any? %>
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">Accessories</h2></div>
+          <div class="divide-y divide-zinc-800">
+            <% @config.accessories.each do |name, hosts| %>
+              <div class="flex items-center justify-between px-4 py-2 text-sm">
+                <span class="text-zinc-200"><%= name %></span>
+                <span class="font-mono text-xs text-zinc-500"><%= hosts.join(", ") %></span>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <div class="card">
+        <div class="card-header"><h2 class="card-title">Service</h2></div>
+        <dl class="card-body space-y-2 text-sm">
+          <div class="flex justify-between gap-4"><dt class="text-zinc-500">Service</dt><dd class="text-zinc-200"><%= @config.service %></dd></div>
+          <div class="flex justify-between gap-4"><dt class="text-zinc-500">Image</dt><dd class="truncate text-zinc-200"><%= @config.image %></dd></div>
+          <div class="flex justify-between gap-4"><dt class="text-zinc-500">SSH</dt><dd class="text-zinc-200"><%= @config.ssh_user %>:<%= @config.ssh_port %></dd></div>
+          <% if @config.proxy_hosts.any? %>
+            <div class="flex justify-between gap-4">
+              <dt class="text-zinc-500">Domains</dt>
+              <dd class="space-y-1 text-right">
+                <% @config.proxy_hosts.each do |host| %>
+                  <%= link_to host, "https://#{host}", target: "_blank", rel: "noopener", class: "block text-emerald-300 hover:underline" %>
+                <% end %>
+              </dd>
+            </div>
+          <% end %>
+        </dl>
+      </div>
+    <% else %>
+      <div class="card card-body text-sm text-zinc-400">
+        <p class="font-medium text-zinc-200">Config not loaded</p>
+        <% if (error = @project.config_for(@destination).error) %>
+          <pre class="mt-2 whitespace-pre-wrap font-mono text-xs text-red-300"><%= error %></pre>
+        <% else %>
+          <p class="mt-1">Press Sync to read <code><%= @project.config_file %></code>.</p>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

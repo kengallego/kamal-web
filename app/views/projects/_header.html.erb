@@ -1,0 +1,56 @@
+<%# locals: (project:, destination: :none) %>
+<%= turbo_stream_from project %>
+
+<div class="mb-6">
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div class="min-w-0">
+      <h1 class="text-xl font-semibold text-zinc-100"><%= project.name %></h1>
+      <p class="mt-1 truncate text-sm text-zinc-500">
+        <% if project.git? %>
+          <%= project.repository_url %> · <%= project.branch %>
+        <% else %>
+          <%= project.local_path %>
+        <% end %>
+        <% if project.git_revision %> · <span class="font-mono"><%= short_sha(project.git_revision) %></span><% end %>
+        <% if project.synced_at %> · synced <%= time_ago_in_words(project.synced_at) %> ago<% end %>
+      </p>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <% unless destination == :none || project.destinations.size < 2 %>
+        <div class="flex rounded-lg border border-zinc-800 p-0.5">
+          <% project.destinations.each do |name| %>
+            <%= link_to destination_label(name), url_for(request.query_parameters.merge(destination: name.to_s)),
+              class: [ "rounded-md px-3 py-1 text-sm", name == destination ? "bg-zinc-800 text-zinc-100" : "text-zinc-400 hover:text-zinc-100" ] %>
+          <% end %>
+        </div>
+      <% end %>
+      <% if current_user.deployer? %>
+        <%= button_to "Sync", sync_project_path(project), class: "btn", title: "Pull the latest code and re-read deploy.yml" %>
+      <% end %>
+    </div>
+  </div>
+
+  <% if project.sync_error.present? %>
+    <div class="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300">
+      <p class="font-medium">Last sync failed</p>
+      <pre class="mt-1 whitespace-pre-wrap font-mono text-xs"><%= project.sync_error %></pre>
+    </div>
+  <% end %>
+
+  <%= render "projects/activity", project: project %>
+
+  <% dest = destination == :none ? {} : { destination: destination.to_s } %>
+  <nav class="mt-6 flex gap-6 overflow-x-auto border-b border-zinc-800">
+    <% [
+      [ "Overview", project_path(project, dest) ],
+      [ "Commands", project_commands_path(project, dest) ],
+      [ "Activity", project_command_runs_path(project) ],
+      [ "Monitoring", project_monitoring_path(project) ],
+      [ "Proxy", project_proxy_path(project, dest) ],
+      [ "Config", project_config_path(project, dest) ]
+    ].tap { |tabs| tabs << [ "Settings", project_settings_path(project) ] if current_user.admin? }.each do |label, path| %>
+      <%= link_to label, path, class: [ "tab", ("tab-active" if request.path == URI(path).path) ] %>
+    <% end %>
+  </nav>
+</div>

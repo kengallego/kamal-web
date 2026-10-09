@@ -1,0 +1,25 @@
+<% content_for :title, "Sign in" %>
+
+<div class="card card-body">
+  <h1 class="mb-6 text-lg font-semibold text-zinc-100">Sign in</h1>
+
+  <%= form_with url: session_url, class: "space-y-4" do |form| %>
+    <div>
+      <%= form.label :email_address, "Email", class: "label" %>
+      <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", value: params[:email_address], class: "input" %>
+    </div>
+
+    <div>
+      <%= form.label :password, class: "label" %>
+      <%= form.password_field :password, required: true, autocomplete: "current-password", maxlength: 72, class: "input" %>
+    </div>
+
+    <%= form.submit "Sign in", class: "btn btn-primary w-full" %>
+  <% end %>
+
+  <% if Rails.configuration.x.password_reset_enabled %>
+    <%= link_to "Forgot password?", new_password_path, class: "mt-4 block text-center text-sm text-zinc-500 hover:text-zinc-300" %>
+  <% else %>
+    <p class="mt-4 text-center text-xs text-zinc-500">Forgot your password? Ask an admin, or run <code class="text-zinc-400">bin/rails "kamal_ui:reset_password[you@example.com]"</code> in the container.</p>
+  <% end %>
+</div>

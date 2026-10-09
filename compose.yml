@@ -1,0 +1,45 @@
+# Kamal UI on any server with Docker:
+#
+#   curl -O https://raw.githubusercontent.com/kengallego/kamal-ui/main/compose.yml
+#   docker compose up -d
+#   docker compose logs kamal-ui   # shows the generated admin password on first boot
+#
+# Then open http://<server-ip>:3000 and sign in.
+services:
+  kamal-ui:
+    image: ghcr.io/kengallego/kamal-ui:latest
+    restart: unless-stopped
+    ports:
+      - "${KAMAL_UI_PORT:-3000}:80"
+    environment:
+      # First admin, created only when the instance has no users. Leave the
+      # password empty to generate one; it is printed once to the logs.
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+
+      # Public URL, used in notification links and password reset emails.
+      KAMAL_UI_URL: ${KAMAL_UI_URL:-}
+
+      # Set both to "true" when Kamal UI is served over HTTPS (for example
+      # behind Caddy, Traefik or kamal-proxy).
+      ASSUME_SSL: ${ASSUME_SSL:-false}
+      FORCE_SSL: ${FORCE_SSL:-false}
+
+      # Optional SMTP for password reset emails.
+      SMTP_ADDRESS: ${SMTP_ADDRESS:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      MAILER_FROM: ${MAILER_FROM:-Kamal UI <kamal-ui@localhost>}
+    volumes:
+      # Databases, encryption secret, cloned projects, SSH known_hosts.
+      # Back this up: without it encrypted keys and variables are lost.
+      - kamal_ui_storage:/rails/storage
+      # Kamal builds images with the host's Docker. Remove this line if every
+      # project uses a remote builder (builder.remote in deploy.yml).
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Optional: projects already on this server, added as "Mounted folder".
+      # - /srv/projects:/projects
+
+volumes:
+  kamal_ui_storage:

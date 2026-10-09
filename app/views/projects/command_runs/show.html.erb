@@ -1,0 +1,30 @@
+<% content_for :title, "#{@run.command.label} · #{@project.name}" %>
+<%= render "projects/header", project: @project %>
+<%= turbo_stream_from @run %>
+
+<div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+  <div>
+    <div class="flex items-center gap-3">
+      <h2 class="text-lg font-semibold text-zinc-100"><%= @run.command.label %></h2>
+      <%= render "command_runs/status", run: @run %>
+    </div>
+    <p class="mt-1 text-sm text-zinc-500">
+      <%= destination_label(@run.destination) %> · by <%= @run.triggered_by %> · <%= l(@run.created_at, format: :long) %>
+      <% if @run.git_revision %> · <span class="font-mono"><%= short_sha(@run.git_revision) %></span><% end %>
+      <% if @run.exit_code %> · exit code <%= @run.exit_code %><% end %>
+    </p>
+  </div>
+  <div class="flex gap-2">
+    <% if @run.active? %>
+      <%= button_to "Cancel", cancel_project_command_run_path(@project, @run), class: "btn btn-danger", form: { data: { turbo_confirm: "Stop this command? Kamal may leave a deploy lock behind." } } %>
+    <% elsif current_user.can?(@run.command.role) %>
+      <%= button_to "Run again", project_command_runs_path(@project), params: { kind: @run.kind, destination: @run.destination }.merge(@run.options.transform_keys { |key| "options[#{key}]" }),
+        class: "btn", form: (@run.mutating? ? { data: { turbo_confirm: "Run #{@run.command.label} again?" } } : {}) %>
+    <% end %>
+  </div>
+</div>
+
+<pre id="run_output_<%= @run.id %>" class="terminal" data-controller="autoscroll"><%= @run.output %></pre>
+<% if @run.output.bytesize >= CommandRun::OUTPUT_LIMIT %>
+  <p class="mt-2 text-xs text-amber-300">Output truncated at <%= number_to_human_size(CommandRun::OUTPUT_LIMIT) %>.</p>
+<% end %>

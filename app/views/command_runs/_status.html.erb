@@ -1,0 +1,4 @@
+<% live = local_assigns[:live] %>
+<span id="run_status_<%= run.id %>" <% if live %>data-controller="notify" data-notify-status-value="<%= run.status %>" data-notify-label-value="<%= run.command.label %>"<% end %>>
+  <%= status_badge(run.status) %>
+</span>

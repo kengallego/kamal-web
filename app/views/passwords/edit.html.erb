@@ -1,0 +1,17 @@
+<% content_for :title, "New password" %>
+
+<div class="card card-body">
+  <h1 class="mb-6 text-lg font-semibold text-zinc-100">Choose a new password</h1>
+
+  <%= form_with url: password_path(params[:token]), method: :put, class: "space-y-4" do |form| %>
+    <div>
+      <%= form.label :password, "New password", class: "label" %>
+      <%= form.password_field :password, required: true, autocomplete: "new-password", maxlength: 72, minlength: 10, class: "input" %>
+    </div>
+    <div>
+      <%= form.label :password_confirmation, "Confirm password", class: "label" %>
+      <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", maxlength: 72, class: "input" %>
+    </div>
+    <%= form.submit "Save", class: "btn btn-primary w-full" %>
+  <% end %>
+</div>

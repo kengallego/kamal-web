@@ -36,6 +36,7 @@
 
 /app/assets/builds/*
 !/app/assets/builds/.keep
+!/.env.example
 
 # Local AI agent settings
 /.claude/

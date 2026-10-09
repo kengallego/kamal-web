@@ -1,0 +1,90 @@
+<%= form_with model: project, class: "space-y-6", data: { controller: "source-kind" } do |form| %>
+  <%= form_errors(project) %>
+
+  <div class="card">
+    <div class="card-header"><h2 class="card-title">Source</h2></div>
+    <div class="card-body space-y-4">
+      <div>
+        <%= form.label :name, class: "label" %>
+        <%= form.text_field :name, required: true, class: "input", placeholder: "my-app" %>
+      </div>
+
+      <div>
+        <span class="label">Where the code lives</span>
+        <div class="flex gap-4 text-sm">
+          <label class="flex items-center gap-2"><%= form.radio_button :source_kind, "git", data: { action: "source-kind#toggle" } %> Git repository</label>
+          <label class="flex items-center gap-2"><%= form.radio_button :source_kind, "local", data: { action: "source-kind#toggle" } %> Mounted folder</label>
+        </div>
+      </div>
+
+      <div data-source-kind-target="git" class="space-y-4">
+        <div>
+          <%= form.label :repository_url, "Repository URL", class: "label" %>
+          <%= form.text_field :repository_url, class: "input font-mono", placeholder: "git@github.com:acme/app.git or https://github.com/acme/app.git" %>
+        </div>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <%= form.label :branch, class: "label" %>
+            <%= form.text_field :branch, class: "input font-mono" %>
+          </div>
+          <div>
+            <%= form.label :git_access_token, "HTTPS access token", class: "label" %>
+            <%= form.password_field :git_access_token, value: nil, class: "input", autocomplete: "off", placeholder: project.git_access_token.present? ? "•••••• stored, leave empty to keep" : "for private https repositories" %>
+          </div>
+        </div>
+        <div>
+          <%= form.label :git_ssh_private_key, "Repository deploy key", class: "label" %>
+          <%= form.text_area :git_ssh_private_key, value: nil, rows: 3, class: "input font-mono text-xs", autocomplete: "off",
+            placeholder: project.git_ssh_private_key.present? ? "Stored. Paste a new key to replace it." : "Optional. Only if the repository needs a different key than the servers." %>
+        </div>
+      </div>
+
+      <div data-source-kind-target="local">
+        <%= form.label :local_path, "Folder", class: "label" %>
+        <%= form.text_field :local_path, class: "input font-mono", placeholder: "#{Rails.configuration.x.projects_path}/my-app" %>
+        <p class="hint">Mount your projects into the container at <code><%= Rails.configuration.x.projects_path %></code>.</p>
+      </div>
+
+      <div>
+        <%= form.label :config_file, "Kamal config file", class: "label" %>
+        <%= form.text_field :config_file, class: "input font-mono" %>
+        <p class="hint">Destination files like <code>config/deploy.staging.yml</code> are detected automatically.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h2 class="card-title">Server access</h2></div>
+    <div class="card-body space-y-4">
+      <div>
+        <%= form.label :ssh_private_key, "SSH private key", class: "label" %>
+        <%= form.text_area :ssh_private_key, value: nil, rows: 5, class: "input font-mono text-xs", autocomplete: "off",
+          placeholder: project.ssh_private_key.present? ? "Stored. Paste a new key to replace it." : "-----BEGIN OPENSSH PRIVATE KEY-----" %>
+        <p class="hint">Used by Kamal and by monitoring. Stored encrypted and only loaded into a temporary ssh-agent. Keys with a passphrase aren't supported.</p>
+      </div>
+      <label class="flex items-center gap-2 text-sm">
+        <%= form.check_box :monitoring_enabled %> Collect server metrics every minute
+      </label>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h2 class="card-title">Notifications</h2></div>
+    <div class="card-body grid gap-4 sm:grid-cols-3">
+      <div class="sm:col-span-2">
+        <%= form.label :notification_webhook_url, "Webhook URL", class: "label" %>
+        <%= form.text_field :notification_webhook_url, class: "input", placeholder: "https://hooks.slack.com/services/…" %>
+        <p class="hint">Called when a deploy, rollback or other server change finishes.</p>
+      </div>
+      <div>
+        <%= form.label :notification_format, "Format", class: "label" %>
+        <%= form.select :notification_format, Project::NOTIFICATION_FORMATS.map { |f| [ f.capitalize, f ] }, {}, class: "input" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex gap-3">
+    <%= form.submit project.new_record? ? "Create project" : "Save project", class: "btn btn-primary" %>
+    <%= link_to "Cancel", project.new_record? ? root_path : project_settings_path(project), class: "btn" %>
+  </div>
+<% end %>
