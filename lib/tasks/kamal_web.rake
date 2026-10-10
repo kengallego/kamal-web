@@ -19,6 +19,7 @@ namespace :kamal_web do
       TEXT
     end
 
+    CheckForUpdatesJob.perform_later if CheckForUpdatesJob.enabled? && Setting.instance.update_checked_at.nil?
     Rake::Task["kamal_web:discover"].invoke
   end
 

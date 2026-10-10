@@ -40,6 +40,12 @@
           <div class="mt-auto space-y-1 border-t border-zinc-800 pt-4">
             <%= nav_link "Settings", edit_settings_path %>
             <%= button_to "Sign out", session_path, method: :delete, class: "w-full rounded-lg px-3 py-1.5 text-left text-sm text-zinc-500 hover:bg-zinc-900 hover:text-zinc-100 cursor-pointer" %>
+            <% setting = Setting.instance %>
+            <% if setting.update_available? %>
+              <%= link_to "Kamal Web #{setting.latest_version} is available", edit_settings_path(anchor: "version"), class: "mt-2 block rounded-lg bg-emerald-500/10 px-3 py-1.5 text-xs text-emerald-300 hover:bg-emerald-500/20" %>
+            <% else %>
+              <p class="px-3 pt-2 text-xs text-zinc-600">Kamal Web <%= KamalWeb::VERSION %></p>
+            <% end %>
           </div>
         </aside>
 

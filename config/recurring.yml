@@ -7,6 +7,10 @@ default: &default
     class: DiscoverKamalAppsJob
     queue: default
     schedule: every 5 minutes
+  check_for_updates:
+    class: CheckForUpdatesJob
+    queue: default
+    schedule: every day at 6am
 
 development:
   <<: *default

@@ -72,8 +72,18 @@
     </div>
   </div>
 
-  <div class="card card-body text-sm text-zinc-400 space-y-1">
+  <div id="version" class="card card-body text-sm text-zinc-400 space-y-1">
     <p class="font-medium text-zinc-200">Instance</p>
+    <% if @setting.update_available? %>
+      <p class="text-emerald-300">
+        Kamal Web <%= @setting.latest_version %> is available<%= link_to " (release notes)", @setting.latest_version_url, target: "_blank", rel: "noopener", class: "underline" if @setting.latest_version_url&.start_with?("https://github.com/") %>.
+        Update from your Kamal Web checkout with <code>git pull &amp;&amp; kamal deploy</code>.
+      </p>
+    <% elsif !CheckForUpdatesJob.enabled? %>
+      <p>Update check turned off (<code>KAMAL_WEB_UPDATE_CHECK=false</code>).</p>
+    <% elsif @setting.update_checked_at %>
+      <p>Up to date. Checked GitHub <%= time_ago_in_words(@setting.update_checked_at) %> ago.</p>
+    <% end %>
     <p>Kamal Web <%= KamalWeb::VERSION %> · Kamal <%= Gem.loaded_specs["kamal"]&.version %> · Rails <%= Rails.version %> · Ruby <%= RUBY_VERSION %></p>
   </div>
 </div>

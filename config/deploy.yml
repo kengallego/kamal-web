@@ -52,4 +52,5 @@ aliases:
   # Lets Kamal Web SSH into this server as Kamal's SSH user.
   authorize: server exec "docker exec $(docker ps -q -f label=service=kamal-web | head -1) bin/authorize-key | sh"
   logs: app logs -f
-  console: app exec --interactive --reuse "bin/rails console"
+  # docker exec runs as root; gosu keeps files in the volume owned by the app user.
+  console: app exec --interactive --reuse "gosu rails bin/rails console"

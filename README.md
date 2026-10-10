@@ -8,18 +8,21 @@ You deploy it with Kamal, like your other apps, and it runs as one container nex
 
 - **Finds the Kamal apps already on the server.** On boot and every 5 minutes, Kamal Web looks at the containers on its own server (through the Docker socket) and adds every Kamal app it finds, with its destinations, roles, accessories and domains. No setup beyond `kamal authorize`.
 - **Projects from git or a mounted folder.** Kamal Web clones your repository (over SSH deploy keys or HTTPS tokens), pulls before every command and detects destinations such as `config/deploy.staging.yml` automatically.
-- **Deploy, redeploy, rollback.** Output streams live, past versions are offered for rollback, and runs can be canceled. Only one server-changing command runs per project at a time.
+- **Deploy, redeploy, rollback.** Output streams live next to the app's containers on every host, so you see the new version start and the old one stop. Runs can be canceled, and only one server-changing command runs per project at a time.
+- **Versions on the server.** The overview lists the versions Kamal still keeps on the server and rolls back to any of them in one click.
 - **Every everyday Kamal command:** app boot/start/stop/details/logs/exec, maintenance and live mode, accessories, proxy, deploy lock, prune, registry login, server bootstrap, setup and audit.
 - **Live logs.** Follow app, proxy or accessory logs as they're written, from any host or a single container (one click from the Monitoring tab). Following stops after 30 minutes or when you press Stop.
 - **Web console.** An interactive Rails console, database console or shell in the running app container, right in the browser (`kamal app exec --interactive --reuse`). Every session is recorded (who, where, when); what you type isn't.
 - **Rails runner.** Evaluates Ruby inside the running app container.
 - **Monitoring.** CPU, memory, disk and load for every host, sampled each minute over SSH and kept for 24 hours, plus the running containers.
-- **Proxy view.** kamal-proxy routes, TLS state and recent requests with status filters, median and p95 latency.
+- **Proxy view.** kamal-proxy routes and TLS state, plus the app's traffic over the last hour: requests per minute by status, median and p95 latency, and the latest requests.
 - **Secrets.** Encrypted environment variables (per destination) for `.kamal/secrets`, and secret files such as `config/master.key`. SSH keys are encrypted and only loaded into a temporary ssh-agent while a command runs.
 - **One password.** No accounts to manage: the password lives in your Kamal secrets.
 - **Notifications.** Slack, Discord or JSON webhooks when an operation finishes, plus browser notifications.
 - **Deploy webhook.** Trigger deploys from CI or a GitHub/GitLab push.
 - **Status board.** A read-only page for a TV or for stakeholders, behind a secret URL.
+- **Backups.** Download everything from Settings and restore it in one step.
+- **Update notice.** The sidebar tells you when a new Kamal Web release is out.
 
 ## Install
 
@@ -95,6 +98,16 @@ Less common settings go under `env.clear` in `config/deploy.yml`:
 | `KAMAL_WEB_HOST_ADDRESS` | container gateway | Address Kamal Web uses to SSH into its own server, for detected apps |
 | `SECRET_KEY_BASE` | generated | Generated and stored in the volume when unset |
 
+### Backups
+
+**Settings → Download backup** saves the database (projects, encrypted variables, settings, history) and the key that decrypts it in one `.tar.gz`. Anyone with the file can read every secret in it, so keep it safe.
+
+**Settings → Restore** replaces the instance's data with a backup and restarts Kamal Web to apply it. The replaced files stay in the volume under `storage/before-restore-*`.
+
+### Update check
+
+Once a day Kamal Web asks GitHub for its latest release and shows a notice when there's a newer one. Nothing else is sent. To turn it off, add `KAMAL_WEB_UPDATE_CHECK: false` under `env.clear` in `config/deploy.yml`.
+
 ### Building images
 
 Kamal Web builds your apps' images with the server's Docker, through the socket mounted in `config/deploy.yml`. **Anything that can use that socket controls the server, so only share the password with people you trust with it.** If all your projects use a [remote builder](https://kamal-deploy.org/docs/configuration/builder/) you can remove the socket mount, but apps on the server are then no longer detected.
@@ -107,10 +120,6 @@ If your projects already live on the server, mount them in `config/deploy.yml` a
 volumes:
   - /srv/projects:/projects
 ```
-
-### Backups
-
-Everything is in the `kamal_web_storage` volume: SQLite databases, the generated `secret_key_base` that encrypts keys and variables, and git clones. Back up the whole volume. Without `secret_key_base` the stored secrets can't be decrypted.
 
 ## Security model
 

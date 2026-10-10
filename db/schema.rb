@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_15_170000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_15_170001) do
   create_table "command_runs", force: :cascade do |t|
     t.integer "project_id", null: false
     t.string "destination"
@@ -120,6 +120,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_15_170000) do
     t.text "ssh_private_key"
     t.text "ssh_public_key"
     t.json "ignored_services", default: [], null: false
+    t.string "latest_version"
+    t.string "latest_version_url"
+    t.datetime "update_checked_at"
   end
 
   add_foreign_key "command_runs", "projects"

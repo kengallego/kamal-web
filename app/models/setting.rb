@@ -12,6 +12,10 @@ class Setting < ApplicationRecord
     first || create!
   end
 
+  def update_available?
+    latest_version.present? && Gem::Version.correct?(latest_version) && Gem::Version.new(latest_version) > Gem::Version.new(KamalWeb::VERSION)
+  end
+
   def regenerate_status_board_token!
     regenerate_status_board_token
   end
