@@ -21,9 +21,7 @@
           <% end %>
         </div>
       <% end %>
-      <% if current_user.deployer? %>
-        <%= button_to "Sync", sync_project_path(project), class: "btn", title: "Pull the latest code and re-read deploy.yml" %>
-      <% end %>
+      <%= button_to "Sync", sync_project_path(project), class: "btn", title: "Pull the latest code and re-read deploy.yml" %>
     </div>
   </div>
 
@@ -41,7 +39,7 @@
         <p class="font-medium">Kamal UI can't connect to <%= failed.map(&:host).to_sentence %> over SSH</p>
         <pre class="mt-1 whitespace-pre-wrap font-mono text-xs text-amber-200/80"><%= failed.first.error.to_s.last(500) %></pre>
         <% if project.ssh_private_key.blank? %>
-          <p class="mt-2 text-amber-200/80">Authorize Kamal UI's key by running this on the server, next to <code>compose.yml</code>, as the user Kamal deploys with:</p>
+          <p class="mt-2 text-amber-200/80">Authorize Kamal UI's key by running this from your Kamal UI checkout:</p>
           <pre class="mt-1 overflow-x-auto rounded bg-zinc-950 p-2 font-mono text-xs text-zinc-200"><%= Setting::AUTHORIZE_THIS_SERVER %></pre>
           <p class="mt-1 text-xs text-amber-200/60">Checked every minute. <%= link_to "Monitoring", project_monitoring_path(project), class: "underline" %> can check again right away.</p>
         <% end %>
@@ -49,7 +47,7 @@
     <% end %>
     <p class="mt-4 text-sm text-zinc-500">
       Detected on this server<%= " · checking SSH access…" if metrics.empty? && project.monitoring_enabled? %>.
-      To deploy from Kamal UI too, <%= current_user.admin? ? link_to("add its git repository", edit_project_path(project), class: "underline hover:text-zinc-300") : "an admin can add its git repository" %>.
+      To deploy from Kamal UI too, <%= link_to "add its git repository", edit_project_path(project), class: "underline hover:text-zinc-300" %>.
     </p>
   <% end %>
 
@@ -65,7 +63,7 @@
       [ "Monitoring", project_monitoring_path(project) ],
       [ "Proxy", project_proxy_path(project, dest) ],
       [ "Config", project_config_path(project, dest) ]
-    ].tap { |tabs| tabs << [ "Settings", project_settings_path(project) ] if current_user.admin? }.each do |label, path| %>
+    ].push([ "Settings", project_settings_path(project) ]).each do |label, path| %>
       <%= link_to label, path, class: [ "tab", ("tab-active" if request.path == URI(path).path) ] %>
     <% end %>
   </nav>

@@ -1,5 +1,4 @@
 class Projects::ProjectFilesController < Projects::BaseController
-  before_action :require_admin
   before_action :set_file, only: %i[ edit update destroy ]
 
   def new

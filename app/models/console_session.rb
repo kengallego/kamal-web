@@ -13,7 +13,6 @@ class ConsoleSession < ApplicationRecord
   CLAIM_WINDOW = 5.minutes
 
   belongs_to :project
-  belongs_to :user, optional: true
 
   normalizes :destination, :host, with: ->(value) { value.presence }
 
@@ -49,10 +48,6 @@ class ConsoleSession < ApplicationRecord
 
   def duration
     (ended_at || Time.current) - started_at if started_at
-  end
-
-  def opened_by
-    user&.display_name || "Deleted user"
   end
 
   def self.close_stale!

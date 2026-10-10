@@ -2,11 +2,10 @@ require "rails_helper"
 
 RSpec.describe CommandRun do
   let(:project) { create(:project, config_snapshots: { "" => {}, "staging" => {} }) }
-  let(:user) { create(:user) }
 
   it "enqueues itself when created" do
     expect {
-      project.command_runs.create!(kind: "deploy", user: user)
+      project.command_runs.create!(kind: "deploy")
     }.to have_enqueued_job(CommandRunJob)
   end
 
@@ -36,26 +35,26 @@ RSpec.describe CommandRun do
   end
 
   it "allows only one server-changing command per project at a time" do
-    project.command_runs.create!(kind: "deploy", user: user)
+    project.command_runs.create!(kind: "deploy")
 
     expect(project.command_runs.build(kind: "rollback", options: { "version" => "abc" })).not_to be_valid
     expect(project.command_runs.build(kind: "app_logs")).to be_valid
   end
 
   it "records success and failure from the exit code" do
-    run = project.command_runs.create!(kind: "version", user: user)
+    run = project.command_runs.create!(kind: "version")
     run.start!
     run.finish!(0)
     expect(run.reload.status).to eq("succeeded")
 
-    run = project.command_runs.create!(kind: "version", user: user)
+    run = project.command_runs.create!(kind: "version")
     run.start!
     run.finish!(nil)
     expect(run.reload.status).to eq("failed")
   end
 
   it "does not overwrite a cancellation when the process exits" do
-    run = project.command_runs.create!(kind: "deploy", user: user)
+    run = project.command_runs.create!(kind: "deploy")
     run.start!
     run.cancel!
     run.finish!(143)
@@ -64,7 +63,7 @@ RSpec.describe CommandRun do
   end
 
   it "strips ANSI codes from output and caps its size" do
-    run = project.command_runs.create!(kind: "version", user: user)
+    run = project.command_runs.create!(kind: "version")
     run.append_output("\e[32mok\e[0m\r\n")
     expect(run.reload.output).to eq("ok\n")
 
@@ -75,7 +74,7 @@ RSpec.describe CommandRun do
   end
 
   it "marks runs interrupted by a restart as failed" do
-    run = project.command_runs.create!(kind: "deploy", user: user)
+    run = project.command_runs.create!(kind: "deploy")
     run.start!
 
     described_class.interrupt_stale!
@@ -86,7 +85,7 @@ RSpec.describe CommandRun do
 
   it "notifies the project webhook when an operation finishes" do
     project.update!(notification_webhook_url: "https://hooks.example.com/x")
-    run = project.command_runs.create!(kind: "deploy", user: user)
+    run = project.command_runs.create!(kind: "deploy")
     run.start!
 
     expect { run.finish!(0) }.to have_enqueued_job(DeployNotificationJob)

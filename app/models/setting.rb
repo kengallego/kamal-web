@@ -3,10 +3,10 @@ class Setting < ApplicationRecord
 
   encrypts :ssh_private_key
 
-  # Written to the storage volume so the README's one-liner can read it:
-  #   docker compose exec -T kamal-ui cat storage/kamal-ui.pub >> ~/.ssh/authorized_keys
+  # Written to the storage volume for bin/authorize-key, which the
+  # `kamal authorize` alias in config/deploy.yml runs on the server.
   PUBLIC_KEY_FILE = "kamal-ui.pub"
-  AUTHORIZE_THIS_SERVER = "mkdir -p ~/.ssh && docker compose exec -T kamal-ui cat storage/#{PUBLIC_KEY_FILE} >> ~/.ssh/authorized_keys".freeze
+  AUTHORIZE_THIS_SERVER = "kamal authorize".freeze
 
   def self.instance
     first || create!
@@ -42,7 +42,9 @@ class Setting < ApplicationRecord
   end
 
   def authorize_command
-    "mkdir -p ~/.ssh && echo '#{ssh_public_key}' >> ~/.ssh/authorized_keys" if ssh_public_key.present?
+    if ssh_public_key.present?
+      "mkdir -p -m 700 ~/.ssh && touch ~/.ssh/authorized_keys && (grep -qxF '#{ssh_public_key}' ~/.ssh/authorized_keys || echo '#{ssh_public_key}' >> ~/.ssh/authorized_keys)"
+    end
   end
 
   def ignore_service!(service)

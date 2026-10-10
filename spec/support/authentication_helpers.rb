@@ -1,6 +1,6 @@
 module AuthenticationHelpers
-  def sign_in(user)
-    post session_path, params: { email_address: user.email_address, password: user.password }
+  def sign_in
+    post session_path, params: { password: AccessPassword::DEVELOPMENT_PASSWORD }
   end
 end
 

@@ -1,6 +1,4 @@
 class SettingsController < ApplicationController
-  before_action :require_admin
-
   def edit
     @setting = Setting.instance
     @setting.ensure_ssh_key!

@@ -13,7 +13,7 @@ RSpec.describe ConsoleProcess do
     allow(Rails.configuration.x).to receive(:projects_path).and_return(Pathname.new(@root))
     create(:project, source_kind: "local", local_path: path, repository_url: nil, config_snapshots: { "" => {} })
   end
-  let(:session) { project.console_sessions.create!(kind: "rails", user: create(:user)) }
+  let(:session) { project.console_sessions.create!(kind: "rails") }
   let(:output) { Queue.new }
   let(:exits) { Queue.new }
 

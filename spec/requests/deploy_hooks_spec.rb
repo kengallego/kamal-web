@@ -9,7 +9,7 @@ RSpec.describe "Deploy hooks" do
     }.to have_enqueued_job(CommandRunJob)
 
     expect(response).to have_http_status(:created)
-    expect(CommandRun.last).to have_attributes(kind: "deploy", trigger: "webhook", user: nil)
+    expect(CommandRun.last).to have_attributes(kind: "deploy", trigger: "webhook")
   end
 
   it "ignores pushes to other branches" do

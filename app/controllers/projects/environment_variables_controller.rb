@@ -1,5 +1,4 @@
 class Projects::EnvironmentVariablesController < Projects::BaseController
-  before_action :require_admin
   before_action :set_variable, only: %i[ edit update destroy ]
 
   def new

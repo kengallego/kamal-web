@@ -10,10 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_15_060345) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_15_170000) do
   create_table "command_runs", force: :cascade do |t|
     t.integer "project_id", null: false
-    t.integer "user_id"
     t.string "destination"
     t.string "kind", null: false
     t.json "options", default: {}, null: false
@@ -30,12 +29,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_15_060345) do
     t.index ["project_id", "created_at"], name: "index_command_runs_on_project_id_and_created_at"
     t.index ["project_id"], name: "index_command_runs_on_project_id"
     t.index ["status"], name: "index_command_runs_on_status"
-    t.index ["user_id"], name: "index_command_runs_on_user_id"
   end
 
   create_table "console_sessions", force: :cascade do |t|
     t.integer "project_id", null: false
-    t.integer "user_id"
     t.string "destination"
     t.string "kind", null: false
     t.string "host"
@@ -45,7 +42,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_15_060345) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["project_id"], name: "index_console_sessions_on_project_id"
-    t.index ["user_id"], name: "index_console_sessions_on_user_id"
   end
 
   create_table "environment_variables", force: :cascade do |t|
@@ -116,15 +112,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_15_060345) do
     t.index ["project_id"], name: "index_server_metrics_on_project_id"
   end
 
-  create_table "sessions", force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.string "ip_address"
-    t.string "user_agent"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_sessions_on_user_id"
-  end
-
   create_table "settings", force: :cascade do |t|
     t.boolean "status_board_enabled", default: false, null: false
     t.string "status_board_token", null: false
@@ -135,22 +122,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_15_060345) do
     t.json "ignored_services", default: [], null: false
   end
 
-  create_table "users", force: :cascade do |t|
-    t.string "email_address", null: false
-    t.string "password_digest", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "name"
-    t.string "role", default: "viewer", null: false
-    t.index ["email_address"], name: "index_users_on_email_address", unique: true
-  end
-
   add_foreign_key "command_runs", "projects"
-  add_foreign_key "command_runs", "users", on_delete: :nullify
   add_foreign_key "console_sessions", "projects"
-  add_foreign_key "console_sessions", "users", on_delete: :nullify
   add_foreign_key "environment_variables", "projects"
   add_foreign_key "project_files", "projects"
   add_foreign_key "server_metrics", "projects"
-  add_foreign_key "sessions", "users"
 end

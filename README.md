@@ -2,11 +2,11 @@
 
 A self-hosted web dashboard for [Kamal](https://kamal-deploy.org). Point it at the repositories you deploy with Kamal and you can deploy, roll back, read logs, inspect kamal-proxy and watch server health from the browser, together with your team.
 
-It runs as one Docker container on any server. It has no external dependencies and nothing to pay for.
+You deploy it with Kamal, like your other apps, and it runs as one container next to them. It has no external dependencies and nothing to pay for.
 
 ## Features
 
-- **Finds the Kamal apps already on the server.** On boot and every 5 minutes, Kamal UI looks at the containers on its own server (through the Docker socket) and adds every Kamal app it finds, with its destinations, roles, accessories and domains. No setup beyond authorizing one SSH key.
+- **Finds the Kamal apps already on the server.** On boot and every 5 minutes, Kamal UI looks at the containers on its own server (through the Docker socket) and adds every Kamal app it finds, with its destinations, roles, accessories and domains. No setup beyond `kamal authorize`.
 - **Projects from git or a mounted folder.** Kamal UI clones your repository (over SSH deploy keys or HTTPS tokens), pulls before every command and detects destinations such as `config/deploy.staging.yml` automatically.
 - **Deploy, redeploy, rollback.** Output streams live, past versions are offered for rollback, and runs can be canceled. Only one server-changing command runs per project at a time.
 - **Every everyday Kamal command:** app boot/start/stop/details/logs/exec, maintenance and live mode, accessories, proxy, deploy lock, prune, registry login, server bootstrap, setup and audit.
@@ -16,90 +16,92 @@ It runs as one Docker container on any server. It has no external dependencies a
 - **Monitoring.** CPU, memory, disk and load for every host, sampled each minute over SSH and kept for 24 hours, plus the running containers.
 - **Proxy view.** kamal-proxy routes, TLS state and recent requests with status filters, median and p95 latency.
 - **Secrets.** Encrypted environment variables (per destination) for `.kamal/secrets`, and secret files such as `config/master.key`. SSH keys are encrypted and only loaded into a temporary ssh-agent while a command runs.
-- **Team access.** Users with viewer, deployer and admin roles.
+- **One password.** No accounts to manage: the password lives in your Kamal secrets.
 - **Notifications.** Slack, Discord or JSON webhooks when an operation finishes, plus browser notifications.
 - **Deploy webhook.** Trigger deploys from CI or a GitHub/GitLab push.
 - **Status board.** A read-only page for a TV or for stakeholders, behind a secret URL.
 
-## Quick start
+## Install
 
-On a server with Docker:
-
-```sh
-mkdir kamal-ui && cd kamal-ui
-curl -O https://raw.githubusercontent.com/kengallego/kamal-ui/main/compose.yml
-docker compose up -d
-docker compose logs kamal-ui
-```
-
-If Kamal already deploys apps to this server, let Kamal UI's SSH key in, as the user Kamal deploys with (usually `root`):
+Kamal UI is a Kamal app itself: you deploy it with Kamal from your machine, to one of your servers, next to the apps it manages. You need Kamal and Docker on your machine. A domain is optional.
 
 ```sh
-mkdir -p ~/.ssh && docker compose exec -T kamal-ui cat storage/kamal-ui.pub >> ~/.ssh/authorized_keys
+git clone https://github.com/kengallego/kamal-ui.git && cd kamal-ui
+cp .env.example .env
 ```
 
-On first boot the logs show the admin account:
+Fill in `.env` with the server's IP and a password of at least 12 characters:
 
-```
-===================================================================
-  Kamal UI admin account created
-    Email:    admin@example.com
-    Password: 8nW2…
-    This password is shown only once. Change it after signing in.
-===================================================================
+```sh
+KAMAL_UI_SERVER=203.0.113.10
+KAMAL_UI_PASSWORD=a long password
 ```
 
-Open `http://<server>:3000` and sign in. To choose the credentials yourself, set `ADMIN_EMAIL` and `ADMIN_PASSWORD` before the first start (see `.env.example`). They are only used while the instance has no users.
+Then deploy and let Kamal UI SSH into the server:
+
+```sh
+kamal setup
+kamal authorize
+```
+
+Open `https://kamal.203-0-113-10.sslip.io` (your IP with dashes) and sign in with the password. There are no user accounts: everyone who knows the password has full access.
+
+kamal-proxy serves Kamal UI over HTTPS with a Let's Encrypt certificate, next to your other apps. [sslip.io](https://sslip.io) gives the IP a name a certificate can be issued for; set `KAMAL_UI_HOST` in `.env` to use a domain of your own instead. No registry account is needed either: images go through a registry Kamal runs on your machine.
+
+`.env` also takes `KAMAL_UI_SSH_USER` when your servers don't use `root`, and `KAMAL_UI_BUILD_ON_SERVER=true` to build the image on the server, which is much faster from an Apple Silicon Mac. You don't need to edit `config/deploy.yml`.
+
+### Updating
+
+```sh
+git pull
+kamal deploy
+```
+
+To change the password, change `KAMAL_UI_PASSWORD` in `.env` and run `kamal deploy`. That signs everybody out.
 
 ### Apps already running on the server
 
-Kamal UI detects them by itself on first boot. Kamal still reaches them over SSH, so authorize Kamal UI's own key once with the command from the quick start, run next to `compose.yml` as the user Kamal deploys with (usually `root`). If Kamal deploys as another user, `deploy` for example:
+Kamal UI finds them by itself after the first deploy. Kamal still reaches them over SSH, which is what `kamal authorize` sets up: it adds Kamal UI's key to `~/.ssh/authorized_keys` on the server, as the user Kamal connects with (`KAMAL_UI_SSH_USER`, `root` by default). Running it again does nothing.
 
-```sh
-docker compose exec -T kamal-ui cat storage/kamal-ui.pub | sudo -u deploy sh -c 'mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys'
-```
+For apps on other servers, **Settings** has a command to run on each of them.
 
-**Settings** shows the key, plus a command for your other servers.
+Detected apps get logs, the web console, monitoring, the proxy view and every read-only command straight away. Their config comes from the `config/deploy*.yml` inside the deployed image when there is one, or is rebuilt from the containers and kamal-proxy routes. That config has none of the app's env or secrets, so deploys and anything that recreates containers stay disabled until you add the app's git repository in the project settings. Starting, stopping and maintenance mode work.
 
-Detected apps get logs, the web console, monitoring, the proxy view and every read-only command straight away. Their config comes from the `config/deploy*.yml` inside the deployed image when there is one, or is rebuilt from the containers and kamal-proxy routes. That config has none of the app's env or secrets, so deploys and anything that recreates containers stay disabled until you connect the app's repository in the project settings. Starting, stopping and maintenance mode work.
+New apps are picked up within 5 minutes, or right away with **Scan this server** on the dashboard. A detected project you delete isn't added again (Settings lets you undo that). Kamal UI never lists itself.
 
-New apps are picked up within 5 minutes, or right away with **Scan this server** on the dashboard. A detected project you delete isn't added again (Settings lets you undo that).
-
-Kamal UI reaches its own server at the container's default gateway. If SSH listens elsewhere, set `KAMAL_UI_HOST_ADDRESS`.
+Kamal UI reaches its own server at the container's default gateway. If SSH listens elsewhere, set `KAMAL_UI_HOST_ADDRESS` under `env.clear` in `config/deploy.yml`.
 
 ### Adding a project
 
 1. **New project.** Enter the repository URL and branch. Private repositories need either an HTTPS token or a deploy key.
-2. **SSH private key.** This is the key Kamal uses to reach your servers. Without a passphrase. Leave it empty to use Kamal UI's own key from Settings.
+2. **SSH private key.** This is the key Kamal uses to reach your servers. Without a passphrase. Leave it empty to use Kamal UI's own key, which `kamal authorize` and Settings let in.
 3. **Settings → Environment variables.** Add whatever your `.kamal/secrets` reads, such as `KAMAL_REGISTRY_PASSWORD` or `RAILS_MASTER_KEY`. Use secret files for `config/master.key`.
 4. Press **Sync**, then **Deploy**.
 
 ## Configuration
 
-All settings are environment variables in `compose.yml`:
+| `.env` | Default | |
+|---|---|---|
+| `KAMAL_UI_SERVER` | | Required. The server Kamal UI runs on |
+| `KAMAL_UI_PASSWORD` | | Required. At least 12 characters |
+| `KAMAL_UI_HOST` | `kamal.<ip>.sslip.io` | Domain Kamal UI is served at |
+| `KAMAL_UI_SSH_USER` | `root` | User Kamal connects as |
+| `KAMAL_UI_BUILD_ON_SERVER` | `false` | Build the image on the server instead of your machine |
+
+Less common settings go under `env.clear` in `config/deploy.yml`:
 
 | Variable | Default | |
 |---|---|---|
-| `ADMIN_EMAIL` | `admin@example.com` | First admin, only created when there are no users |
-| `ADMIN_PASSWORD` | random | Printed once to the logs when empty |
-| `KAMAL_UI_PORT` | `3000` | Host port |
-| `KAMAL_UI_URL` | | Public URL, used in notification links and emails |
-| `ASSUME_SSL` / `FORCE_SSL` | `false` | Set to `true` behind an HTTPS proxy |
-| `SMTP_ADDRESS`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `MAILER_FROM` | | Enables password reset emails |
-| `SECRET_KEY_BASE` | generated | Generated and stored in the volume when unset |
 | `KAMAL_UI_HOST_ADDRESS` | container gateway | Address Kamal UI uses to SSH into its own server, for detected apps |
-
-### HTTPS
-
-Put Kamal UI behind any reverse proxy (Caddy, Traefik, nginx or kamal-proxy) and set `ASSUME_SSL=true`, `FORCE_SSL=true` and `KAMAL_UI_URL`. Live output uses WebSockets, so the proxy must allow upgrades on `/cable`.
+| `SECRET_KEY_BASE` | generated | Generated and stored in the volume when unset |
 
 ### Building images
 
-Kamal builds images with Docker. The default `compose.yml` mounts the host's Docker socket for this. **Anything that can use that socket controls the host, so only give Kamal UI accounts to people you trust with the server.** If all your projects use a [remote builder](https://kamal-deploy.org/docs/configuration/builder/) you can remove the socket mount.
+Kamal UI builds your apps' images with the server's Docker, through the socket mounted in `config/deploy.yml`. **Anything that can use that socket controls the server, so only share the password with people you trust with it.** If all your projects use a [remote builder](https://kamal-deploy.org/docs/configuration/builder/) you can remove the socket mount, but apps on the server are then no longer detected.
 
 ### Mounted projects
 
-If your projects already live on the server, mount them and add them as **Mounted folder**:
+If your projects already live on the server, mount them in `config/deploy.yml` and add them as **Mounted folder**:
 
 ```yaml
 volumes:
@@ -110,19 +112,14 @@ volumes:
 
 Everything is in the `kamal_ui_storage` volume: SQLite databases, the generated `secret_key_base` that encrypts keys and variables, and git clones. Back up the whole volume. Without `secret_key_base` the stored secrets can't be decrypted.
 
-### Lost password
-
-```sh
-docker compose exec kamal-ui bin/rails "kamal_ui:reset_password[admin@example.com]"
-```
-
 ## Security model
 
 - Secrets (SSH keys, tokens, variables, files, webhook URLs) are encrypted with Active Record encryption and never rendered back into forms.
-- Commands come from a fixed catalog and run without a shell. Options are validated, and each command needs a minimum role.
+- Commands come from a fixed catalog and run without a shell. Options are validated.
 - Child processes get an allowlisted environment, so the instance's own secrets never reach your project's hooks.
 - Deploy webhook and status board URLs use long random tokens and can be regenerated.
-- Web consoles need the deployer role, can only be attached once by the user who opened them, and close when the page is left or after 30 minutes idle.
+- Sign-in is rate limited. Sessions are tied to the password, so changing it signs everybody out.
+- Web consoles can only be attached once, and close when the page is left or after 30 minutes idle.
 - Interactive consoles and followed logs use the system `ssh`, which trusts a server's host key the first time it connects and refuses it if it later changes.
 
 ## Development
@@ -133,7 +130,7 @@ bin/dev            # http://localhost:3000
 bundle exec rspec
 ```
 
-The admin account for development is created with `bin/rails kamal_ui:bootstrap` and printed to the terminal.
+In development the password is `kamal-ui-development` unless `KAMAL_UI_PASSWORD` is set.
 
 Built with Rails 8, Hotwire, Tailwind, SQLite and Solid Queue/Cable/Cache. Kamal runs as a subprocess, using the version pinned in this app's `Gemfile.lock`.
 

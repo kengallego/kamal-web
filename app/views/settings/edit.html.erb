@@ -36,10 +36,10 @@
     </div>
     <div class="card-body space-y-3 text-sm">
       <% [
-        [ "On the server running Kamal UI, next to compose.yml:", Setting::AUTHORIZE_THIS_SERVER ],
-        [ "On any other server:", @setting.authorize_command ]
+        [ "For the server running Kamal UI, from your Kamal UI checkout:", Setting::AUTHORIZE_THIS_SERVER ],
+        [ "On any other server, as the user Kamal deploys with (usually <code>root</code>):".html_safe, @setting.authorize_command ]
       ].each do |intro, command| %>
-        <p class="text-zinc-400"><%= intro %> <span class="text-zinc-500">(as the user Kamal deploys with, usually <code>root</code>)</span></p>
+        <p class="text-zinc-400"><%= intro %></p>
         <div class="flex gap-2">
           <input type="text" readonly value="<%= command %>" class="input font-mono text-xs">
           <button class="btn" data-controller="clipboard" data-clipboard-text-value="<%= command %>" data-action="clipboard#copy">Copy</button>
@@ -57,6 +57,5 @@
   <div class="card card-body text-sm text-zinc-400 space-y-1">
     <p class="font-medium text-zinc-200">Instance</p>
     <p>Kamal <%= Gem.loaded_specs["kamal"]&.version %> · Rails <%= Rails.version %> · Ruby <%= RUBY_VERSION %></p>
-    <p>Password reset by email: <%= Rails.configuration.x.password_reset_enabled ? "enabled" : "disabled (set SMTP_ADDRESS)" %></p>
   </div>
 </div>

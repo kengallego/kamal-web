@@ -1,7 +1,5 @@
 Rails.application.routes.draw do
   resource :session
-  resources :passwords, param: :token
-  resource :profile, only: %i[ edit update ]
 
   resources :projects do
     member do
@@ -24,7 +22,6 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :users, except: :show
   resource :settings, only: %i[ edit update ] do
     post :regenerate_status_board_token
     post :reset_ignored_services

@@ -2,8 +2,8 @@
 # sent base64-encoded because PTY chunks can split multi-byte characters.
 class ConsoleChannel < ApplicationCable::Channel
   def subscribed
-    @session = ConsoleSession.find_by(id: params[:id], user: current_user)
-    return reject unless @session && current_user.can?("deployer") && @session.claim!
+    @session = ConsoleSession.find_by(id: params[:id])
+    return reject unless @session&.claim!
 
     @process = ConsoleProcess.new(@session,
       on_output: ->(data) { transmit({ type: "output", data: Base64.strict_encode64(data) }) },

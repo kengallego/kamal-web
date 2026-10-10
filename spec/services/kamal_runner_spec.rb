@@ -15,7 +15,7 @@ RSpec.describe KamalRunner do
   end
 
   it "runs Kamal and streams its output into the run" do
-    run = project.command_runs.create!(kind: "version", user: create(:user))
+    run = project.command_runs.create!(kind: "version")
 
     described_class.new(run).call
 
@@ -27,7 +27,7 @@ RSpec.describe KamalRunner do
 
   it "records failures" do
     File.write(File.join(project.local_path, "config/deploy.yml"), "service: [")
-    run = project.command_runs.create!(kind: "app_details", user: create(:user))
+    run = project.command_runs.create!(kind: "app_details")
 
     described_class.new(run).call
 
@@ -43,7 +43,7 @@ RSpec.describe KamalRunner do
   end
 
   it "skips runs canceled before they started" do
-    run = project.command_runs.create!(kind: "version", user: create(:user))
+    run = project.command_runs.create!(kind: "version")
     run.cancel!
 
     described_class.new(run).call
@@ -54,7 +54,7 @@ RSpec.describe KamalRunner do
   it "stops followed logs after the follow limit" do
     stub_const("CommandRun::FOLLOW_LIMIT", 1.second)
     allow(ProcessEnvironment).to receive(:kamal_command).and_return([ "sh", "-c", "while true; do echo tick; sleep 0.1; done", "--" ])
-    run = project.command_runs.create!(kind: "app_logs", options: { "follow" => "1" }, user: create(:user))
+    run = project.command_runs.create!(kind: "app_logs", options: { "follow" => "1" })
 
     described_class.new(run).call
 

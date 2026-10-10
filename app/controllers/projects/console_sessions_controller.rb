@@ -1,14 +1,13 @@
 class Projects::ConsoleSessionsController < Projects::BaseController
   before_action :set_destination, only: :index
-  before_action -> { require_role("deployer") }, only: %i[ create show ]
 
   def index
     @config = @project.config_for(@destination)
-    @sessions = @project.console_sessions.includes(:user).latest_first.limit(50)
+    @sessions = @project.console_sessions.latest_first.limit(50)
   end
 
   def create
-    session = @project.console_sessions.new(params.permit(:kind, :destination, :host).merge(user: current_user))
+    session = @project.console_sessions.new(params.permit(:kind, :destination, :host))
 
     if session.save
       redirect_to project_console_session_path(@project, session)

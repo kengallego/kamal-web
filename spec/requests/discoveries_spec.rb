@@ -6,8 +6,8 @@ RSpec.describe "Discovered projects" do
       discovered_files: { "config/deploy.yml" => "service: shop\n" }.to_json)
   end
 
-  it "lets admins scan the server" do
-    sign_in create(:user, :admin)
+  it "scans the server" do
+    sign_in
     result = KamalDiscovery::Result.new(apps: [ :shop ], created: [ project ], updated: [], error: nil)
     allow(KamalDiscovery).to receive(:new).and_return(instance_double(KamalDiscovery, call: result))
 
@@ -16,15 +16,8 @@ RSpec.describe "Discovered projects" do
     expect(flash[:notice]).to eq("Found 1 Kamal app on this server, added shop.")
   end
 
-  it "keeps deployers from scanning" do
-    sign_in create(:user)
-    expect(KamalDiscovery).not_to receive(:new)
-
-    post discovery_path
-  end
-
   it "explains why deploys are unavailable" do
-    sign_in create(:user)
+    sign_in
 
     get project_path(project)
     expect(response.body).to include("Detected on this server")
@@ -34,7 +27,7 @@ RSpec.describe "Discovered projects" do
   end
 
   it "only shows the SSH instructions while the server refuses Kamal UI's key" do
-    sign_in create(:user)
+    sign_in
 
     project.server_metrics.create!(host: "192.0.2.10", collected_at: 2.minutes.ago, error: "Permission denied (publickey)")
     get project_path(project)
@@ -47,7 +40,7 @@ RSpec.describe "Discovered projects" do
   end
 
   it "becomes a regular project once its repository is connected" do
-    sign_in create(:user, :admin)
+    sign_in
     allow(ProjectWorkspace).to receive(:new).and_return(instance_double(ProjectWorkspace, sync!: true))
 
     patch project_path(project), params: { project: { source_kind: "git", repository_url: "git@github.com:acme/shop.git" } }

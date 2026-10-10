@@ -2,7 +2,7 @@ class Projects::CommandRunsController < Projects::BaseController
   before_action :set_run, only: %i[ show cancel ]
 
   def index
-    @runs = @project.command_runs.includes(:user).latest_first
+    @runs = @project.command_runs.latest_first
     @runs = @runs.where(destination: params[:destination].presence) if params.key?(:destination)
     @runs = @runs.where(kind: params[:kind]) if params[:kind].present?
     @runs = @runs.limit(100)
@@ -13,13 +13,10 @@ class Projects::CommandRunsController < Projects::BaseController
 
   def create
     command = CommandCatalog.find(params.require(:kind))
-    return require_role(command.role) unless current_user.can?(command.role)
-
     run = @project.command_runs.new(
       kind: command.key,
       destination: params[:destination],
-      options: params.fetch(:options, {}).permit(*command.fields.map(&:name)).to_h,
-      user: current_user
+      options: params.fetch(:options, {}).permit(*command.fields.map(&:name)).to_h
     )
 
     if run.save
@@ -32,12 +29,8 @@ class Projects::CommandRunsController < Projects::BaseController
   end
 
   def cancel
-    if current_user.can?(@run.command.role) || @run.user == current_user
-      @run.cancel!
-      redirect_to project_command_run_path(@project, @run), notice: "Command canceled."
-    else
-      require_role(@run.command.role)
-    end
+    @run.cancel!
+    redirect_to project_command_run_path(@project, @run), notice: "Command canceled."
   end
 
   private

@@ -47,7 +47,7 @@ class DeployNotificationJob < ApplicationJob
       target = [ run.project.name, run.destination ].compact.join(" / ")
       revision = run.git_revision ? " (#{run.git_revision.first(7)})" : ""
       link = run_url(run) ? "\n#{run_url(run)}" : ""
-      "#{icon} #{run.command.label} #{run.status} for #{target}#{revision} by #{run.triggered_by}#{link}"
+      "#{icon} #{run.command.label} #{run.status} for #{target}#{revision}#{" (deploy webhook)" if run.trigger == "webhook"}#{link}"
     end
 
     def run_url(run)

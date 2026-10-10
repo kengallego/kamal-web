@@ -2,12 +2,10 @@
 
 <div class="mb-6 flex items-center justify-between">
   <h1 class="text-xl font-semibold text-zinc-100">Dashboard</h1>
-  <% if current_user.admin? %>
-    <div class="flex gap-2">
-      <%= button_to "Scan this server", discovery_path, class: "btn", title: "Find Kamal apps running on this server and add them" %>
-      <%= link_to "New project", new_project_path, class: "btn btn-primary" %>
-    </div>
-  <% end %>
+  <div class="flex gap-2">
+    <%= button_to "Scan this server", discovery_path, class: "btn", title: "Find Kamal apps running on this server and add them" %>
+    <%= link_to "New project", new_project_path, class: "btn btn-primary" %>
+  </div>
 </div>
 
 <% if @projects.empty? %>
@@ -18,11 +16,7 @@
       Kamal UI runs Kamal for it and shows what is happening on your servers.
       Kamal apps already running on this server are detected and added automatically.
     </p>
-    <% if current_user.admin? %>
-      <%= link_to "Add your first project", new_project_path, class: "btn btn-primary mt-6" %>
-    <% else %>
-      <p class="mt-4 text-sm text-zinc-500">Ask an admin to add one.</p>
-    <% end %>
+    <%= link_to "Add your first project", new_project_path, class: "btn btn-primary mt-6" %>
   </div>
 <% else %>
   <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">

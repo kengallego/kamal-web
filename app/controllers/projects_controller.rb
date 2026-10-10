@@ -1,6 +1,4 @@
 class ProjectsController < ApplicationController
-  before_action :require_admin, except: %i[ index show sync ]
-  before_action :require_deployer, only: :sync
   before_action :set_project, only: %i[ show edit update destroy sync ]
 
   def index
@@ -10,7 +8,7 @@ class ProjectsController < ApplicationController
   def show
     @destination = selected_destination
     @config = @project.config_for(@destination)
-    @recent_runs = @project.command_runs.includes(:user).where(destination: @destination).latest_first.limit(10)
+    @recent_runs = @project.command_runs.where(destination: @destination).latest_first.limit(10)
     @latest_metrics = @project.server_metrics.where(id: @project.server_metrics.recent.group(:host).select("MAX(id)")).index_by(&:host)
   end
 
@@ -60,10 +58,6 @@ class ProjectsController < ApplicationController
   private
     def set_project
       @project = Project.find(params[:id])
-    end
-
-    def require_deployer
-      require_role "deployer"
     end
 
     def selected_destination

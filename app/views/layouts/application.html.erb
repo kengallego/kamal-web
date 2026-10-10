@@ -29,9 +29,7 @@
 
           <div class="mt-6 mb-2 flex items-center justify-between px-3">
             <span class="text-xs font-medium uppercase tracking-wide text-zinc-500">Projects</span>
-            <% if current_user.admin? %>
-              <%= link_to "+", new_project_path, class: "text-zinc-500 hover:text-zinc-100", title: "New project" %>
-            <% end %>
+            <%= link_to "+", new_project_path, class: "text-zinc-500 hover:text-zinc-100", title: "New project" %>
           </div>
           <nav class="space-y-1">
             <% Project.ordered.each do |project| %>
@@ -40,11 +38,7 @@
           </nav>
 
           <div class="mt-auto space-y-1 border-t border-zinc-800 pt-4">
-            <% if current_user.admin? %>
-              <%= nav_link "Users", users_path %>
-              <%= nav_link "Settings", edit_settings_path %>
-            <% end %>
-            <%= nav_link current_user.display_name, edit_profile_path %>
+            <%= nav_link "Settings", edit_settings_path %>
             <%= button_to "Sign out", session_path, method: :delete, class: "w-full rounded-lg px-3 py-1.5 text-left text-sm text-zinc-500 hover:bg-zinc-900 hover:text-zinc-100 cursor-pointer" %>
           </div>
         </aside>
@@ -59,11 +53,7 @@
                 <% Project.ordered.each do |project| %>
                   <%= nav_link project.name, project_path(project) %>
                 <% end %>
-                <% if current_user.admin? %>
-                  <%= nav_link "Users", users_path %>
-                  <%= nav_link "Settings", edit_settings_path %>
-                <% end %>
-                <%= nav_link "Profile", edit_profile_path %>
+                <%= nav_link "Settings", edit_settings_path %>
                 <%= button_to "Sign out", session_path, method: :delete, class: "w-full rounded-lg px-3 py-1.5 text-left text-sm text-zinc-400 cursor-pointer" %>
               </div>
             </details>

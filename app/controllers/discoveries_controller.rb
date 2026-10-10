@@ -1,6 +1,4 @@
 class DiscoveriesController < ApplicationController
-  before_action :require_admin
-
   def create
     result = KamalDiscovery.new.call
 

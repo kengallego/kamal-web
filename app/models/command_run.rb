@@ -5,7 +5,6 @@ class CommandRun < ApplicationRecord
   FOLLOW_LIMIT = 30.minutes
 
   belongs_to :project
-  belongs_to :user, optional: true
 
   normalizes :destination, with: ->(d) { d.presence }
 
@@ -62,7 +61,7 @@ class CommandRun < ApplicationRecord
   end
 
   def triggered_by
-    trigger == "webhook" ? "Deploy webhook" : user&.display_name || "Deleted user"
+    trigger == "webhook" ? "Deploy webhook" : "Dashboard"
   end
 
   def start!(pid: nil)

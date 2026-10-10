@@ -1,7 +1,7 @@
 # Every Kamal command the UI can run. Arguments are always built as arrays and
 # executed without a shell, so user-provided options can't inject commands.
 class CommandCatalog
-  Command = Data.define(:key, :label, :group, :role, :mutating, :fields, :builder, :description) do
+  Command = Data.define(:key, :label, :group, :mutating, :fields, :builder, :description) do
     def arguments(options = {})
       builder.call(options.to_h.stringify_keys.transform_values { |value| value.to_s.strip })
     end
@@ -41,8 +41,8 @@ class CommandCatalog
     end
 
     private
-      def command(key, label, group:, role: "viewer", mutating: false, fields: [], description: nil, &builder)
-        all[key] = Command.new(key:, label:, group:, role:, mutating:, fields:, builder:, description:)
+      def command(key, label, group:, mutating: false, fields: [], description: nil, &builder)
+        all[key] = Command.new(key:, label:, group:, mutating:, fields:, builder:, description:)
       end
 
       def field(name, label, type: :text, required: false, placeholder: nil)
@@ -93,37 +93,37 @@ class CommandCatalog
       end
   end
 
-  command "deploy", "Deploy", group: "deploy", role: "deployer", mutating: true,
+  command "deploy", "Deploy", group: "deploy", mutating: true,
     description: "Build, push and boot a new version" do
     [ "deploy" ]
   end
 
-  command "redeploy", "Redeploy", group: "deploy", role: "deployer", mutating: true,
+  command "redeploy", "Redeploy", group: "deploy", mutating: true,
     description: "Deploy without bootstrapping servers, proxy or registry login" do
     [ "redeploy" ]
   end
 
-  command "rollback", "Rollback", group: "deploy", role: "deployer", mutating: true,
+  command "rollback", "Rollback", group: "deploy", mutating: true,
     fields: [ field("version", "Version", required: true, placeholder: "git sha of a previous deploy") ] do |options|
     raise ArgumentError, "Version is required" if options["version"].blank?
     raise ArgumentError, "Version contains invalid characters" unless options["version"].match?(/\A[\w.\-]+\z/)
     [ "rollback", options["version"] ]
   end
 
-  command "setup", "Setup", group: "deploy", role: "admin", mutating: true,
+  command "setup", "Setup", group: "deploy", mutating: true,
     description: "Bootstrap servers, boot accessories and deploy" do
     [ "setup" ]
   end
 
-  command "app_boot", "Boot app", group: "app", role: "deployer", mutating: true do
+  command "app_boot", "Boot app", group: "app", mutating: true do
     [ "app", "boot" ]
   end
 
-  command "app_start", "Start app", group: "app", role: "deployer", mutating: true do
+  command "app_start", "Start app", group: "app", mutating: true do
     [ "app", "start" ]
   end
 
-  command "app_stop", "Stop app", group: "app", role: "deployer", mutating: true do
+  command "app_stop", "Stop app", group: "app", mutating: true do
     [ "app", "stop" ]
   end
 
@@ -149,25 +149,25 @@ class CommandCatalog
     [ "app", "logs" ] + host(options) + container(options) + lines(options) + grep(options) + follow(options)
   end
 
-  command "app_exec", "Run command", group: "app", role: "deployer",
+  command "app_exec", "Run command", group: "app",
     fields: [ field("command", "Command", required: true, placeholder: "bin/rails db:migrate:status") ],
     description: "Runs in a new container from the current image on the primary host" do |options|
     raise ArgumentError, "Command is required" if options["command"].blank?
     [ "app", "exec", "--primary", "--reuse", options["command"] ]
   end
 
-  command "rails_runner", "Rails runner", group: "app", role: "deployer",
+  command "rails_runner", "Rails runner", group: "app",
     fields: [ field("code", "Ruby code", type: :code, required: true, placeholder: "puts User.count") ],
     description: "Evaluates Ruby with bin/rails runner inside the running app container" do |options|
     raise ArgumentError, "Code is required" if options["code"].blank?
     [ "app", "exec", "--primary", "--reuse", "bin/rails runner #{Shellwords.escape(options["code"])}" ]
   end
 
-  command "app_maintenance", "Maintenance mode", group: "app", role: "deployer", mutating: true do
+  command "app_maintenance", "Maintenance mode", group: "app", mutating: true do
     [ "app", "maintenance" ]
   end
 
-  command "app_live", "Live mode", group: "app", role: "deployer", mutating: true do
+  command "app_live", "Live mode", group: "app", mutating: true do
     [ "app", "live" ]
   end
 
@@ -179,11 +179,11 @@ class CommandCatalog
     [ "proxy", "logs" ] + host(options) + lines(options) + grep(options) + follow(options)
   end
 
-  command "proxy_boot", "Boot proxy", group: "proxy", role: "admin", mutating: true do
+  command "proxy_boot", "Boot proxy", group: "proxy", mutating: true do
     [ "proxy", "boot" ]
   end
 
-  command "proxy_reboot", "Reboot proxy", group: "proxy", role: "admin", mutating: true do
+  command "proxy_reboot", "Reboot proxy", group: "proxy", mutating: true do
     [ "proxy", "reboot", "--rolling", "--confirmed" ]
   end
 
@@ -199,7 +199,7 @@ class CommandCatalog
   end
 
   %w[ boot reboot restart start stop ].each do |action|
-    command "accessory_#{action}", "#{action.capitalize} accessory", group: "accessory", role: "admin", mutating: true,
+    command "accessory_#{action}", "#{action.capitalize} accessory", group: "accessory", mutating: true,
       fields: [ field("name", "Accessory", type: :accessory) ] do |options|
       [ "accessory", action, accessory(options) ] + (action == "reboot" ? [ "--confirmed" ] : [])
     end
@@ -209,25 +209,25 @@ class CommandCatalog
     [ "lock", "status" ]
   end
 
-  command "lock_acquire", "Acquire lock", group: "lock", role: "deployer",
+  command "lock_acquire", "Acquire lock", group: "lock",
     fields: [ field("message", "Message", required: true, placeholder: "Why deploys are blocked") ] do |options|
     raise ArgumentError, "Message is required" if options["message"].blank?
     [ "lock", "acquire", "--message", options["message"] ]
   end
 
-  command "lock_release", "Release lock", group: "lock", role: "deployer" do
+  command "lock_release", "Release lock", group: "lock" do
     [ "lock", "release" ]
   end
 
-  command "prune_all", "Prune images and containers", group: "maintenance", role: "deployer", mutating: true do
+  command "prune_all", "Prune images and containers", group: "maintenance", mutating: true do
     [ "prune", "all" ]
   end
 
-  command "registry_login", "Registry login", group: "maintenance", role: "deployer" do
+  command "registry_login", "Registry login", group: "maintenance" do
     [ "registry", "login" ]
   end
 
-  command "server_bootstrap", "Bootstrap servers", group: "maintenance", role: "admin", mutating: true,
+  command "server_bootstrap", "Bootstrap servers", group: "maintenance", mutating: true,
     description: "Installs curl and Docker on servers that lack them" do
     [ "server", "bootstrap" ]
   end

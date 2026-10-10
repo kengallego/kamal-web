@@ -1,7 +1,10 @@
 namespace :kamal_ui do
-  desc "Create the first admin, close commands interrupted by a restart and detect Kamal apps on this server"
+  desc "Check the password, close commands interrupted by a restart and detect Kamal apps on this server"
   task bootstrap: :environment do
-    AdminBootstrap.new.call
+    if (problem = AccessPassword.problem)
+      abort "Kamal UI can't start: #{problem}"
+    end
+
     CommandRun.interrupt_stale!
     ConsoleSession.close_stale!
 
@@ -9,10 +12,9 @@ namespace :kamal_ui do
       puts <<~TEXT
         ===================================================================
           Kamal UI SSH key created. To let Kamal UI manage the Kamal apps on
-          this server, run this next to compose.yml, as the user Kamal
-          deploys with (usually root):
+          this server, run this from your Kamal UI checkout:
 
-          #{Setting::AUTHORIZE_THIS_SERVER}
+            #{Setting::AUTHORIZE_THIS_SERVER}
         ===================================================================
       TEXT
     end
@@ -31,14 +33,5 @@ namespace :kamal_ui do
   rescue StandardError => error
     # Detection must never keep Kamal UI from booting.
     puts "Kamal app detection failed: #{error.class}: #{error.message}"
-  end
-
-  desc "Set a new random password for a user: bin/rails 'kamal_ui:reset_password[admin@example.com]'"
-  task :reset_password, [ :email ] => :environment do |_, args|
-    user = User.find_by!(email_address: args[:email].to_s.strip.downcase)
-    password = SecureRandom.base58(20)
-    user.update!(password: password)
-    user.sessions.destroy_all
-    puts "New password for #{user.email_address}: #{password}"
   end
 end

@@ -1,6 +1,6 @@
 # Builds the environment for child processes (git, kamal, ssh). Starts from an
 # allowlist instead of inheriting ENV so instance secrets like SECRET_KEY_BASE
-# or ADMIN_PASSWORD never reach a project's hooks or .kamal/secrets.
+# or KAMAL_UI_PASSWORD never reach a project's hooks or .kamal/secrets.
 module ProcessEnvironment
   INHERITED = %w[
     PATH HOME LANG LC_ALL TZ TERM USER

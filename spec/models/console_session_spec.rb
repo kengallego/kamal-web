@@ -4,7 +4,7 @@ RSpec.describe ConsoleSession do
   let(:project) { create(:project, config_snapshots: { "" => { "roles" => { "web" => [ "192.0.2.10", "192.0.2.11" ] }, "accessories" => {} }, "staging" => { "roles" => { "web" => [ "192.0.2.20" ] }, "accessories" => {} } }) }
 
   it "builds an interactive exec in the running container" do
-    session = project.console_sessions.create!(kind: "rails", destination: "staging", host: "192.0.2.20", user: create(:user))
+    session = project.console_sessions.create!(kind: "rails", destination: "staging", host: "192.0.2.20")
 
     expect(session.arguments).to eq([ "app", "exec", "--interactive", "--reuse", "--hosts", "192.0.2.20", "bin/rails console", "-d", "staging" ])
   end
@@ -17,7 +17,7 @@ RSpec.describe ConsoleSession do
   end
 
   it "can be claimed once, shortly after creation" do
-    session = project.console_sessions.create!(kind: "rails", user: create(:user))
+    session = project.console_sessions.create!(kind: "rails")
 
     expect(session.claim!).to be(true)
     expect(session.claim!).to be(false)
