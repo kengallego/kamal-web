@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html class="h-full">
   <head>
-    <title><%= [ content_for(:title), "Kamal UI" ].compact.join(" · ") %></title>
+    <title><%= [ content_for(:title), "Kamal Web" ].compact.join(" · ") %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="application-name" content="Kamal UI">
+    <meta name="application-name" content="Kamal Web">
     <meta name="color-scheme" content="dark">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -20,7 +20,7 @@
         <aside class="hidden w-60 shrink-0 flex-col border-r border-zinc-800 bg-zinc-950 p-4 lg:flex">
           <%= link_to root_path, class: "mb-6 flex items-center gap-2 px-2" do %>
             <span class="grid size-7 place-items-center rounded-lg bg-emerald-500 text-sm font-black text-zinc-950">K</span>
-            <span class="font-semibold text-zinc-100">Kamal UI</span>
+            <span class="font-semibold text-zinc-100">Kamal Web</span>
           <% end %>
 
           <nav class="space-y-1">
@@ -45,7 +45,7 @@
 
         <div class="min-w-0 flex-1">
           <header class="flex items-center justify-between border-b border-zinc-800 px-4 py-3 lg:hidden">
-            <%= link_to "Kamal UI", root_path, class: "font-semibold" %>
+            <%= link_to "Kamal Web", root_path, class: "font-semibold" %>
             <details class="relative">
               <summary class="btn btn-sm list-none">Menu</summary>
               <div class="absolute right-0 z-10 mt-2 w-56 space-y-1 rounded-xl border border-zinc-800 bg-zinc-900 p-2">
@@ -70,7 +70,7 @@
         <div class="w-full max-w-sm">
           <div class="mb-8 flex items-center justify-center gap-2">
             <span class="grid size-9 place-items-center rounded-xl bg-emerald-500 font-black text-zinc-950">K</span>
-            <span class="text-xl font-semibold text-zinc-100">Kamal UI</span>
+            <span class="text-xl font-semibold text-zinc-100">Kamal Web</span>
           </div>
           <%= render "shared/flash" %>
           <%= yield %>

@@ -7,7 +7,7 @@ module SshWrapper
 
   def directory
     @directory ||= begin
-      dir = Rails.root.join("tmp/kamal_ui_bin")
+      dir = Rails.root.join("tmp/kamal_web_bin")
       dir.mkpath
       script = dir.join("ssh")
       script.write(<<~SH)

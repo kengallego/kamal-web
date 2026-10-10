@@ -24,7 +24,7 @@ class SshAgent
   def start
     return {} if @keys.empty?
 
-    @dir = Dir.mktmpdir("kamal-ui-agent")
+    @dir = Dir.mktmpdir("kamal-web-agent")
     socket = File.join(@dir, "agent.sock")
     @pid = Process.spawn("ssh-agent", "-D", "-a", socket, out: File::NULL, err: File::NULL)
     wait_for(socket)

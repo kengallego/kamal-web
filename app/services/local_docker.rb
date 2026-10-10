@@ -1,7 +1,7 @@
 require "open3"
 require "rubygems/package"
 
-# Talks to the Docker daemon Kamal UI can reach directly (the host's, through
+# Talks to the Docker daemon Kamal Web can reach directly (the host's, through
 # the mounted /var/run/docker.sock). Used to discover Kamal apps on this server.
 class LocalDocker
   class Error < StandardError; end

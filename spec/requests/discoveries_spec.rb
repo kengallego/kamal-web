@@ -26,7 +26,7 @@ RSpec.describe "Discovered projects" do
     expect(response.body).to include("More commands available with the app's code")
   end
 
-  it "only shows the SSH instructions while the server refuses Kamal UI's key" do
+  it "only shows the SSH instructions while the server refuses Kamal Web's key" do
     sign_in
 
     project.server_metrics.create!(host: "192.0.2.10", collected_at: 2.minutes.ago, error: "Permission denied (publickey)")

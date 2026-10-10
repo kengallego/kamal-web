@@ -5,7 +5,7 @@ class Setting < ApplicationRecord
 
   # Written to the storage volume for bin/authorize-key, which the
   # `kamal authorize` alias in config/deploy.yml runs on the server.
-  PUBLIC_KEY_FILE = "kamal-ui.pub"
+  PUBLIC_KEY_FILE = "kamal-web.pub"
   AUTHORIZE_THIS_SERVER = "kamal authorize".freeze
 
   def self.instance
@@ -16,7 +16,7 @@ class Setting < ApplicationRecord
     regenerate_status_board_token
   end
 
-  # The key Kamal UI uses for servers when a project has none of its own,
+  # The key Kamal Web uses for servers when a project has none of its own,
   # generated on first use. Returns true when a new key was created.
   def ensure_ssh_key!
     if ssh_private_key.present?
@@ -24,9 +24,9 @@ class Setting < ApplicationRecord
       return false
     end
 
-    Dir.mktmpdir("kamal-ui-key") do |dir|
+    Dir.mktmpdir("kamal-web-key") do |dir|
       path = File.join(dir, "id_ed25519")
-      _, status = Open3.capture2e("ssh-keygen", "-q", "-t", "ed25519", "-N", "", "-C", "kamal-ui", "-f", path)
+      _, status = Open3.capture2e("ssh-keygen", "-q", "-t", "ed25519", "-N", "", "-C", "kamal-web", "-f", path)
       raise "ssh-keygen failed" unless status.success?
 
       update!(ssh_private_key: File.read(path), ssh_public_key: File.read("#{path}.pub").strip)

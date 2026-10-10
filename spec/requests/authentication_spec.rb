@@ -29,7 +29,7 @@ RSpec.describe "Authentication" do
   it "signs everybody out when the password changes" do
     sign_in
     allow(ENV).to receive(:[]).and_call_original
-    allow(ENV).to receive(:[]).with("KAMAL_UI_PASSWORD").and_return("a different password")
+    allow(ENV).to receive(:[]).with("KAMAL_WEB_PASSWORD").and_return("a different password")
 
     get root_path
     expect(response).to redirect_to(new_session_path)
@@ -37,7 +37,7 @@ RSpec.describe "Authentication" do
 
   it "refuses to sign in with a short password" do
     allow(ENV).to receive(:[]).and_call_original
-    allow(ENV).to receive(:[]).with("KAMAL_UI_PASSWORD").and_return("short")
+    allow(ENV).to receive(:[]).with("KAMAL_WEB_PASSWORD").and_return("short")
 
     get new_session_path
     expect(response.body).to include("at least 12 characters")

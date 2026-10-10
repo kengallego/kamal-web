@@ -30,7 +30,7 @@ class KamalRunner
   rescue ProjectWorkspace::Error, SshAgent::Error => error
     @run.fail!(error.message)
   rescue StandardError => error
-    @run.fail!("Kamal UI error: #{error.class}: #{error.message}")
+    @run.fail!("Kamal Web error: #{error.class}: #{error.message}")
     raise
   end
 

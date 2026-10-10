@@ -127,7 +127,7 @@ class Project < ApplicationRecord
   end
 
   private
-    # Only clones made by Kamal UI are removed; mounted folders are left alone.
+    # Only clones made by Kamal Web are removed; mounted folders are left alone.
     def ignore_discovered_service
       Setting.instance.ignore_service!(discovered_service)
     end

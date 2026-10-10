@@ -1,5 +1,5 @@
 # Lets CI or a git host trigger a deploy:
-#   curl -X POST https://kamal-ui.example.com/hooks/deploy/TOKEN?destination=production
+#   curl -X POST https://kamal-web.example.com/hooks/deploy/TOKEN?destination=production
 # GitHub/GitLab push payloads are accepted; pushes to other branches are ignored.
 class DeployHooksController < ApplicationController
   allow_unauthenticated_access

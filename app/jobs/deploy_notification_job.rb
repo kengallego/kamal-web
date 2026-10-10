@@ -13,7 +13,7 @@ class DeployNotificationJob < ApplicationJob
     return if url.blank?
 
     uri = URI.parse(url)
-    request = Net::HTTP::Post.new(uri, "Content-Type" => "application/json", "User-Agent" => "KamalUI")
+    request = Net::HTTP::Post.new(uri, "Content-Type" => "application/json", "User-Agent" => "KamalWeb")
     request.body = payload(run).to_json
 
     Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https", open_timeout: 5, read_timeout: 10) do |http|
@@ -51,7 +51,7 @@ class DeployNotificationJob < ApplicationJob
     end
 
     def run_url(run)
-      host = ENV["KAMAL_UI_URL"].presence
+      host = ENV["KAMAL_WEB_URL"].presence
       "#{host.chomp("/")}/projects/#{run.project_id}/command_runs/#{run.id}" if host
     end
 end

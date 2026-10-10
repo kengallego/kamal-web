@@ -1,6 +1,6 @@
 # Collects CPU, memory, disk, load and running containers from one host.
 class ServerProbe
-  SEPARATOR = "--kamal-ui--".freeze
+  SEPARATOR = "--kamal-web--".freeze
 
   SCRIPT = <<~SH.freeze
     head -1 /proc/stat; echo #{SEPARATOR}

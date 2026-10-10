@@ -1,4 +1,4 @@
-# Kamal UI signs in with a single KAMAL_UI_PASSWORD instead of user accounts.
+# Kamal Web signs in with a single KAMAL_WEB_PASSWORD instead of user accounts.
 class RemoveUserAccounts < ActiveRecord::Migration[8.1]
   def change
     remove_reference :command_runs, :user, index: true, type: :integer

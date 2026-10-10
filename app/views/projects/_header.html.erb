@@ -36,10 +36,10 @@
     <% metrics = project.latest_metrics %>
     <% if (failed = metrics.select(&:error)).any? %>
       <div class="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-200">
-        <p class="font-medium">Kamal UI can't connect to <%= failed.map(&:host).to_sentence %> over SSH</p>
+        <p class="font-medium">Kamal Web can't connect to <%= failed.map(&:host).to_sentence %> over SSH</p>
         <pre class="mt-1 whitespace-pre-wrap font-mono text-xs text-amber-200/80"><%= failed.first.error.to_s.last(500) %></pre>
         <% if project.ssh_private_key.blank? %>
-          <p class="mt-2 text-amber-200/80">Authorize Kamal UI's key by running this from your Kamal UI checkout:</p>
+          <p class="mt-2 text-amber-200/80">Authorize Kamal Web's key by running this from your Kamal Web checkout:</p>
           <pre class="mt-1 overflow-x-auto rounded bg-zinc-950 p-2 font-mono text-xs text-zinc-200"><%= Setting::AUTHORIZE_THIS_SERVER %></pre>
           <p class="mt-1 text-xs text-amber-200/60">Checked every minute. <%= link_to "Monitoring", project_monitoring_path(project), class: "underline" %> can check again right away.</p>
         <% end %>
@@ -47,7 +47,7 @@
     <% end %>
     <p class="mt-4 text-sm text-zinc-500">
       Detected on this server<%= " · checking SSH access…" if metrics.empty? && project.monitoring_enabled? %>.
-      To deploy from Kamal UI too, <%= link_to "add its git repository", edit_project_path(project), class: "underline hover:text-zinc-300" %>.
+      To deploy from Kamal Web too, <%= link_to "add its git repository", edit_project_path(project), class: "underline hover:text-zinc-300" %>.
     </p>
   <% end %>
 

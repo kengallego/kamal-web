@@ -8,7 +8,7 @@
   <% else %>
     <%= form_with url: session_url, class: "space-y-4" do |form| %>
       <%# Lets password managers tell this instance apart from others. %>
-      <%= hidden_field_tag :username, "kamal-ui@#{request.host}", autocomplete: "username", id: nil %>
+      <%= hidden_field_tag :username, "kamal-web@#{request.host}", autocomplete: "username", id: nil %>
       <div>
         <%= form.label :password, class: "label" %>
         <%= form.password_field :password, required: true, autofocus: true, autocomplete: "current-password", class: "input" %>
@@ -17,6 +17,6 @@
       <%= form.submit "Sign in", class: "btn btn-primary w-full" %>
     <% end %>
 
-    <p class="mt-4 text-center text-xs text-zinc-500">The password is <code class="text-zinc-400">KAMAL_UI_PASSWORD</code> from the <code class="text-zinc-400">.env</code> file Kamal UI was deployed with.</p>
+    <p class="mt-4 text-center text-xs text-zinc-500">The password is <code class="text-zinc-400">KAMAL_WEB_PASSWORD</code> from the <code class="text-zinc-400">.env</code> file Kamal Web was deployed with.</p>
   <% end %>
 </div>

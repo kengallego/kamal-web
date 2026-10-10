@@ -11,7 +11,7 @@ config_file, destination = ARGV
 destination = nil if destination.to_s.empty?
 
 begin
-  config = Kamal::Configuration.create_from(config_file: Pathname.new(config_file), destination: destination, version: "kamal-ui")
+  config = Kamal::Configuration.create_from(config_file: Pathname.new(config_file), destination: destination, version: "kamal-web")
 
   proxy_hosts = config.roles.select(&:running_proxy?).flat_map { |role| Array(role.proxy.hosts) }
   ssh_proxy = config.ssh.proxy

@@ -20,7 +20,7 @@ Bundler.require(*Rails.groups)
 
 require_relative "instance_secrets"
 
-module KamalUi
+module KamalWeb
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.1
@@ -47,8 +47,8 @@ module KamalUi
     config.active_record.encryption.key_derivation_salt = InstanceSecrets.encryption_key("key_derivation_salt")
 
     # Where git-backed projects are cloned and where local projects may be mounted.
-    config.x.workspaces_path = Pathname.new(ENV.fetch("KAMAL_UI_WORKSPACES_PATH", Rails.root.join("storage/workspaces").to_s))
+    config.x.workspaces_path = Pathname.new(ENV.fetch("KAMAL_WEB_WORKSPACES_PATH", Rails.root.join("storage/workspaces").to_s))
     # Outside Docker, local projects can live anywhere in your home directory.
-    config.x.projects_path = Pathname.new(ENV.fetch("KAMAL_UI_PROJECTS_PATH") { Rails.env.production? ? "/projects" : Dir.home })
+    config.x.projects_path = Pathname.new(ENV.fetch("KAMAL_WEB_PROJECTS_PATH") { Rails.env.production? ? "/projects" : Dir.home })
   end
 end

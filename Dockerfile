@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 # check=error=true
 
-# Production image for Kamal UI, deployed with Kamal: see config/deploy.yml.
+# Production image for Kamal Web, deployed with Kamal: see config/deploy.yml.
 
 # For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 

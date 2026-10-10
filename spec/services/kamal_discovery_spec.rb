@@ -42,7 +42,7 @@ RSpec.describe KamalDiscovery do
     expect(shop.versions).to eq("" => "abc123")
     expect(config).to include(
       "service" => "shop", "image" => "acme/shop",
-      "registry" => { "server" => "ghcr.io", "username" => "kamal-ui", "password" => [ "KAMAL_REGISTRY_PASSWORD" ] },
+      "registry" => { "server" => "ghcr.io", "username" => "kamal-web", "password" => [ "KAMAL_REGISTRY_PASSWORD" ] },
       "builder" => { "arch" => "arm64" }, "ssh" => { "user" => "deploy" },
       "servers" => { "web" => { "hosts" => [ "172.18.0.1" ] }, "job" => { "hosts" => [ "172.18.0.1" ] } },
       "proxy" => { "hosts" => [ "shop.example.com", "www.shop.example.com" ], "ssl" => true, "app_port" => 3000 },
@@ -50,13 +50,13 @@ RSpec.describe KamalDiscovery do
     )
   end
 
-  it "never lists Kamal UI itself, including its older versions" do
+  it "never lists Kamal Web itself, including its older versions" do
     containers.push(
-      container("kamal-ui-web-v2", "kamal-ui:v2", { "service" => "kamal-ui", "role" => "web", "destination" => "" }),
-      container("kamal-ui-web-v1", "kamal-ui:v1", { "service" => "kamal-ui", "role" => "web", "destination" => "" }, running: false)
+      container("kamal-web-web-v2", "kamal-web:v2", { "service" => "kamal-web", "role" => "web", "destination" => "" }),
+      container("kamal-web-web-v1", "kamal-web:v1", { "service" => "kamal-web", "role" => "web", "destination" => "" }, running: false)
     )
     allow(ENV).to receive(:[]).and_call_original
-    allow(ENV).to receive(:[]).with("KAMAL_CONTAINER_NAME").and_return("kamal-ui-web-v2")
+    allow(ENV).to receive(:[]).with("KAMAL_CONTAINER_NAME").and_return("kamal-web-web-v2")
 
     expect(discovery.discover.map(&:service)).to contain_exactly("shop", "blog")
   end

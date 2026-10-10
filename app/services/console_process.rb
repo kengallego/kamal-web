@@ -61,7 +61,7 @@ class ConsoleProcess
       output "\r\n\e[31m#{error.message}\e[0m\r\n"
       finish(1)
     rescue StandardError => error
-      output "\r\n\e[31mKamal UI error: #{error.class}: #{error.message}\e[0m\r\n"
+      output "\r\n\e[31mKamal Web error: #{error.class}: #{error.message}\e[0m\r\n"
       finish(1)
       Rails.error.report(error)
     ensure

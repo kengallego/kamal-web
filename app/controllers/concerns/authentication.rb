@@ -1,7 +1,7 @@
 module Authentication
   extend ActiveSupport::Concern
 
-  COOKIE = :kamal_ui_session
+  COOKIE = :kamal_web_session
 
   included do
     before_action :require_authentication

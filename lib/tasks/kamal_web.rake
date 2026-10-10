@@ -1,8 +1,8 @@
-namespace :kamal_ui do
+namespace :kamal_web do
   desc "Check the password, close commands interrupted by a restart and detect Kamal apps on this server"
   task bootstrap: :environment do
     if (problem = AccessPassword.problem)
-      abort "Kamal UI can't start: #{problem}"
+      abort "Kamal Web can't start: #{problem}"
     end
 
     CommandRun.interrupt_stale!
@@ -11,15 +11,15 @@ namespace :kamal_ui do
     if Setting.instance.ensure_ssh_key!
       puts <<~TEXT
         ===================================================================
-          Kamal UI SSH key created. To let Kamal UI manage the Kamal apps on
-          this server, run this from your Kamal UI checkout:
+          Kamal Web SSH key created. To let Kamal Web manage the Kamal apps on
+          this server, run this from your Kamal Web checkout:
 
             #{Setting::AUTHORIZE_THIS_SERVER}
         ===================================================================
       TEXT
     end
 
-    Rake::Task["kamal_ui:discover"].invoke
+    Rake::Task["kamal_web:discover"].invoke
   end
 
   desc "Detect the Kamal apps running on this server and add them as projects"
@@ -31,7 +31,7 @@ namespace :kamal_ui do
       puts "Detected #{result.apps.size} Kamal app(s) on this server#{", added #{result.created.map(&:name).join(", ")}" if result.created.any?}."
     end
   rescue StandardError => error
-    # Detection must never keep Kamal UI from booting.
+    # Detection must never keep Kamal Web from booting.
     puts "Kamal app detection failed: #{error.class}: #{error.message}"
   end
 end

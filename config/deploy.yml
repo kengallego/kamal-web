@@ -1,16 +1,16 @@
-# Deploys Kamal UI with Kamal. Your settings go in .env (copy .env.example),
+# Deploys Kamal Web with Kamal. Your settings go in .env (copy .env.example),
 # not here. See README.md.
 <%
   require "dotenv"
   Dotenv.load(".env")
-  server = ENV["KAMAL_UI_SERVER"].presence || raise("Set KAMAL_UI_SERVER in .env (see .env.example)")
-  ssh_user = ENV["KAMAL_UI_SSH_USER"].presence || "root"
+  server = ENV["KAMAL_WEB_SERVER"].presence || raise("Set KAMAL_WEB_SERVER in .env (see .env.example)")
+  ssh_user = ENV["KAMAL_WEB_SSH_USER"].presence || "root"
   # Without a domain of your own, sslip.io gives the server's IP a name that
   # Let's Encrypt can issue a certificate for.
-  host = ENV["KAMAL_UI_HOST"].presence || "kamal.#{server.tr(".", "-")}.sslip.io"
+  host = ENV["KAMAL_WEB_HOST"].presence || "kamal.#{server.tr(".", "-")}.sslip.io"
 %>
-service: kamal-ui
-image: kamal-ui
+service: kamal-web
+image: kamal-web
 
 servers:
   web:
@@ -30,26 +30,26 @@ registry:
 
 builder:
   arch: amd64
-  <%- if ENV["KAMAL_UI_BUILD_ON_SERVER"] == "true" -%>
+  <%- if ENV["KAMAL_WEB_BUILD_ON_SERVER"] == "true" -%>
   remote: ssh://<%= ssh_user %>@<%= server %>
   <%- end -%>
 
 env:
   secret:
-    - KAMAL_UI_PASSWORD
+    - KAMAL_WEB_PASSWORD
   clear:
     ASSUME_SSL: true
     FORCE_SSL: true
-    KAMAL_UI_URL: https://<%= host %>
+    KAMAL_WEB_URL: https://<%= host %>
 
 volumes:
   # Databases, the key that encrypts secrets, clones and the SSH key. Back it up.
-  - kamal_ui_storage:/rails/storage
+  - kamal_web_storage:/rails/storage
   # Used to build images and to find the Kamal apps running on this server.
   - /var/run/docker.sock:/var/run/docker.sock
 
 aliases:
-  # Lets Kamal UI SSH into this server as Kamal's SSH user.
-  authorize: server exec "docker exec $(docker ps -q -f label=service=kamal-ui | head -1) bin/authorize-key | sh"
+  # Lets Kamal Web SSH into this server as Kamal's SSH user.
+  authorize: server exec "docker exec $(docker ps -q -f label=service=kamal-web | head -1) bin/authorize-key | sh"
   logs: app logs -f
   console: app exec --interactive --reuse "bin/rails console"

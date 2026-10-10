@@ -36,7 +36,7 @@
     </div>
     <div class="card-body space-y-3 text-sm">
       <% [
-        [ "For the server running Kamal UI, from your Kamal UI checkout:", Setting::AUTHORIZE_THIS_SERVER ],
+        [ "For the server running Kamal Web, from your Kamal Web checkout:", Setting::AUTHORIZE_THIS_SERVER ],
         [ "On any other server, as the user Kamal deploys with (usually <code>root</code>):".html_safe, @setting.authorize_command ]
       ].each do |intro, command| %>
         <p class="text-zinc-400"><%= intro %></p>

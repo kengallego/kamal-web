@@ -115,7 +115,7 @@ class CommandRun < ApplicationRecord
   end
 
   def self.interrupt_stale!
-    active.find_each { |run| run.fail!("Interrupted: Kamal UI restarted while this command was running.") }
+    active.find_each { |run| run.fail!("Interrupted: Kamal Web restarted while this command was running.") }
   end
 
   private
