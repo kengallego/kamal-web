@@ -16,9 +16,12 @@ class ProxyInspector
     parse_routes(output)
   end
 
-  def requests(limit: 300)
-    output = @shell.run("docker logs --tail #{limit.to_i} kamal-proxy 2>&1 || sudo -n docker logs --tail #{limit.to_i} kamal-proxy 2>&1")
-    parse_requests(output)
+  # Access log entries from the last window, newest first. Capped so a busy
+  # proxy can't flood the page.
+  def requests(window: 1.hour, limit: 20_000)
+    since = "#{(window / 60).ceil}m"
+    logs = "docker logs --since #{since} kamal-proxy 2>&1 || sudo -n docker logs --since #{since} kamal-proxy 2>&1"
+    parse_requests(@shell.run("(#{logs}) | grep '\"msg\":\"Request\"' | tail -n #{limit.to_i}"))
   end
 
   def parse_routes(output)

@@ -1,0 +1,23 @@
+<%= turbo_frame_tag "containers" do %>
+  <%# Polling stops once the run this panel belongs to has finished. %>
+  <% if @run.nil? || !@run.active? %><span hidden data-poll-final></span><% end %>
+  <% @errors.each do |host, message| %>
+    <p class="px-4 py-2 text-xs text-red-300"><%= host %>: <%= message %></p>
+  <% end %>
+  <% if @containers.empty? && @errors.empty? %>
+    <p class="px-4 py-4 text-sm text-zinc-500">No containers of this app yet.</p>
+  <% else %>
+    <ul class="divide-y divide-zinc-800">
+      <% @containers.each do |container| %>
+        <li class="px-4 py-2 text-sm">
+          <div class="flex items-center justify-between gap-2">
+            <span class="truncate font-mono text-xs text-zinc-200" title="<%= container.name %>"><%= container.name %></span>
+            <span class="badge <%= container.running? ? "badge-success" : container.state == "restarting" ? "badge-warning" : "badge-neutral" %>"><%= container.state %></span>
+          </div>
+          <p class="mt-0.5 text-xs text-zinc-500"><%= container.host %> · <%= container.role %> · <%= container.status %></p>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+  <p class="border-t border-zinc-800 px-4 py-2 text-xs text-zinc-600">Updated <%= l(Time.current, format: "%H:%M:%S") %></p>
+<% end %>

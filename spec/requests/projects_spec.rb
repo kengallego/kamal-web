@@ -78,4 +78,16 @@ RSpec.describe "Projects" do
     expect(response.body).not_to include("Roll back</button>")
     expect(response.body).to include("needs the app's repository")
   end
+
+  it "charts the proxy traffic of this app only" do
+    sign_in
+    request = ->(service, status) { ProxyInspector::Request.new(time: 1.minute.ago, host: "x", path: "/", method: "GET", status: status, duration_ms: 3.0, service: service, remote_addr: nil) }
+    inspector = instance_double(ProxyInspector, routes: [], requests: [ request.("demo-web", 200), request.("demo-web", 503), request.("other-web", 200) ])
+    allow(ProxyInspector).to receive(:new).and_return(inspector)
+
+    get project_proxy_path(project), headers: { "Turbo-Frame" => "proxy_data" }
+
+    expect(response.body).to include("<svg", "Requests (1 h)")
+    expect(response.body).to match(%r{Requests \(1 h\)</p>\s*<p[^>]*>2</p>})
+  end
 end

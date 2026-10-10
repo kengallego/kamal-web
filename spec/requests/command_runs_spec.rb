@@ -37,4 +37,20 @@ RSpec.describe "Command runs" do
     post cancel_project_command_run_path(project, run)
     expect(run.reload.status).to eq("canceled")
   end
+
+  it "shows the app's containers next to a deploy until it finishes" do
+    sign_in
+    run = project.command_runs.create!(kind: "deploy")
+    allow_any_instance_of(ServiceContainers).to receive(:call).and_return([ [], {} ])
+
+    get project_command_run_path(project, run)
+    expect(response.body).to include(project_containers_path(project, destination: nil, run_id: run.id).sub("&", "&amp;"))
+
+    get project_containers_path(project, run_id: run.id)
+    expect(response.body).not_to include("data-poll-final")
+
+    run.update_columns(status: "succeeded")
+    get project_containers_path(project, run_id: run.id)
+    expect(response.body).to include("data-poll-final")
+  end
 end

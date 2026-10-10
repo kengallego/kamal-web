@@ -24,13 +24,14 @@
     <% end %>
   </div>
 
-  <% total = @requests.size %>
+  <% total = @traffic.size %>
+  <% durations = @traffic.map(&:duration_ms).sort %>
   <div class="mb-6 grid gap-3 sm:grid-cols-4">
     <% [
-      [ "Requests", total ],
-      [ "Errors (5xx)", @requests.count { |r| r.status >= 500 } ],
-      [ "Median", @requests.any? ? "#{@requests.map(&:duration_ms).sort[total / 2]} ms" : "–" ],
-      [ "p95", @requests.any? ? "#{@requests.map(&:duration_ms).sort[(total * 0.95).floor.clamp(0, total - 1)]} ms" : "–" ]
+      [ "Requests (1 h)", total ],
+      [ "Errors (5xx)", @traffic.count { |r| r.status >= 500 } ],
+      [ "Median", total.positive? ? "#{durations[total / 2]} ms" : "–" ],
+      [ "p95", total.positive? ? "#{durations[(total * 0.95).floor.clamp(0, total - 1)]} ms" : "–" ]
     ].each do |label, value| %>
       <div class="card p-4">
         <p class="label"><%= label %></p>
@@ -39,13 +40,54 @@
     <% end %>
   </div>
 
+  <div class="card mb-6">
+    <div class="card-header">
+      <h2 class="card-title">Traffic</h2>
+      <div class="flex items-center gap-3 text-xs text-zinc-500">
+        <% { "2xx" => "bg-emerald-500", "3xx" => "bg-sky-500", "4xx" => "bg-amber-500", "5xx" => "bg-red-500" }.each do |label, color| %>
+          <span class="flex items-center gap-1"><span class="inline-block h-2 w-2 rounded-sm <%= color %>"></span><%= label %></span>
+        <% end %>
+      </div>
+    </div>
+    <div class="card-body">
+      <% if @chart.empty? %>
+        <p class="py-6 text-center text-sm text-zinc-500">No requests to this app in the last hour.</p>
+      <% else %>
+        <% colors = { "2xx" => "#10b981", "3xx" => "#0ea5e9", "4xx" => "#f59e0b", "5xx" => "#ef4444" } %>
+        <% bar = 10 %>
+        <% height = 120.0 %>
+        <svg viewBox="0 0 <%= @chart.minutes * bar %> <%= height.to_i %>" preserveAspectRatio="none" class="h-32 w-full" role="img" aria-label="Requests per minute in the last hour">
+          <% @chart.buckets.each_with_index do |bucket, index| %>
+            <g>
+              <title><%= bucket.time.strftime("%H:%M") %>: <%= bucket.counts.map { |status_class, count| "#{count} #{status_class}" }.join(", ") %></title>
+              <rect x="<%= index * bar %>" y="0" width="<%= bar %>" height="<%= height.to_i %>" fill="transparent" />
+              <% y = height %>
+              <% TrafficChart::CLASSES.each do |status_class| %>
+                <% count = bucket.counts[status_class] %>
+                <% next if count.zero? %>
+                <% h = (count.to_f / @chart.peak * (height - 4)).round(2) %>
+                <% y -= h %>
+                <rect x="<%= index * bar + 1 %>" y="<%= y.round(2) %>" width="<%= bar - 2 %>" height="<%= h %>" fill="<%= colors[status_class] %>" />
+              <% end %>
+            </g>
+          <% end %>
+        </svg>
+        <div class="mt-1 flex justify-between text-xs text-zinc-600">
+          <span><%= @chart.buckets.first.time.strftime("%H:%M") %></span>
+          <span>peak <%= @chart.peak %>/min</span>
+          <span><%= @chart.buckets.last.time.strftime("%H:%M") %></span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
   <div class="card">
     <div class="card-header">
       <h2 class="card-title">Recent requests</h2>
-      <span class="text-xs text-zinc-500">last 300 log lines</span>
+      <span class="text-xs text-zinc-500">this app, latest 300</span>
     </div>
     <% if @requests.empty? %>
-      <p class="px-4 py-6 text-center text-sm text-zinc-500">No requests in the recent proxy log.</p>
+      <p class="px-4 py-6 text-center text-sm text-zinc-500">No requests to this app in the last hour.</p>
     <% else %>
       <div class="max-h-[60vh] overflow-auto">
         <table class="table">
