@@ -10,6 +10,7 @@ class ProjectsController < ApplicationController
     @config = @project.config_for(@destination)
     @recent_runs = @project.command_runs.where(destination: @destination).latest_first.limit(10)
     @latest_metrics = @project.server_metrics.where(id: @project.server_metrics.recent.group(:host).select("MAX(id)")).index_by(&:host)
+    @checks = ProjectChecks.new(@project, @destination, @latest_metrics).all
   end
 
   def new

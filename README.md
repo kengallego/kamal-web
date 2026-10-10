@@ -9,6 +9,7 @@ You deploy it with Kamal, like your other apps, and it runs as one container nex
 - **Finds the Kamal apps already on the server.** On boot and every 5 minutes, Kamal Web looks at the containers on its own server (through the Docker socket) and adds every Kamal app it finds, with its destinations, roles, accessories and domains. No setup beyond `kamal authorize`.
 - **Projects from git or a mounted folder.** Kamal Web clones your repository (over SSH deploy keys or HTTPS tokens), pulls before every command and detects destinations such as `config/deploy.staging.yml` automatically.
 - **Deploy, redeploy, rollback.** Output streams live next to the app's containers on every host, so you see the new version start and the old one stop. Runs can be canceled, and only one server-changing command runs per project at a time.
+- **Checks.** The overview tells you at a glance whether the config loads, SSH works, kamal-proxy and the app are running and every secret is set, and how to fix what isn't.
 - **Versions on the server.** The overview lists the versions Kamal still keeps on the server and rolls back to any of them in one click.
 - **Every everyday Kamal command:** app boot/start/stop/details/logs/exec, maintenance and live mode, accessories, proxy, deploy lock, prune, registry login, server bootstrap, setup and audit.
 - **Live logs.** Follow app, proxy or accessory logs as they're written, from any host or a single container (one click from the Monitoring tab). Following stops after 30 minutes or when you press Stop.

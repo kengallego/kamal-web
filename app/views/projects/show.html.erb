@@ -37,6 +37,21 @@
   </div>
 
   <div class="space-y-6">
+    <div class="card">
+      <div class="card-header"><h2 class="card-title">Checks</h2></div>
+      <ul class="divide-y divide-zinc-800">
+        <% @checks.each do |check| %>
+          <li class="flex gap-3 px-4 py-2.5 text-sm">
+            <span class="mt-0.5 w-4 shrink-0 text-center font-semibold <%= check.ok? ? "text-emerald-400" : check.failed? ? "text-red-400" : "text-zinc-500" %>"><%= check.ok? ? "✓" : check.failed? ? "✗" : "–" %></span>
+            <div class="min-w-0">
+              <p class="text-zinc-200"><%= check.label %></p>
+              <p class="break-words text-xs <%= check.failed? ? "text-red-300/80" : "text-zinc-500" %>"><%= check.detail %></p>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
     <% if @config.present? %>
       <div class="card">
         <div class="card-header"><h2 class="card-title">Servers</h2></div>
