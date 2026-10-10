@@ -15,7 +15,9 @@
     </p>
   </div>
   <div class="flex gap-2">
-    <% if @run.active? %>
+    <% if @run.active? && @run.follow? %>
+      <%= button_to "Stop following", cancel_project_command_run_path(@project, @run), class: "btn btn-danger" %>
+    <% elsif @run.active? %>
       <%= button_to "Cancel", cancel_project_command_run_path(@project, @run), class: "btn btn-danger", form: { data: { turbo_confirm: "Stop this command? Kamal may leave a deploy lock behind." } } %>
     <% elsif current_user.can?(@run.command.role) %>
       <%= button_to "Run again", project_command_runs_path(@project), params: { kind: @run.kind, destination: @run.destination }.merge(@run.options.transform_keys { |key| "options[#{key}]" }),
@@ -26,5 +28,7 @@
 
 <pre id="run_output_<%= @run.id %>" class="terminal" data-controller="autoscroll"><%= @run.output %></pre>
 <% if @run.output.bytesize >= CommandRun::OUTPUT_LIMIT %>
-  <p class="mt-2 text-xs text-amber-300">Output truncated at <%= number_to_human_size(CommandRun::OUTPUT_LIMIT) %>.</p>
+  <p class="mt-2 text-xs text-amber-300">
+    Output truncated at <%= number_to_human_size(CommandRun::OUTPUT_LIMIT) %><%= ". New lines still stream to this page until you leave it" if @run.follow? %>.
+  </p>
 <% end %>

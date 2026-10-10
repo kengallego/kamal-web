@@ -1,0 +1,19 @@
+<% content_for :title, "#{@session.label} · #{@project.name}" %>
+<% content_for :head, tag.meta(name: "turbo-cache-control", content: "no-cache") %>
+<%= render "projects/header", project: @project %>
+
+<div data-controller="console" data-console-session-id-value="<%= @session.id %>">
+  <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+      <h2 class="text-lg font-semibold text-zinc-100"><%= @session.label %></h2>
+      <span class="badge badge-neutral" data-console-target="status">Connecting…</span>
+    </div>
+    <div class="flex items-center gap-3 text-sm text-zinc-500">
+      <span><%= destination_label(@session.destination) %> · <span class="font-mono"><%= @session.host || "primary host" %></span></span>
+      <%= link_to "New session", project_console_sessions_path(@project, destination: @session.destination), class: "btn" %>
+    </div>
+  </div>
+
+  <div class="h-[70vh] overflow-hidden rounded-xl border border-zinc-800 bg-black p-2" data-console-target="screen"></div>
+  <p class="mt-2 text-xs text-zinc-500">Leaving this page closes the session. What you type isn't stored.</p>
+</div>

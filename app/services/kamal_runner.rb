@@ -19,7 +19,8 @@ class KamalRunner
     SshAgent.with_keys(@project.ssh_keys) do |agent_env|
       env = ProcessEnvironment.build(@project.environment_for(@run.destination).merge(agent_env))
       workspace = ProjectWorkspace.new(@project, logger: ->(line) { log "#{line}\n" })
-      revision = workspace.prepare!(env)
+      other_operation = @project.active_operation
+      revision = workspace.prepare!(env, sync: other_operation.nil? || other_operation == @run)
       @run.update!(git_revision: revision) if revision
 
       exit_code = spawn(env, workspace.path)
@@ -38,6 +39,8 @@ class KamalRunner
       buffer = +""
       last_flush = monotonic
       exit_code = nil
+      deadline = monotonic + CommandRun::FOLLOW_LIMIT if @run.follow?
+      timed_out = false
 
       PTY.spawn(env, *ProcessEnvironment.kamal_command, *@run.arguments, chdir: directory.to_s, unsetenv_others: true) do |reader, writer, pid|
         writer.close
@@ -53,13 +56,19 @@ class KamalRunner
             buffer = +""
             last_flush = monotonic
           end
+
+          if deadline && !timed_out && monotonic > deadline
+            timed_out = true
+            buffer << "\nStopped following after #{CommandRun::FOLLOW_LIMIT.inspect}.\n"
+            Process.kill("-TERM", pid) rescue Errno::ESRCH
+          end
         rescue EOFError, Errno::EIO
           break
         end
 
         log buffer if buffer.present?
         _, status = Process.wait2(pid)
-        exit_code = status.exitstatus || 1
+        exit_code = timed_out ? 0 : status.exitstatus || 1
       end
 
       exit_code || 1

@@ -14,21 +14,32 @@ class SshAgent
   end
 
   def run
-    return yield({}) if @keys.empty?
+    yield start
+  ensure
+    stop
+  end
 
-    Dir.mktmpdir("kamal-ui-agent") do |dir|
-      socket = File.join(dir, "agent.sock")
-      pid = Process.spawn("ssh-agent", "-D", "-a", socket, out: File::NULL, err: File::NULL)
+  # Starts the agent and returns the environment pointing at it. Call #stop
+  # when done; long-lived callers (the web console) can't use a block.
+  def start
+    return {} if @keys.empty?
 
-      begin
-        wait_for(socket)
-        @keys.each { |key| add(socket, key) }
-        yield({ "SSH_AUTH_SOCK" => socket })
-      ensure
-        Process.kill("TERM", pid) rescue Errno::ESRCH
-        Process.wait(pid) rescue Errno::ECHILD
-      end
+    @dir = Dir.mktmpdir("kamal-ui-agent")
+    socket = File.join(@dir, "agent.sock")
+    @pid = Process.spawn("ssh-agent", "-D", "-a", socket, out: File::NULL, err: File::NULL)
+    wait_for(socket)
+    @keys.each { |key| add(socket, key) }
+    { "SSH_AUTH_SOCK" => socket }
+  end
+
+  def stop
+    if @pid
+      Process.kill("TERM", @pid) rescue Errno::ESRCH
+      Process.wait(@pid) rescue Errno::ECHILD
+      @pid = nil
     end
+    FileUtils.rm_rf(@dir) if @dir
+    @dir = nil
   end
 
   private

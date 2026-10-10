@@ -1,0 +1,63 @@
+import { Controller } from "@hotwired/stimulus"
+import { cable } from "@hotwired/turbo-rails"
+import { Terminal } from "@xterm/xterm"
+import { FitAddon } from "@xterm/addon-fit"
+
+// Attaches an xterm.js terminal to a ConsoleChannel subscription.
+export default class extends Controller {
+  static targets = [ "screen", "status" ]
+  static values = { sessionId: Number }
+
+  async connect() {
+    this.terminal = new Terminal({
+      cursorBlink: true,
+      fontFamily: '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace',
+      fontSize: 13,
+      scrollback: 5000,
+      theme: { background: "#000000", foreground: "#d4d4d8", cursor: "#34d399" }
+    })
+    this.fitAddon = new FitAddon()
+    this.terminal.loadAddon(this.fitAddon)
+    this.terminal.open(this.screenTarget)
+    this.fitAddon.fit()
+    this.terminal.focus()
+
+    this.resizeObserver = new ResizeObserver(() => this.fitAddon.fit())
+    this.resizeObserver.observe(this.screenTarget)
+
+    this.subscription = await cable.subscribeTo(
+      { channel: "ConsoleChannel", id: this.sessionIdValue, rows: this.terminal.rows, cols: this.terminal.cols },
+      {
+        connected: () => this.setStatus("Connected", "success"),
+        disconnected: () => this.ended || this.setStatus("Disconnected", "danger"),
+        rejected: () => this.setStatus("This session can't be opened anymore. Start a new one.", "danger"),
+        received: (message) => this.received(message)
+      }
+    )
+
+    this.terminal.onData((data) => this.ended || this.subscription.send({ type: "input", data }))
+    this.terminal.onResize(({ rows, cols }) => this.subscription.send({ type: "resize", rows, cols }))
+  }
+
+  disconnect() {
+    this.resizeObserver?.disconnect()
+    this.subscription?.unsubscribe()
+    this.terminal?.dispose()
+  }
+
+  received(message) {
+    if (message.type === "output") {
+      this.terminal.write(Uint8Array.from(atob(message.data), (char) => char.charCodeAt(0)))
+    } else if (message.type === "exit") {
+      this.ended = true
+      const code = message.code ?? "unknown"
+      this.setStatus(`Session ended (exit code ${code})`, code === 0 ? "neutral" : "danger")
+      this.terminal.write("\r\n\x1b[2m[session ended]\x1b[0m\r\n")
+    }
+  }
+
+  setStatus(text, tone) {
+    this.statusTarget.textContent = text
+    this.statusTarget.className = `badge badge-${tone}`
+  }
+}

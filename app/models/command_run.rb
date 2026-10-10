@@ -2,6 +2,7 @@ class CommandRun < ApplicationRecord
   STATUSES = %w[ queued running succeeded failed canceled ].freeze
   TRIGGERS = %w[ manual webhook ].freeze
   OUTPUT_LIMIT = 2.megabytes
+  FOLLOW_LIMIT = 30.minutes
 
   belongs_to :project
   belongs_to :user, optional: true
@@ -36,6 +37,11 @@ class CommandRun < ApplicationRecord
     args = command.arguments(options)
     args += [ "-c", project.config_file ] unless project.config_file == "config/deploy.yml"
     destination.present? ? args + [ "-d", destination ] : args
+  end
+
+  # Log commands with --follow stream until stopped or FOLLOW_LIMIT passes.
+  def follow?
+    options["follow"] == "1" && command.fields.any? { |field| field.name == "follow" }
   end
 
   def display_command
@@ -91,8 +97,9 @@ class CommandRun < ApplicationRecord
     reload.status == "canceled"
   end
 
-  # Appends a chunk to the stored output and streams it to open pages. Output is
-  # capped so a runaway log command can't fill the database.
+  # Appends a chunk to the stored output and streams it to open pages. Stored
+  # output is capped so a runaway log command can't fill the database; followed
+  # logs keep streaming past the cap.
   def append_output(chunk)
     chunk = clean(chunk)
     return if chunk.empty?
@@ -100,8 +107,11 @@ class CommandRun < ApplicationRecord
     if output.bytesize < OUTPUT_LIMIT
       self.class.where(id: id).update_all([ "output = output || ?", chunk ])
       self.output = output + chunk
-      broadcast_append_to self, target: "run_output_#{id}", html: ERB::Util.html_escape(chunk)
+    elsif !follow?
+      return
     end
+
+    broadcast_append_to self, target: "run_output_#{id}", html: ERB::Util.html_escape(chunk)
   end
 
   def self.interrupt_stale!

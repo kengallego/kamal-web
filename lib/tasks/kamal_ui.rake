@@ -1,8 +1,9 @@
 namespace :kamal_ui do
-  desc "Create the first admin if needed and mark commands interrupted by a restart"
+  desc "Create the first admin if needed and close commands and consoles interrupted by a restart"
   task bootstrap: :environment do
     AdminBootstrap.new.call
     CommandRun.interrupt_stale!
+    ConsoleSession.close_stale!
     Setting.instance
   end
 

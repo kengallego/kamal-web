@@ -55,8 +55,37 @@ class CommandCatalog
         [ "--lines", count.to_s ]
       end
 
+      # Kamal interpolates --grep into a remote shell command, so anything that
+      # could break out of its quotes is rejected.
       def grep(options)
-        options["grep"].present? ? [ "--grep", options["grep"] ] : []
+        return [] if options["grep"].blank?
+        raise ArgumentError, "Filter can't contain quotes, backslashes, $ or backticks" if options["grep"].match?(/['"`$\\\n]/)
+
+        [ "--grep", options["grep"] ]
+      end
+
+      def follow(options)
+        options["follow"] == "1" ? [ "--follow" ] : []
+      end
+
+      def host(options)
+        return [] if options["host"].blank?
+        raise ArgumentError, "Host is not valid" unless options["host"].match?(/\A[\w\[\]][\w.:\[\]-]*\z/)
+
+        [ "--hosts", options["host"] ]
+      end
+
+      # Also interpolated into a remote shell command by Kamal.
+      def container(options)
+        return [] if options["container_id"].blank?
+        raise ArgumentError, "Container is not valid" unless options["container_id"].match?(/\A\w[\w.-]*\z/)
+
+        [ "--container-id", options["container_id"] ]
+      end
+
+      def log_fields(*extra)
+        [ *extra, field("lines", "Lines", type: :number, placeholder: "200"), field("grep", "Filter", placeholder: "text or regex"),
+          field("follow", "Follow live", type: :boolean) ]
       end
 
       def accessory(options)
@@ -115,8 +144,9 @@ class CommandCatalog
   end
 
   command "app_logs", "App logs", group: "app",
-    fields: [ field("lines", "Lines", type: :number, placeholder: "200"), field("grep", "Filter", placeholder: "text or regex") ] do |options|
-    [ "app", "logs" ] + lines(options) + grep(options)
+    fields: log_fields(field("host", "Host", type: :host), field("container_id", "Container", placeholder: "current app container")),
+    description: "Follow streams new lines from one host (the primary unless you pick one) for up to 30 minutes" do |options|
+    [ "app", "logs" ] + host(options) + container(options) + lines(options) + grep(options) + follow(options)
   end
 
   command "app_exec", "Run command", group: "app", role: "deployer",
@@ -145,9 +175,8 @@ class CommandCatalog
     [ "proxy", "details" ]
   end
 
-  command "proxy_logs", "Proxy logs", group: "proxy",
-    fields: [ field("lines", "Lines", type: :number, placeholder: "200"), field("grep", "Filter") ] do |options|
-    [ "proxy", "logs" ] + lines(options) + grep(options)
+  command "proxy_logs", "Proxy logs", group: "proxy", fields: log_fields(field("host", "Host", type: :host)) do |options|
+    [ "proxy", "logs" ] + host(options) + lines(options) + grep(options) + follow(options)
   end
 
   command "proxy_boot", "Boot proxy", group: "proxy", role: "admin", mutating: true do
@@ -164,9 +193,9 @@ class CommandCatalog
   end
 
   command "accessory_logs", "Accessory logs", group: "accessory",
-    fields: [ field("name", "Accessory", type: :accessory, required: true), field("lines", "Lines", type: :number, placeholder: "200"), field("grep", "Filter") ] do |options|
+    fields: log_fields(field("name", "Accessory", type: :accessory, required: true)) do |options|
     raise ArgumentError, "Accessory is required" if options["name"].blank?
-    [ "accessory", "logs", options["name"] ] + lines(options) + grep(options)
+    [ "accessory", "logs", options["name"] ] + lines(options) + grep(options) + follow(options)
   end
 
   %w[ boot reboot restart start stop ].each do |action|

@@ -31,6 +31,13 @@
             <% end %>
 
             <% command.fields.each do |field| %>
+              <% if field.type == :boolean %>
+                <label class="flex items-center gap-2 text-sm text-zinc-300">
+                  <%= check_box_tag "options[#{field.name}]", "1", false, class: "accent-emerald-500", id: nil %>
+                  <%= field.label %>
+                </label>
+                <% next %>
+              <% end %>
               <div>
                 <label class="label"><%= field.label %></label>
                 <% case field.type %>
@@ -38,6 +45,8 @@
                   <%= text_area_tag "options[#{field.name}]", nil, rows: 4, required: field.required, placeholder: field.placeholder, class: "input font-mono", id: nil %>
                 <% when :number %>
                   <%= number_field_tag "options[#{field.name}]", nil, min: 1, max: 5000, placeholder: field.placeholder, class: "input", id: nil %>
+                <% when :host %>
+                  <%= select_tag "options[#{field.name}]", options_for_select(@config.all_hosts), include_blank: "Default hosts", class: "input", id: nil %>
                 <% when :accessory %>
                   <%= select_tag "options[#{field.name}]", options_for_select(@config.accessories.keys),
                     include_blank: (field.required ? false : "All accessories"), class: "input", id: nil %>

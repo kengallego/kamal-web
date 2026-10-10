@@ -13,6 +13,7 @@ Rails.application.routes.draw do
         post :cancel, on: :member
       end
       resource :commands, only: :show
+      resources :console_sessions, only: %i[ index create show ], path: "console"
       resource :monitoring, only: %i[ show create ], controller: :monitoring
       resource :proxy, only: :show
       resource :config, only: :show

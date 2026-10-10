@@ -5,6 +5,7 @@ class Project < ApplicationRecord
   has_many :environment_variables, -> { order(:destination, :key) }, dependent: :destroy
   has_many :project_files, -> { order(:path) }, dependent: :destroy
   has_many :command_runs, dependent: :destroy
+  has_many :console_sessions, dependent: :delete_all
   has_many :server_metrics, dependent: :delete_all
 
   has_secure_token :deploy_webhook_token, length: 36
@@ -57,6 +58,10 @@ class Project < ApplicationRecord
 
   def hosts
     config_snapshots.values.flat_map { |snapshot| KamalConfigSnapshot.new(snapshot).all_hosts }.uniq
+  end
+
+  def destination_for_host(host)
+    destinations.find { |destination| config_for(destination).all_hosts.include?(host) }
   end
 
   # Variables for the base config apply everywhere; destination-specific ones

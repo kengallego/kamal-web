@@ -9,6 +9,8 @@ It runs as one Docker container on any server. It has no external dependencies a
 - **Projects from git or a mounted folder.** Kamal UI clones your repository (over SSH deploy keys or HTTPS tokens), pulls before every command and detects destinations such as `config/deploy.staging.yml` automatically.
 - **Deploy, redeploy, rollback.** Output streams live, past versions are offered for rollback, and runs can be canceled. Only one server-changing command runs per project at a time.
 - **Every everyday Kamal command:** app boot/start/stop/details/logs/exec, maintenance and live mode, accessories, proxy, deploy lock, prune, registry login, server bootstrap, setup and audit.
+- **Live logs.** Follow app, proxy or accessory logs as they're written, from any host or a single container (one click from the Monitoring tab). Following stops after 30 minutes or when you press Stop.
+- **Web console.** An interactive Rails console, database console or shell in the running app container, right in the browser (`kamal app exec --interactive --reuse`). Every session is recorded (who, where, when); what you type isn't.
 - **Rails runner.** Evaluates Ruby inside the running app container.
 - **Monitoring.** CPU, memory, disk and load for every host, sampled each minute over SSH and kept for 24 hours, plus the running containers.
 - **Proxy view.** kamal-proxy routes, TLS state and recent requests with status filters, median and p95 latency.
@@ -96,6 +98,8 @@ docker compose exec kamal-ui bin/rails "kamal_ui:reset_password[admin@example.co
 - Commands come from a fixed catalog and run without a shell. Options are validated, and each command needs a minimum role.
 - Child processes get an allowlisted environment, so the instance's own secrets never reach your project's hooks.
 - Deploy webhook and status board URLs use long random tokens and can be regenerated.
+- Web consoles need the deployer role, can only be attached once by the user who opened them, and close when the page is left or after 30 minutes idle.
+- Interactive consoles and followed logs use the system `ssh`, which trusts a server's host key the first time it connects and refuses it if it later changes.
 
 ## Development
 

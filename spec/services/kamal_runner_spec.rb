@@ -50,4 +50,16 @@ RSpec.describe KamalRunner do
 
     expect(run.reload.output).to be_empty
   end
+
+  it "stops followed logs after the follow limit" do
+    stub_const("CommandRun::FOLLOW_LIMIT", 1.second)
+    allow(ProcessEnvironment).to receive(:kamal_command).and_return([ "sh", "-c", "while true; do echo tick; sleep 0.1; done", "--" ])
+    run = project.command_runs.create!(kind: "app_logs", options: { "follow" => "1" }, user: create(:user))
+
+    described_class.new(run).call
+
+    run.reload
+    expect(run.status).to eq("succeeded")
+    expect(run.output).to include("tick", "Stopped following after 1 second")
+  end
 end

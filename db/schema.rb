@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_14_100600) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_14_131306) do
   create_table "command_runs", force: :cascade do |t|
     t.integer "project_id", null: false
     t.integer "user_id"
@@ -31,6 +31,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_14_100600) do
     t.index ["project_id"], name: "index_command_runs_on_project_id"
     t.index ["status"], name: "index_command_runs_on_status"
     t.index ["user_id"], name: "index_command_runs_on_user_id"
+  end
+
+  create_table "console_sessions", force: :cascade do |t|
+    t.integer "project_id", null: false
+    t.integer "user_id"
+    t.string "destination"
+    t.string "kind", null: false
+    t.string "host"
+    t.datetime "started_at"
+    t.datetime "ended_at"
+    t.integer "exit_code"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id"], name: "index_console_sessions_on_project_id"
+    t.index ["user_id"], name: "index_console_sessions_on_user_id"
   end
 
   create_table "environment_variables", force: :cascade do |t|
@@ -125,6 +140,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_14_100600) do
 
   add_foreign_key "command_runs", "projects"
   add_foreign_key "command_runs", "users", on_delete: :nullify
+  add_foreign_key "console_sessions", "projects"
+  add_foreign_key "console_sessions", "users", on_delete: :nullify
   add_foreign_key "environment_variables", "projects"
   add_foreign_key "project_files", "projects"
   add_foreign_key "server_metrics", "projects"

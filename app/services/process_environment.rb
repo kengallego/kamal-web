@@ -18,6 +18,7 @@ module ProcessEnvironment
   def build(extra = {})
     base = Bundler.unbundled_env.slice(*INHERITED).merge(ENV.slice(*BUNDLER_SETTINGS))
     base.merge(
+      "PATH" => [ SshWrapper.directory, base["PATH"] ].compact.join(File::PATH_SEPARATOR),
       "BUNDLE_GEMFILE" => Rails.root.join("Gemfile").to_s,
       "GIT_TERMINAL_PROMPT" => "0",
       # Mounted projects are usually owned by another uid than the app user.

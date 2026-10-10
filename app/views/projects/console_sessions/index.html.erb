@@ -1,0 +1,56 @@
+<% content_for :title, "Console · #{@project.name}" %>
+<%= render "projects/header", project: @project, destination: @destination %>
+
+<div class="grid gap-6 lg:grid-cols-3">
+  <div class="card lg:col-span-1">
+    <div class="card-header"><h2 class="card-title">Open a console</h2></div>
+    <% if current_user.deployer? %>
+      <%= form_with url: project_console_sessions_path(@project), class: "card-body space-y-4" do |form| %>
+        <%= hidden_field_tag :destination, @destination, id: nil %>
+        <div>
+          <label class="label" for="console_kind">Console</label>
+          <%= select_tag :kind, options_for_select(ConsoleSession::KINDS.map { |key, kind| [ kind[:label], key ] }), class: "input", id: "console_kind" %>
+        </div>
+        <div>
+          <label class="label" for="console_host">Host</label>
+          <%= select_tag :host, options_for_select(@config.all_hosts), include_blank: "Primary host#{" (#{@config.primary_host})" if @config.primary_host}", class: "input", id: "console_host" %>
+        </div>
+        <p class="hint">
+          Runs <span class="font-mono">kamal app exec --interactive --reuse</span> inside the running app container on
+          <span class="text-zinc-300"><%= destination_label(@destination) %></span>. Sessions close after <%= ConsoleProcess::IDLE_TIMEOUT.inspect %> without activity or when you leave the page.
+        </p>
+        <%= form.submit "Open console", class: "btn btn-primary" %>
+      <% end %>
+    <% else %>
+      <p class="card-body text-sm text-zinc-500">Requires deployer role.</p>
+    <% end %>
+  </div>
+
+  <div class="card lg:col-span-2">
+    <div class="card-header"><h2 class="card-title">Recent sessions</h2></div>
+    <% if @sessions.any? %>
+      <div class="overflow-x-auto">
+        <table class="table">
+          <thead><tr><th>Console</th><th>Destination</th><th>Host</th><th>Opened by</th><th>When</th><th>Duration</th></tr></thead>
+          <tbody>
+            <% @sessions.each do |session| %>
+              <tr>
+                <td class="text-zinc-200">
+                  <%= session.label %>
+                  <% if session.active? %><span class="badge badge-success ml-1">open</span><% end %>
+                </td>
+                <td class="text-zinc-400"><%= destination_label(session.destination) %></td>
+                <td class="font-mono text-xs text-zinc-400"><%= session.host || "primary" %></td>
+                <td class="text-zinc-400"><%= session.opened_by %></td>
+                <td class="text-zinc-500"><%= time_ago_in_words(session.created_at) %> ago</td>
+                <td class="text-zinc-500"><%= session.duration ? distance_of_time_in_words(session.duration) : "never opened" %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="card-body text-sm text-zinc-500">No console sessions yet.</p>
+    <% end %>
+  </div>
+</div>

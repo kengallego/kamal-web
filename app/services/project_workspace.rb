@@ -13,12 +13,20 @@ class ProjectWorkspace
   end
 
   # Returns the checked-out git revision, if any.
-  def prepare!(env)
-    sync_repository!(env) if project.git?
-    raise Error, "Project directory #{path} does not exist" unless path.directory?
+  # Pass sync: false while another operation uses the checkout, so a git reset
+  # can't change the code under a running deploy.
+  def prepare!(env, sync: true)
+    with_lock do
+      if project.git? && (sync || !path.join(".git").directory?)
+        sync_repository!(env)
+      elsif project.git?
+        log "Another operation is running; using the current checkout"
+      end
+      raise Error, "Project directory #{path} does not exist" unless path.directory?
 
-    write_project_files!
-    current_revision
+      write_project_files!
+      current_revision
+    end
   end
 
   def refresh_config!(env)
@@ -36,7 +44,7 @@ class ProjectWorkspace
   def sync!
     SshAgent.with_keys(project.ssh_keys) do |agent_env|
       env = ProcessEnvironment.build(project.environment_for(nil).merge(agent_env))
-      prepare!(env)
+      prepare!(env, sync: project.active_operation.nil?)
       refresh_config!(env)
     end
   rescue Error, SshAgent::Error => error
@@ -59,6 +67,15 @@ class ProjectWorkspace
   end
 
   private
+    def with_lock
+      lock_path = Rails.configuration.x.workspaces_path.join("project-#{project.id}.lock")
+      FileUtils.mkdir_p(lock_path.dirname)
+      File.open(lock_path, File::RDWR | File::CREAT, 0o600) do |file|
+        file.flock(File::LOCK_EX)
+        yield
+      end
+    end
+
     def log(line)
       @logger.call(line)
     end
