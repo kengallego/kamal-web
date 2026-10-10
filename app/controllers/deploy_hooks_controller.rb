@@ -3,6 +3,7 @@
 # GitHub/GitLab push payloads are accepted; pushes to other branches are ignored.
 class DeployHooksController < ApplicationController
   allow_unauthenticated_access
+  skip_before_action :require_allowed_ip
   skip_forgery_protection
   rate_limit to: 30, within: 1.minute
 

@@ -6,11 +6,12 @@ class SessionsController < ApplicationController
   end
 
   def create
-    if AccessPassword.matches?(params[:password])
+    if AccessPassword.matches?(params[:password], code: params[:code])
       start_session
       redirect_to after_authentication_url
     else
-      redirect_to new_session_path, alert: "Wrong password."
+      Rails.logger.warn "Failed sign-in from #{request.remote_ip}"
+      redirect_to new_session_path, alert: AccessPassword.two_factor? ? "Wrong password or code." : "Wrong password."
     end
   end
 

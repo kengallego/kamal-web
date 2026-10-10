@@ -90,6 +90,8 @@ Kamal Web reaches its own server at the container's default gateway. If SSH list
 | `KAMAL_WEB_HOST` | `kamal.<ip>.sslip.io` | Domain Kamal Web is served at |
 | `KAMAL_WEB_SSH_USER` | `root` | User Kamal connects as |
 | `KAMAL_WEB_BUILD_ON_SERVER` | `false` | Build the image on the server instead of your machine |
+| `KAMAL_WEB_TOTP_SECRET` | | Also ask for a code from an authenticator app |
+| `KAMAL_WEB_ALLOWED_IPS` | | Only these IPs or networks can open the dashboard |
 
 Less common settings go under `env.clear` in `config/deploy.yml`:
 
@@ -97,6 +99,15 @@ Less common settings go under `env.clear` in `config/deploy.yml`:
 |---|---|---|
 | `KAMAL_WEB_HOST_ADDRESS` | container gateway | Address Kamal Web uses to SSH into its own server, for detected apps |
 | `SECRET_KEY_BASE` | generated | Generated and stored in the volume when unset |
+
+### Protecting the sign-in
+
+Kamal Web controls your servers, so it's worth more than a password:
+
+- **Authenticator app.** Run `bin/totp-secret`, add the line it prints to `.env`, add the key to an authenticator app (1Password, Google Authenticator, Aegis…) and `kamal deploy`. Signing in then asks for the 6-digit code too.
+- **Allowed IPs.** `KAMAL_WEB_ALLOWED_IPS=203.0.113.7,198.51.100.0/24` in `.env` makes the dashboard answer only those addresses. The deploy webhook and the status board keep working from anywhere, since they have their own secret URLs.
+
+Sign-in attempts are limited to 10 every 3 minutes per IP. Changing the password or the TOTP secret signs everybody out.
 
 ### Backups
 
@@ -127,7 +138,7 @@ volumes:
 - Commands come from a fixed catalog and run without a shell. Options are validated.
 - Child processes get an allowlisted environment, so the instance's own secrets never reach your project's hooks.
 - Deploy webhook and status board URLs use long random tokens and can be regenerated.
-- Sign-in is rate limited. Sessions are tied to the password, so changing it signs everybody out.
+- Sign-in is rate limited, can require a code from an authenticator app and can be limited to some IPs. Sessions are tied to the password and the TOTP secret, so changing either signs everybody out.
 - Web consoles can only be attached once, and close when the page is left or after 30 minutes idle.
 - Interactive consoles and followed logs use the system `ssh`, which trusts a server's host key the first time it connects and refuses it if it later changes.
 

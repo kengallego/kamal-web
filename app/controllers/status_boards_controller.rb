@@ -1,6 +1,7 @@
 # Read-only wallboard for a TV or a status page, reachable with a secret URL.
 class StatusBoardsController < ApplicationController
   allow_unauthenticated_access
+  skip_before_action :require_allowed_ip
   layout "status_board"
 
   def show

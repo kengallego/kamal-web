@@ -37,7 +37,9 @@ builder:
 env:
   secret:
     - KAMAL_WEB_PASSWORD
+    - KAMAL_WEB_TOTP_SECRET
   clear:
+    KAMAL_WEB_ALLOWED_IPS: "<%= ENV["KAMAL_WEB_ALLOWED_IPS"] %>"
     ASSUME_SSL: true
     FORCE_SSL: true
     KAMAL_WEB_URL: https://<%= host %>
