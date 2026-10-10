@@ -82,4 +82,22 @@ RSpec.describe ProjectWorkspace do
     }
     expect(project.reload.sync_error).to be_present
   end
+
+  it "writes a discovered project's config in place and drops stale files" do
+    allow(Rails.configuration.x).to receive(:workspaces_path).and_return(Pathname.new(@root))
+    files = { "config/deploy.yml" => "service: demo\nimage: acme/demo\nservers: [192.0.2.10]\nregistry: { username: a, password: [KAMAL_REGISTRY_PASSWORD] }\nbuilder: { arch: amd64 }\n",
+              "config/deploy.old.yml" => "servers: [192.0.2.30]\n", ".kamal/secrets" => "KAMAL_REGISTRY_PASSWORD=$KAMAL_REGISTRY_PASSWORD\n" }
+    project = create(:project, source_kind: "discovered", discovered_service: "demo", discovered_files: files.to_json, discovered_versions: { "" => "abc" })
+    workspace = described_class.new(project)
+    workspace.sync!
+    inode = File.stat(workspace.path).ino
+
+    project.update!(discovered_files: files.except("config/deploy.old.yml").to_json)
+    workspace.sync!
+
+    expect(File.stat(workspace.path).ino).to eq(inode)
+    expect(workspace.path.join("config/deploy.old.yml")).not_to exist
+    expect(project.reload.destinations).to eq([ nil ])
+    expect(project.config_for(nil).roles).to eq("web" => [ "192.0.2.10" ])
+  end
 end

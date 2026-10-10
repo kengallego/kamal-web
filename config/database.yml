@@ -6,7 +6,9 @@
 #
 default: &default
   adapter: sqlite3
-  max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  # Puma threads, Solid Queue workers (in Puma) and web console threads all
+  # share each process's pool.
+  max_connections: <%= ENV.fetch("RAILS_MAX_THREADS", 5).to_i + ENV.fetch("JOB_THREADS", 5).to_i + 5 %>
   timeout: 5000
 
 development:

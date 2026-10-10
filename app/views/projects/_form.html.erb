@@ -14,6 +14,9 @@
         <div class="flex gap-4 text-sm">
           <label class="flex items-center gap-2"><%= form.radio_button :source_kind, "git", data: { action: "source-kind#toggle" } %> Git repository</label>
           <label class="flex items-center gap-2"><%= form.radio_button :source_kind, "local", data: { action: "source-kind#toggle" } %> Mounted folder</label>
+          <% if project.discovered? || project.discovered_service.present? %>
+            <label class="flex items-center gap-2"><%= form.radio_button :source_kind, "discovered", data: { action: "source-kind#toggle" } %> Detected on this server</label>
+          <% end %>
         </div>
       </div>
 
@@ -59,7 +62,7 @@
       <div>
         <%= form.label :ssh_private_key, "SSH private key", class: "label" %>
         <%= form.text_area :ssh_private_key, value: nil, rows: 5, class: "input font-mono text-xs", autocomplete: "off",
-          placeholder: project.ssh_private_key.present? ? "Stored. Paste a new key to replace it." : "-----BEGIN OPENSSH PRIVATE KEY-----" %>
+          placeholder: project.ssh_private_key.present? ? "Stored. Paste a new key to replace it." : "Optional. Leave empty to use the Kamal UI key from Settings." %>
         <p class="hint">Used by Kamal and by monitoring. Stored encrypted and only loaded into a temporary ssh-agent. Keys with a passphrase aren't supported.</p>
       </div>
       <label class="flex items-center gap-2 text-sm">

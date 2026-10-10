@@ -31,12 +31,16 @@ services:
       SMTP_USERNAME: ${SMTP_USERNAME:-}
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
       MAILER_FROM: ${MAILER_FROM:-Kamal UI <kamal-ui@localhost>}
+
+      # Address used to SSH into this server for the Kamal apps detected on
+      # it. Defaults to the container's gateway, which is the host.
+      KAMAL_UI_HOST_ADDRESS: ${KAMAL_UI_HOST_ADDRESS:-}
     volumes:
       # Databases, encryption secret, cloned projects, SSH known_hosts.
       # Back this up: without it encrypted keys and variables are lost.
       - kamal_ui_storage:/rails/storage
-      # Kamal builds images with the host's Docker. Remove this line if every
-      # project uses a remote builder (builder.remote in deploy.yml).
+      # Kamal builds images with the host's Docker, and Kamal UI uses it to
+      # detect the Kamal apps running on this server.
       - /var/run/docker.sock:/var/run/docker.sock
       # Optional: projects already on this server, added as "Mounted folder".
       # - /srv/projects:/projects

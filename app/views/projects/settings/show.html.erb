@@ -8,7 +8,7 @@
       <%= link_to "Edit", edit_project_path(@project), class: "btn btn-sm" %>
     </div>
     <dl class="card-body grid gap-3 text-sm sm:grid-cols-2">
-      <div><dt class="label">Source</dt><dd><%= @project.git? ? "Git: #{@project.repository_url} (#{@project.branch})" : "Folder: #{@project.local_path}" %></dd></div>
+      <div><dt class="label">Source</dt><dd><%= @project.git? ? "Git: #{@project.repository_url} (#{@project.branch})" : @project.local? ? "Folder: #{@project.local_path}" : "Detected on this server (#{@project.discovered_service})" %></dd></div>
       <div><dt class="label">Config file</dt><dd class="font-mono"><%= @project.config_file %></dd></div>
       <div><dt class="label">SSH key</dt><dd><%= @project.ssh_private_key.present? ? "Stored" : "Not set" %></dd></div>
       <div><dt class="label">Notifications</dt><dd><%= @project.notification_webhook_url.present? ? @project.notification_format.capitalize : "Off" %></dd></div>

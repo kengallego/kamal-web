@@ -6,6 +6,7 @@ It runs as one Docker container on any server. It has no external dependencies a
 
 ## Features
 
+- **Finds the Kamal apps already on the server.** On boot and every 5 minutes, Kamal UI looks at the containers on its own server (through the Docker socket) and adds every Kamal app it finds, with its destinations, roles, accessories and domains. No setup beyond authorizing one SSH key.
 - **Projects from git or a mounted folder.** Kamal UI clones your repository (over SSH deploy keys or HTTPS tokens), pulls before every command and detects destinations such as `config/deploy.staging.yml` automatically.
 - **Deploy, redeploy, rollback.** Output streams live, past versions are offered for rollback, and runs can be canceled. Only one server-changing command runs per project at a time.
 - **Every everyday Kamal command:** app boot/start/stop/details/logs/exec, maintenance and live mode, accessories, proxy, deploy lock, prune, registry login, server bootstrap, setup and audit.
@@ -31,6 +32,12 @@ docker compose up -d
 docker compose logs kamal-ui
 ```
 
+If Kamal already deploys apps to this server, let Kamal UI's SSH key in, as the user Kamal deploys with (usually `root`):
+
+```sh
+mkdir -p ~/.ssh && docker compose exec -T kamal-ui cat storage/kamal-ui.pub >> ~/.ssh/authorized_keys
+```
+
 On first boot the logs show the admin account:
 
 ```
@@ -44,10 +51,26 @@ On first boot the logs show the admin account:
 
 Open `http://<server>:3000` and sign in. To choose the credentials yourself, set `ADMIN_EMAIL` and `ADMIN_PASSWORD` before the first start (see `.env.example`). They are only used while the instance has no users.
 
+### Apps already running on the server
+
+Kamal UI detects them by itself on first boot. Kamal still reaches them over SSH, so authorize Kamal UI's own key once with the command from the quick start, run next to `compose.yml` as the user Kamal deploys with (usually `root`). If Kamal deploys as another user, `deploy` for example:
+
+```sh
+docker compose exec -T kamal-ui cat storage/kamal-ui.pub | sudo -u deploy sh -c 'mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys'
+```
+
+**Settings** shows the key, plus a command for your other servers.
+
+Detected apps get logs, the web console, monitoring, the proxy view and every read-only command straight away. Their config comes from the `config/deploy*.yml` inside the deployed image when there is one, or is rebuilt from the containers and kamal-proxy routes. That config has none of the app's env or secrets, so deploys and anything that recreates containers stay disabled until you connect the app's repository in the project settings. Starting, stopping and maintenance mode work.
+
+New apps are picked up within 5 minutes, or right away with **Scan this server** on the dashboard. A detected project you delete isn't added again (Settings lets you undo that).
+
+Kamal UI reaches its own server at the container's default gateway. If SSH listens elsewhere, set `KAMAL_UI_HOST_ADDRESS`.
+
 ### Adding a project
 
 1. **New project.** Enter the repository URL and branch. Private repositories need either an HTTPS token or a deploy key.
-2. **SSH private key.** This is the key Kamal uses to reach your servers. Without a passphrase.
+2. **SSH private key.** This is the key Kamal uses to reach your servers. Without a passphrase. Leave it empty to use Kamal UI's own key from Settings.
 3. **Settings → Environment variables.** Add whatever your `.kamal/secrets` reads, such as `KAMAL_REGISTRY_PASSWORD` or `RAILS_MASTER_KEY`. Use secret files for `config/master.key`.
 4. Press **Sync**, then **Deploy**.
 
@@ -64,6 +87,7 @@ All settings are environment variables in `compose.yml`:
 | `ASSUME_SSL` / `FORCE_SSL` | `false` | Set to `true` behind an HTTPS proxy |
 | `SMTP_ADDRESS`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `MAILER_FROM` | | Enables password reset emails |
 | `SECRET_KEY_BASE` | generated | Generated and stored in the volume when unset |
+| `KAMAL_UI_HOST_ADDRESS` | container gateway | Address Kamal UI uses to SSH into its own server, for detected apps |
 
 ### HTTPS
 

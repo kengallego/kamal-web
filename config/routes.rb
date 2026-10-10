@@ -27,7 +27,9 @@ Rails.application.routes.draw do
   resources :users, except: :show
   resource :settings, only: %i[ edit update ] do
     post :regenerate_status_board_token
+    post :reset_ignored_services
   end
+  resource :discovery, only: :create
 
   get "status/:token" => "status_boards#show", as: :status_board
   post "hooks/deploy/:token" => "deploy_hooks#create", as: :deploy_hook

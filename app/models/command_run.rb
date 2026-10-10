@@ -15,6 +15,7 @@ class CommandRun < ApplicationRecord
   validate :arguments_are_valid, on: :create
   validate :destination_is_known, on: :create
   validate :one_operation_at_a_time, on: :create
+  validate :project_allows_command, on: :create
 
   scope :active, -> { where(status: %w[ queued running ]) }
   scope :finished, -> { where(status: %w[ succeeded failed canceled ]) }
@@ -136,6 +137,12 @@ class CommandRun < ApplicationRecord
     def destination_is_known
       unless project.destinations.include?(destination)
         errors.add(:destination, "is not configured in this project")
+      end
+    end
+
+    def project_allows_command
+      if CommandCatalog.exists?(kind) && !project.allows_command?(command)
+        errors.add(:base, "#{command.label} needs the project's repository, because the config detected on the server has no env or secrets. Connect it in the project settings.")
       end
     end
 

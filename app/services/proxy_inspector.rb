@@ -22,7 +22,8 @@ class ProxyInspector
   end
 
   def parse_routes(output)
-    lines = output.to_s.lines.map(&:rstrip).reject(&:blank?)
+    # kamal-proxy colors its table even without a TTY.
+    lines = output.to_s.gsub(/\e\[[\d;]*m/, "").lines.map(&:rstrip).reject(&:blank?)
     header_index = lines.index { |line| line.match?(/\AService\s+Host/i) }
     return [] unless header_index
 

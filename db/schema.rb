@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_14_131306) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_15_060345) do
   create_table "command_runs", force: :cascade do |t|
     t.integer "project_id", null: false
     t.integer "user_id"
@@ -89,7 +89,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_14_131306) do
     t.text "sync_error"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "discovered_service"
+    t.text "discovered_files"
+    t.json "discovered_versions", default: {}, null: false
     t.index ["deploy_webhook_token"], name: "index_projects_on_deploy_webhook_token", unique: true
+    t.index ["discovered_service"], name: "index_projects_on_discovered_service", unique: true, where: "discovered_service IS NOT NULL"
     t.index ["name"], name: "index_projects_on_name", unique: true
   end
 
@@ -126,6 +130,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_14_131306) do
     t.string "status_board_token", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "ssh_private_key"
+    t.text "ssh_public_key"
+    t.json "ignored_services", default: [], null: false
   end
 
   create_table "users", force: :cascade do |t|

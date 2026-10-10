@@ -3,6 +3,10 @@ default: &default
     class: CollectMetricsJob
     queue: monitoring
     schedule: every minute
+  discover_kamal_apps:
+    class: DiscoverKamalAppsJob
+    queue: default
+    schedule: every 5 minutes
 
 development:
   <<: *default

@@ -17,6 +17,15 @@ RSpec.describe ProxyInspector do
     expect(route.tls).to eq("yes")
   end
 
+  it "ignores the colors kamal-proxy adds" do
+    output = "\e[3;94mService\e[0m   \e[3;94mHost\e[0m       \e[3;94mPath\e[0m  \e[3;94mTarget\e[0m   \e[3;94mState\e[0m    \e[3;94mTLS\e[0m\n" \
+      "\e[1;34mshop-web\e[0m  \e[mshop.test\e[0m  \e[m/\e[0m     \e[mabc:80\e[0m   \e[mrunning\e[0m  \e[mno\e[0m\n"
+
+    route = inspector.parse_routes(output).first
+
+    expect([ route.service, route.host, route.target, route.tls ]).to eq([ "shop-web", "shop.test", "abc:80", "no" ])
+  end
+
   it "parses request lines from the access log, newest first" do
     output = <<~TEXT
       {"time":"2026-10-14T10:00:00Z","level":"INFO","msg":"Request","host":"demo.example.com","path":"/","status":200,"duration":2500000,"method":"GET","service":"demo-web"}

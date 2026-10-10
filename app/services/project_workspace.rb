@@ -22,6 +22,7 @@ class ProjectWorkspace
       elsif project.git?
         log "Another operation is running; using the current checkout"
       end
+      write_discovered_files! if project.discovered?
       raise Error, "Project directory #{path} does not exist" unless path.directory?
 
       write_project_files!
@@ -32,8 +33,10 @@ class ProjectWorkspace
   def refresh_config!(env)
     snapshots = discover_destinations.to_h { |destination| [ destination.to_s, dump_config(destination, env) ] }
 
-    # The base config alone is often incomplete when destinations exist.
-    if snapshots[""]&.key?("error") && snapshots.except("").values.any? { |snapshot| !snapshot.key?("error") }
+    # The base config alone is often incomplete (or has no servers) when
+    # destinations exist.
+    base = snapshots[""]
+    if base && (base.key?("error") || base["roles"].blank?) && snapshots.except("").values.any? { |snapshot| !snapshot.key?("error") }
       snapshots.delete("")
     end
 
@@ -95,13 +98,30 @@ class ProjectWorkspace
       end
     end
 
+    # The workspace of a discovered project only holds the config found on the
+    # server. Files are replaced in place, never the directory, because other
+    # commands or consoles may be running in it.
+    def write_discovered_files!
+      files = project.discovered_file_map
+      FileUtils.mkdir_p(path)
+      Dir.glob("**/*", File::FNM_DOTMATCH, base: path.to_s).each do |relative_path|
+        target = path.join(relative_path)
+        File.delete(target) if target.file? && !files.key?(relative_path)
+      end
+      write_files(files)
+    end
+
     def write_project_files!
-      project.project_files.each do |file|
-        target = path.join(file.path).expand_path
-        raise Error, "Refusing to write #{file.path} outside the project" unless target.to_s.start_with?("#{path.expand_path}/")
+      write_files(project.project_files.to_h { |file| [ file.path, file.content.to_s ] })
+    end
+
+    def write_files(files)
+      files.each do |relative_path, content|
+        target = path.join(relative_path).expand_path
+        raise Error, "Refusing to write #{relative_path} outside the project" unless target.to_s.start_with?("#{path.expand_path}/")
 
         FileUtils.mkdir_p(target.dirname)
-        File.write(target, file.content.to_s)
+        File.write(target, content)
         File.chmod(0o600, target)
       end
     end

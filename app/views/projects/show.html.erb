@@ -3,7 +3,7 @@
 
 <div class="grid gap-6 lg:grid-cols-3">
   <div class="space-y-6 lg:col-span-2">
-    <% if current_user.deployer? %>
+    <% if current_user.deployer? && !@project.discovered? %>
       <div class="card">
         <div class="card-header">
           <h2 class="card-title">Deploy <span class="font-normal text-zinc-500">to <%= destination_label(@destination) %></span></h2>

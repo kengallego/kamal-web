@@ -1,5 +1,8 @@
 class Project < ApplicationRecord
-  SOURCE_KINDS = %w[ git local ].freeze
+  SOURCE_KINDS = %w[ git local discovered ].freeze
+  # Commands that only start, stop or reroute existing containers, so they are
+  # safe on a discovered project whose config was rebuilt without env or secrets.
+  DISCOVERED_MUTATIONS = %w[ app_start app_stop app_maintenance app_live accessory_start accessory_stop accessory_restart ].freeze
   NOTIFICATION_FORMATS = %w[ generic slack discord ].freeze
 
   has_many :environment_variables, -> { order(:destination, :key) }, dependent: :destroy
@@ -10,7 +13,7 @@ class Project < ApplicationRecord
 
   has_secure_token :deploy_webhook_token, length: 36
 
-  encrypts :ssh_private_key, :git_ssh_private_key, :git_access_token, :notification_webhook_url
+  encrypts :ssh_private_key, :git_ssh_private_key, :git_access_token, :notification_webhook_url, :discovered_files
 
   normalizes :repository_url, :local_path, :branch, :config_file, with: ->(value) { value.strip.presence }
 
@@ -21,6 +24,7 @@ class Project < ApplicationRecord
   validates :repository_url, presence: true, if: :git?
   validates :repository_url, format: { with: %r{\A(https://|ssh://|[\w.-]+@[\w.-]+:)\S+\z}, message: "must be an https or ssh git URL" }, allow_blank: true
   validates :local_path, presence: true, if: :local?
+  validates :discovered_service, presence: true, if: :discovered?
   validates :notification_webhook_url, format: { with: %r{\Ahttps?://\S+\z} }, allow_blank: true
   validate :config_file_is_relative
   validate :local_path_inside_projects_root, if: :local?
@@ -29,6 +33,7 @@ class Project < ApplicationRecord
   scope :ordered, -> { order(:name) }
 
   after_destroy_commit :remove_clone
+  after_destroy_commit :ignore_discovered_service, if: :discovered?
 
   def git?
     source_kind == "git"
@@ -36,6 +41,25 @@ class Project < ApplicationRecord
 
   def local?
     source_kind == "local"
+  end
+
+  def discovered?
+    source_kind == "discovered"
+  end
+
+  def discovered_file_map
+    JSON.parse(discovered_files.presence || "{}")
+  end
+
+  def allows_command?(command)
+    !discovered? || !command.mutating? || command.key.in?(DISCOVERED_MUTATIONS)
+  end
+
+  def source_description
+    if git? then "#{repository_url} · #{branch}"
+    elsif local? then local_path
+    else "Detected on this server"
+    end
   end
 
   def workspace_path
@@ -70,11 +94,21 @@ class Project < ApplicationRecord
     variables = environment_variables.to_a
     base = variables.select { |variable| variable.destination.nil? }
     scoped = variables.select { |variable| destination.present? && variable.destination == destination }
-    (base + scoped).to_h { |variable| [ variable.key, variable.value.to_s ] }
+    variables = (base + scoped).to_h { |variable| [ variable.key, variable.value.to_s ] }
+
+    # A discovered project has no git checkout to take the version from.
+    version = discovered? && discovered_versions[destination.to_s]
+    version ? variables.reverse_merge("VERSION" => version) : variables
   end
 
+  # Projects without their own key use the instance key from Settings.
   def ssh_keys
-    [ ssh_private_key, git_ssh_private_key ].compact_blank
+    [ ssh_private_key.presence || Setting.instance.ssh_private_key, git_ssh_private_key ].compact_blank
+  end
+
+  # Latest monitoring sample per host, which tells whether SSH works.
+  def latest_metrics
+    hosts.filter_map { |host| server_metrics.where(host: host).order(collected_at: :desc).first }
   end
 
   def active_operation
@@ -94,9 +128,13 @@ class Project < ApplicationRecord
 
   private
     # Only clones made by Kamal UI are removed; mounted folders are left alone.
+    def ignore_discovered_service
+      Setting.instance.ignore_service!(discovered_service)
+    end
+
     def remove_clone
       root = Rails.configuration.x.workspaces_path.expand_path
-      FileUtils.rm_rf(root.join("project-#{id}")) if git?
+      FileUtils.rm_rf(root.join("project-#{id}")) unless local?
     end
 
     def config_file_is_relative

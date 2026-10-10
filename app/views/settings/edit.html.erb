@@ -27,6 +27,33 @@
     </div>
   </div>
 
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <h2 class="card-title">Server access key</h2>
+        <p class="text-xs text-zinc-500">Used for every project without its own SSH key, including the apps detected on this server.</p>
+      </div>
+    </div>
+    <div class="card-body space-y-3 text-sm">
+      <% [
+        [ "On the server running Kamal UI, next to compose.yml:", Setting::AUTHORIZE_THIS_SERVER ],
+        [ "On any other server:", @setting.authorize_command ]
+      ].each do |intro, command| %>
+        <p class="text-zinc-400"><%= intro %> <span class="text-zinc-500">(as the user Kamal deploys with, usually <code>root</code>)</span></p>
+        <div class="flex gap-2">
+          <input type="text" readonly value="<%= command %>" class="input font-mono text-xs">
+          <button class="btn" data-controller="clipboard" data-clipboard-text-value="<%= command %>" data-action="clipboard#copy">Copy</button>
+        </div>
+      <% end %>
+      <% if @setting.ignored_services.any? %>
+        <div class="flex items-center justify-between gap-3 border-t border-zinc-800 pt-3">
+          <p class="text-zinc-400">Not detected again because you removed them: <span class="font-mono text-zinc-300"><%= @setting.ignored_services.to_sentence %></span></p>
+          <%= button_to "Detect again", reset_ignored_services_settings_path, class: "btn btn-sm" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
   <div class="card card-body text-sm text-zinc-400 space-y-1">
     <p class="font-medium text-zinc-200">Instance</p>
     <p>Kamal <%= Gem.loaded_specs["kamal"]&.version %> · Rails <%= Rails.version %> · Ruby <%= RUBY_VERSION %></p>
