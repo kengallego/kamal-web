@@ -54,8 +54,26 @@
     </div>
   </div>
 
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <h2 class="card-title">Backup</h2>
+        <p class="text-xs text-zinc-500">Projects, encrypted variables and keys, settings and history, plus the key that decrypts them. Keep the file somewhere safe: it unlocks every secret stored here.</p>
+      </div>
+    </div>
+    <div class="card-body space-y-4 text-sm">
+      <%= link_to "Download backup", backup_path, class: "btn", data: { turbo: false } %>
+      <%= form_with url: backup_path, multipart: true, class: "flex flex-wrap items-center gap-2 border-t border-zinc-800 pt-4",
+        data: { turbo_confirm: "Replace everything in this instance with the backup? Kamal Web restarts to restore it." } do |form| %>
+        <%= form.file_field :backup, accept: ".gz,application/gzip", required: true, class: "text-xs text-zinc-400" %>
+        <%= form.submit "Restore", class: "btn btn-danger" %>
+      <% end %>
+      <p class="text-xs text-zinc-500">Restoring replaces the current data. What it replaces is kept in <code>storage/before-restore-*</code> in the volume.</p>
+    </div>
+  </div>
+
   <div class="card card-body text-sm text-zinc-400 space-y-1">
     <p class="font-medium text-zinc-200">Instance</p>
-    <p>Kamal <%= Gem.loaded_specs["kamal"]&.version %> · Rails <%= Rails.version %> · Ruby <%= RUBY_VERSION %></p>
+    <p>Kamal Web <%= KamalWeb::VERSION %> · Kamal <%= Gem.loaded_specs["kamal"]&.version %> · Rails <%= Rails.version %> · Ruby <%= RUBY_VERSION %></p>
   </div>
 </div>

@@ -29,6 +29,7 @@ Rails.application.routes.draw do
     post :reset_ignored_services
   end
   resource :discovery, only: :create
+  resource :backup, only: %i[ show create ]
 
   get "status/:token" => "status_boards#show", as: :status_board
   post "hooks/deploy/:token" => "deploy_hooks#create", as: :deploy_hook
