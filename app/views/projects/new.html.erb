@@ -1,3 +1,14 @@
 <% content_for :title, "New project" %>
 <h1 class="mb-6 text-xl font-semibold text-zinc-100">New project</h1>
-<div class="max-w-3xl"><%= render "form", project: @project %></div>
+<div class="max-w-3xl">
+  <div class="mb-6 rounded-lg border border-sky-500/30 bg-sky-500/10 p-4 text-sm text-sky-200">
+    <p class="font-medium">Prefer deploying from your terminal?</p>
+    <div class="mt-1 text-sky-200/80">
+      You don't need to add anything here. Run <code class="text-sky-100">kamal setup</code> or <code class="text-sky-100">kamal deploy</code> from your app's folder as usual, pointing at this server,
+      and Kamal Web adds the app by itself within 5 minutes, or right away with
+      <%= button_to "Scan this server", discovery_path, class: "inline cursor-pointer underline hover:text-sky-100", form_class: "inline" %>.
+      Add a project below only if you want to deploy from Kamal Web too.
+    </div>
+  </div>
+  <%= render "form", project: @project %>
+</div>

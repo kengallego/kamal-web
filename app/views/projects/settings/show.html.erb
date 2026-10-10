@@ -26,7 +26,7 @@
     <% if @project.environment_variables.empty? %>
       <p class="px-4 py-6 text-center text-sm text-zinc-500">No variables yet.</p>
     <% else %>
-      <table class="table">
+      <div class="overflow-x-auto"><table class="table">
         <thead><tr><th>Name</th><th>Destination</th><th>Value</th><th></th></tr></thead>
         <tbody>
           <% @project.environment_variables.each do |variable| %>
@@ -43,7 +43,7 @@
             </tr>
           <% end %>
         </tbody>
-      </table>
+      </table></div>
     <% end %>
   </div>
 
@@ -63,7 +63,7 @@
     <% if @project.project_files.empty? %>
       <p class="px-4 py-6 text-center text-sm text-zinc-500">No files yet.</p>
     <% else %>
-      <table class="table">
+      <div class="overflow-x-auto"><table class="table">
         <thead><tr><th>Path</th><th>Updated</th><th></th></tr></thead>
         <tbody>
           <% @project.project_files.each do |file| %>
@@ -79,7 +79,7 @@
             </tr>
           <% end %>
         </tbody>
-      </table>
+      </table></div>
     <% end %>
   </div>
 
@@ -97,7 +97,7 @@
         <input type="text" readonly value="<%= hook_url %>" class="input font-mono text-xs">
         <button class="btn" data-controller="clipboard" data-clipboard-text-value="<%= hook_url %>" data-action="clipboard#copy">Copy</button>
       </div>
-      <p class="hint">Add <code>?destination=staging</code> to deploy a specific destination. Example: <code>curl -X POST "<%= hook_url %>?destination=<%= @project.destinations.compact.first || "production" %>"</code></p>
+      <p class="hint">Add <code>?destination=staging</code> to deploy a specific destination. Example: <code class="break-all">curl -X POST "<%= hook_url %>?destination=<%= @project.destinations.compact.first || "production" %>"</code></p>
     </div>
   </div>
 

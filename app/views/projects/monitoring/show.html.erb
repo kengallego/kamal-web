@@ -34,7 +34,7 @@
         <div class="card-body grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <% [
             [ "CPU", latest.cpu_percent, "#{latest.cpu_percent&.round || "–"}%", samples.map(&:cpu_percent) ],
-            [ "Load", latest.load_percent, "#{latest.load_1} / #{latest.cpu_count} cores", samples.map(&:load_percent) ],
+            [ "Load", latest.load_percent, "#{latest.load_1&.round(2)} / #{latest.cpu_count} cores", samples.map(&:load_percent) ],
             [ "Memory", latest.memory_percent, "#{number_to_human_size(latest.memory_used)} / #{number_to_human_size(latest.memory_total)}", samples.map(&:memory_percent) ],
             [ "Disk", latest.disk_percent, "#{number_to_human_size(latest.disk_used)} / #{number_to_human_size(latest.disk_total)}", samples.map(&:disk_percent) ]
           ].each do |label, percent, detail, history| %>
@@ -62,9 +62,11 @@
               <tbody>
                 <% latest.containers.each do |container| %>
                   <tr>
-                    <td class="flex items-center gap-2 font-mono text-xs text-zinc-200">
-                      <span class="size-2 shrink-0 rounded-full <%= container["State"] == "running" ? "bg-emerald-400" : "bg-zinc-600" %>"></span>
-                      <%= container["Names"] %>
+                    <td class="font-mono text-xs text-zinc-200">
+                      <span class="flex items-center gap-2">
+                        <span class="size-2 shrink-0 rounded-full <%= container["State"] == "running" ? "bg-emerald-400" : "bg-zinc-600" %>"></span>
+                        <%= container["Names"] %>
+                      </span>
                     </td>
                     <td class="font-mono text-xs text-zinc-500"><%= container["Image"].to_s.truncate(60) %></td>
                     <td class="text-xs text-zinc-400"><%= container["Status"] %></td>

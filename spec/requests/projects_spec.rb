@@ -90,4 +90,10 @@ RSpec.describe "Projects" do
     expect(response.body).to include("<svg", "Requests (1 h)")
     expect(response.body).to match(%r{Requests \(1 h\)</p>\s*<p[^>]*>2</p>})
   end
+
+  it "explains that apps deployed from the terminal are added automatically" do
+    sign_in
+    get new_project_path
+    expect(response.body).to include("Prefer deploying from your terminal?", discovery_path)
+  end
 end

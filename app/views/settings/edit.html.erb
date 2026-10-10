@@ -65,7 +65,7 @@
       <%= link_to "Download backup", backup_path, class: "btn", data: { turbo: false } %>
       <%= form_with url: backup_path, multipart: true, class: "flex flex-wrap items-center gap-2 border-t border-zinc-800 pt-4",
         data: { turbo_confirm: "Replace everything in this instance with the backup? Kamal Web restarts to restore it." } do |form| %>
-        <%= form.file_field :backup, accept: ".gz,application/gzip", required: true, class: "text-xs text-zinc-400" %>
+        <%= form.file_field :backup, accept: ".gz,application/gzip", required: true, class: "text-xs text-zinc-400 file:mr-3 file:cursor-pointer file:rounded-lg file:border-0 file:bg-zinc-800 file:px-3 file:py-1.5 file:text-sm file:text-zinc-100 hover:file:bg-zinc-700" %>
         <%= form.submit "Restore", class: "btn btn-danger" %>
       <% end %>
       <p class="text-xs text-zinc-500">Restoring replaces the current data. What it replaces is kept in <code>storage/before-restore-*</code> in the volume.</p>

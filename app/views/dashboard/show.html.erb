@@ -30,7 +30,7 @@
           <% if project.sync_error.present? %>
             <span class="badge badge-danger">sync error</span>
           <% elsif (operation = project.active_operation) %>
-            <span class="badge badge-info"><%= operation.command.label.downcase %>…</span>
+            <span class="badge badge-info"><%= operation.command.label.downcase %> running</span>
           <% end %>
         </div>
 

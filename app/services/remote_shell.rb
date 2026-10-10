@@ -27,7 +27,9 @@ class RemoteShell
       output
     end
   rescue Net::SSH::Exception, SystemCallError, SocketError, Timeout::Error, OpenSSL::PKey::PKeyError, ArgumentError => error
-    raise Error, "#{@host}: #{error.message}"
+    # Some Net::SSH errors carry only their class name, e.g. ConnectionTimeout.
+    message = error.message == error.class.name ? "#{error.class.name.demodulize.underscore.humanize.downcase} (SSH port #{@config.ssh_port})" : error.message
+    raise Error, "#{@host}: #{message}"
   end
 
   private
