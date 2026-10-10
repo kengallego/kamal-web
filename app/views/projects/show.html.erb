@@ -13,23 +13,19 @@
             class: "btn btn-primary", form: { data: { turbo_confirm: "Deploy #{@project.name} to #{destination_label(@destination)}?" } } %>
           <%= button_to "Redeploy", project_command_runs_path(@project), params: { kind: "redeploy", destination: @destination },
             class: "btn", form: { data: { turbo_confirm: "Redeploy #{@project.name} to #{destination_label(@destination)}?" } } %>
-
-          <%= form_with url: project_command_runs_path(@project), class: "flex items-end gap-2", data: { turbo_confirm: "Roll back #{destination_label(@destination)}?" } do |form| %>
-            <%= hidden_field_tag :kind, "rollback" %>
-            <%= hidden_field_tag :destination, @destination %>
-            <div>
-              <label class="label" for="rollback_version">Rollback to</label>
-              <% candidates = @project.rollback_candidates(@destination) %>
-              <%= text_field_tag "options[version]", nil, id: "rollback_version", list: "rollback_candidates", placeholder: "version", class: "input w-48 font-mono", required: true %>
-              <datalist id="rollback_candidates">
-                <% candidates.each do |sha| %><option value="<%= sha %>"><% end %>
-              </datalist>
-            </div>
-            <%= form.submit "Rollback", class: "btn btn-danger" %>
-          <% end %>
         </div>
       </div>
     <% end %>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Versions on the server</h2>
+        <span class="text-xs text-zinc-500">Kamal keeps the last 5</span>
+      </div>
+      <%= turbo_frame_tag "releases", src: project_releases_path(@project, destination: @destination), loading: :lazy do %>
+        <p class="px-4 py-4 text-sm text-zinc-500">Loading…</p>
+      <% end %>
+    </div>
 
     <div class="card">
       <div class="card-header">

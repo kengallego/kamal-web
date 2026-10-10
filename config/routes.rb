@@ -15,6 +15,8 @@ Rails.application.routes.draw do
       resource :monitoring, only: %i[ show create ], controller: :monitoring
       resource :proxy, only: :show
       resource :config, only: :show
+      resource :releases, only: :show
+      resource :containers, only: :show
       resources :environment_variables, except: %i[ index show ]
       resources :project_files, except: %i[ index show ]
       resource :webhook_token, only: :create

@@ -121,10 +121,6 @@ class Project < ApplicationRecord
     runs.order(created_at: :desc).first
   end
 
-  def rollback_candidates(destination)
-    command_runs.succeeded.where(kind: %w[ deploy redeploy ], destination: destination)
-      .where.not(git_revision: nil).order(created_at: :desc).distinct.limit(20).pluck(:git_revision).uniq
-  end
 
   private
     # Only clones made by Kamal Web are removed; mounted folders are left alone.

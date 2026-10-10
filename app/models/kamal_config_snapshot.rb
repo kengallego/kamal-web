@@ -54,6 +54,11 @@ class KamalConfigSnapshot
     data["primary_host"]
   end
 
+  # Snapshots taken before primary_role was recorded fall back to Kamal's default.
+  def primary_role
+    data["primary_role"].presence || (roles.key?("web") ? "web" : roles.keys.first)
+  end
+
   def all_hosts
     (roles.values.flatten + accessories.values.flatten).uniq
   end

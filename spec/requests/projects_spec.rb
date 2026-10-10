@@ -50,4 +50,32 @@ RSpec.describe "Projects" do
     get project_settings_path(project)
     expect(response.body).not_to include("hunter2hunter2")
   end
+
+  it "offers a rollback for every version still on the server" do
+    sign_in
+    release = ServerReleases::Release
+    allow_any_instance_of(ServerReleases).to receive(:call).and_return([
+      release.new(version: "b" * 40, state: "running", created_at: 1.hour.ago, current: true),
+      release.new(version: "a" * 40, state: "exited", created_at: 1.day.ago, current: false)
+    ])
+
+    get project_releases_path(project), headers: { "Turbo-Frame" => "releases" }
+
+    expect(response.body).to include("live", "aaaaaaa")
+    expect(response.body.scan("Roll back</button>").size).to eq(1)
+  end
+
+  it "explains why detected apps can't roll back" do
+    sign_in
+    project.update!(source_kind: "discovered", repository_url: nil, discovered_service: "demo", discovered_files: "{}")
+    allow_any_instance_of(ServerReleases).to receive(:call).and_return([
+      ServerReleases::Release.new(version: "v2", state: "running", created_at: nil, current: true),
+      ServerReleases::Release.new(version: "v1", state: "exited", created_at: nil, current: false)
+    ])
+
+    get project_releases_path(project)
+
+    expect(response.body).not_to include("Roll back</button>")
+    expect(response.body).to include("needs the app's repository")
+  end
 end

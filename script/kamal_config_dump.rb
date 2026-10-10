@@ -20,6 +20,7 @@ begin
     service: config.service,
     image: config.repository,
     primary_host: config.primary_host,
+    primary_role: config.primary_role.name,
     roles: config.roles.to_h { |role| [ role.name, role.hosts ] },
     accessories: config.accessories.to_h { |accessory| [ accessory.name, accessory.hosts ] },
     proxy_hosts: proxy_hosts.compact.uniq,

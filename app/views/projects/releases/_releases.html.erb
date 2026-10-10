@@ -1,0 +1,33 @@
+<%= turbo_frame_tag "releases" do %>
+  <% if @error %>
+    <p class="px-4 py-4 text-sm text-red-300"><%= @error %></p>
+  <% elsif @releases.empty? %>
+    <p class="px-4 py-4 text-sm text-zinc-500">No containers of this app on the server yet.</p>
+  <% else %>
+    <% can_roll_back = @project.allows_command?(CommandCatalog.find("rollback")) %>
+    <ul class="divide-y divide-zinc-800">
+      <% @releases.each do |release| %>
+        <li class="flex items-center justify-between gap-3 px-4 py-2 text-sm">
+          <div class="min-w-0">
+            <span class="font-mono text-zinc-200" title="<%= release.version %>"><%= release.version.match?(/\A\h{40}\z/) ? short_sha(release.version) : release.version.truncate(24) %></span>
+            <% if release.current %>
+              <span class="badge badge-success ml-1">live</span>
+            <% elsif release.running? %>
+              <span class="badge badge-warning ml-1">running</span>
+            <% end %>
+            <% if release.created_at %>
+              <span class="ml-1 text-xs text-zinc-500">deployed <%= time_ago_in_words(release.created_at) %> ago</span>
+            <% end %>
+          </div>
+          <% if !release.current && can_roll_back %>
+            <%= button_to "Roll back", project_command_runs_path(@project), params: { kind: "rollback", destination: @destination, options: { version: release.version } },
+              class: "btn btn-sm", form: { data: { turbo_frame: "_top", turbo_confirm: "Roll back #{@project.name} to #{release.version.first(12)}?" } } %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+    <% if !can_roll_back && @releases.size > 1 %>
+      <p class="border-t border-zinc-800 px-4 py-3 text-xs text-zinc-500">Rolling back starts the old version with the app's current env and secrets, so it needs the app's repository.</p>
+    <% end %>
+  <% end %>
+<% end %>
