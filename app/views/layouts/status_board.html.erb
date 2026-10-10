@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="dark">
     <meta name="robots" content="noindex">
-    <meta http-equiv="refresh" content="30">
     <%= stylesheet_link_tag :app %>
+    <%= javascript_importmap_tags %>
+    <%= turbo_refresh_method_tag :morph %>
+    <%= turbo_refresh_scroll_tag :preserve %>
   </head>
   <body class="h-full p-6"><%= yield %></body>
 </html>

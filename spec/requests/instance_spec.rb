@@ -28,4 +28,16 @@ RSpec.describe "Instance pages" do
     get edit_settings_path
     expect(response.body).to include("git pull &amp;&amp; kamal deploy")
   end
+
+  it "refreshes open status boards when deploys or metrics change" do
+    Setting.instance.update!(status_board_enabled: true)
+    project = create(:project)
+
+    expect { project.command_runs.create!(kind: "version") }.to have_enqueued_job(Turbo::Streams::BroadcastStreamJob)
+    expect { project.server_metrics.create!(host: "192.0.2.10", collected_at: Time.current) }.to have_enqueued_job(Turbo::Streams::BroadcastStreamJob)
+
+    get status_board_path(Setting.instance.status_board_token)
+    expect(response.body).to include("turbo-cable-stream-source", 'name="turbo-refresh-method" content="morph"')
+    expect(cookies[StatusBoardsController::COOKIE.to_s]).to be_present
+  end
 end

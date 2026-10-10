@@ -1,4 +1,5 @@
 class ServerMetric < ApplicationRecord
+  include RefreshesStatusBoard
   RETENTION = 24.hours
 
   belongs_to :project

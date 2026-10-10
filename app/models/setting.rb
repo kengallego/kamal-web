@@ -16,6 +16,10 @@ class Setting < ApplicationRecord
     latest_version.present? && Gem::Version.correct?(latest_version) && Gem::Version.new(latest_version) > Gem::Version.new(KamalWeb::VERSION)
   end
 
+  def status_board_viewer?(token)
+    status_board_enabled? && token.is_a?(String) && ActiveSupport::SecurityUtils.secure_compare(status_board_token.to_s, token)
+  end
+
   def regenerate_status_board_token!
     regenerate_status_board_token
   end

@@ -2,6 +2,8 @@
 # sent base64-encoded because PTY chunks can split multi-byte characters.
 class ConsoleChannel < ApplicationCable::Channel
   def subscribed
+    return reject unless connection.access == :full
+
     @session = ConsoleSession.find_by(id: params[:id])
     return reject unless @session&.claim!
 

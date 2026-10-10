@@ -1,4 +1,5 @@
 class Project < ApplicationRecord
+  include RefreshesStatusBoard
   SOURCE_KINDS = %w[ git local discovered ].freeze
   # Commands that only start, stop or reroute existing containers, so they are
   # safe on a discovered project whose config was rebuilt without env or secrets.

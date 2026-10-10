@@ -1,4 +1,6 @@
 class CommandRun < ApplicationRecord
+  include RefreshesStatusBoard
+
   STATUSES = %w[ queued running succeeded failed canceled ].freeze
   TRIGGERS = %w[ manual webhook ].freeze
   OUTPUT_LIMIT = 2.megabytes
