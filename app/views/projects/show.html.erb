@@ -6,31 +6,31 @@
     <% unless @project.discovered? %>
       <div class="card">
         <div class="card-header">
-          <h2 class="card-title">Deploy <span class="font-normal text-zinc-500">to <%= destination_label(@destination) %></span></h2>
+          <h2 class="card-title"><%= t(".deploy_to_html", destination: tag.span(destination_label(@destination), class: "font-normal text-zinc-500")) %></h2>
         </div>
         <div class="card-body flex flex-wrap items-end gap-3">
-          <%= button_to "Deploy", project_command_runs_path(@project), params: { kind: "deploy", destination: @destination },
-            class: "btn btn-primary", form: { data: { turbo_confirm: "Deploy #{@project.name} to #{destination_label(@destination)}?" } } %>
-          <%= button_to "Redeploy", project_command_runs_path(@project), params: { kind: "redeploy", destination: @destination },
-            class: "btn", form: { data: { turbo_confirm: "Redeploy #{@project.name} to #{destination_label(@destination)}?" } } %>
+          <%= button_to t(".deploy"), project_command_runs_path(@project), params: { kind: "deploy", destination: @destination },
+            class: "btn btn-primary", form: { data: { turbo_confirm: t(".confirm_deploy", project: @project.name, destination: destination_label(@destination)) } } %>
+          <%= button_to t(".redeploy"), project_command_runs_path(@project), params: { kind: "redeploy", destination: @destination },
+            class: "btn", form: { data: { turbo_confirm: t(".confirm_redeploy", project: @project.name, destination: destination_label(@destination)) } } %>
         </div>
       </div>
     <% end %>
 
     <div class="card">
       <div class="card-header">
-        <h2 class="card-title">Versions on the server</h2>
-        <span class="text-xs text-zinc-500">Kamal keeps the last 5</span>
+        <h2 class="card-title"><%= t(".versions") %></h2>
+        <span class="text-xs text-zinc-500"><%= t(".versions_hint") %></span>
       </div>
       <%= turbo_frame_tag "releases", src: project_releases_path(@project, destination: @destination), loading: :lazy do %>
-        <p class="px-4 py-4 text-sm text-zinc-500">Loading…</p>
+        <p class="px-4 py-4 text-sm text-zinc-500"><%= t("common.loading") %></p>
       <% end %>
     </div>
 
     <div class="card">
       <div class="card-header">
-        <h2 class="card-title">Recent activity</h2>
-        <%= link_to "All activity", project_command_runs_path(@project), class: "text-xs text-zinc-400 hover:text-zinc-100" %>
+        <h2 class="card-title"><%= t("common.recent_activity") %></h2>
+        <%= link_to t(".all_activity"), project_command_runs_path(@project), class: "text-xs text-zinc-400 hover:text-zinc-100" %>
       </div>
       <%= render "command_runs/table", runs: @recent_runs %>
     </div>
@@ -38,7 +38,7 @@
 
   <div class="min-w-0 space-y-6">
     <div class="card">
-      <div class="card-header"><h2 class="card-title">Checks</h2></div>
+      <div class="card-header"><h2 class="card-title"><%= t(".checks") %></h2></div>
       <ul class="divide-y divide-zinc-800">
         <% @checks.each do |check| %>
           <li class="flex gap-3 px-4 py-2.5 text-sm">
@@ -54,7 +54,7 @@
 
     <% if @config.present? %>
       <div class="card">
-        <div class="card-header"><h2 class="card-title">Servers</h2></div>
+        <div class="card-header"><h2 class="card-title"><%= t(".servers") %></h2></div>
         <div class="divide-y divide-zinc-800">
           <% @config.roles.each do |role, hosts| %>
             <div class="px-4 py-3">
@@ -62,11 +62,11 @@
               <% hosts.each do |host| %>
                 <% metric = @latest_metrics[host] %>
                 <div class="flex items-center justify-between py-1 text-sm">
-                  <span class="font-mono text-zinc-200" data-controller="clipboard" data-clipboard-text-value="<%= host %>" data-action="click->clipboard#copy" title="Click to copy"><%= host %></span>
+                  <span class="font-mono text-zinc-200" data-controller="clipboard" data-clipboard-copied-value="<%= t("common.copied") %>" data-clipboard-text-value="<%= host %>" data-action="click->clipboard#copy" title="<%= t(".click_to_copy") %>"><%= host %></span>
                   <% if metric&.error %>
-                    <span class="badge badge-danger" title="<%= metric.error %>">unreachable</span>
+                    <span class="badge badge-danger" title="<%= metric.error %>"><%= t("common.unreachable") %></span>
                   <% elsif metric %>
-                    <span class="text-xs text-zinc-500">CPU <%= metric.cpu_percent&.round || "–" %>% · RAM <%= metric.memory_percent&.round || "–" %>%</span>
+                    <span class="text-xs text-zinc-500"><%= t("common.cpu") %> <%= metric.cpu_percent&.round || "–" %>% · <%= t("common.ram") %> <%= metric.memory_percent&.round || "–" %>%</span>
                   <% end %>
                 </div>
               <% end %>
@@ -77,7 +77,7 @@
 
       <% if @config.accessories.any? %>
         <div class="card">
-          <div class="card-header"><h2 class="card-title">Accessories</h2></div>
+          <div class="card-header"><h2 class="card-title"><%= t(".accessories") %></h2></div>
           <div class="divide-y divide-zinc-800">
             <% @config.accessories.each do |name, hosts| %>
               <div class="flex items-center justify-between px-4 py-2 text-sm">
@@ -90,14 +90,14 @@
       <% end %>
 
       <div class="card">
-        <div class="card-header"><h2 class="card-title">Service</h2></div>
+        <div class="card-header"><h2 class="card-title"><%= t(".service") %></h2></div>
         <dl class="card-body space-y-2 text-sm">
-          <div class="flex justify-between gap-4"><dt class="text-zinc-500">Service</dt><dd class="text-zinc-200"><%= @config.service %></dd></div>
-          <div class="flex justify-between gap-4"><dt class="text-zinc-500">Image</dt><dd class="truncate text-zinc-200"><%= @config.image %></dd></div>
+          <div class="flex justify-between gap-4"><dt class="text-zinc-500"><%= t(".service") %></dt><dd class="text-zinc-200"><%= @config.service %></dd></div>
+          <div class="flex justify-between gap-4"><dt class="text-zinc-500"><%= t(".image") %></dt><dd class="truncate text-zinc-200"><%= @config.image %></dd></div>
           <div class="flex justify-between gap-4"><dt class="text-zinc-500">SSH</dt><dd class="text-zinc-200"><%= @config.ssh_user %>:<%= @config.ssh_port %></dd></div>
           <% if @config.proxy_hosts.any? %>
             <div class="flex justify-between gap-4">
-              <dt class="text-zinc-500">Domains</dt>
+              <dt class="text-zinc-500"><%= t(".domains") %></dt>
               <dd class="space-y-1 text-right">
                 <% @config.proxy_hosts.each do |host| %>
                   <%= link_to host, "https://#{host}", target: "_blank", rel: "noopener", class: "block text-emerald-300 hover:underline" %>
@@ -109,11 +109,11 @@
       </div>
     <% else %>
       <div class="card card-body text-sm text-zinc-400">
-        <p class="font-medium text-zinc-200">Config not loaded</p>
+        <p class="font-medium text-zinc-200"><%= t(".config_not_loaded") %></p>
         <% if (error = @project.config_for(@destination).error) %>
           <pre class="mt-2 whitespace-pre-wrap font-mono text-xs text-red-300"><%= error %></pre>
         <% else %>
-          <p class="mt-1">Press Sync to read <code><%= @project.config_file %></code>.</p>
+          <p class="mt-1"><%= t(".press_sync_html", file: tag.code(@project.config_file)) %></p>
         <% end %>
       </div>
     <% end %>

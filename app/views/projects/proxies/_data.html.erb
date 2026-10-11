@@ -1,12 +1,12 @@
 <%= turbo_frame_tag "proxy_data" do %>
   <div class="card mb-6">
-    <div class="card-header"><h2 class="card-title">Routes</h2></div>
+    <div class="card-header"><h2 class="card-title"><%= t(".routes") %></h2></div>
     <% if @routes.empty? %>
-      <p class="px-4 py-6 text-center text-sm text-zinc-500">kamal-proxy reported no routes. Is it running on <%= @host %>?</p>
+      <p class="px-4 py-6 text-center text-sm text-zinc-500"><%= t(".no_routes", host: @host) %></p>
     <% else %>
       <div class="overflow-x-auto">
         <table class="table">
-          <thead><tr><th>Service</th><th>Host</th><th>Path</th><th>Target</th><th>State</th><th>TLS</th></tr></thead>
+          <thead><tr><th><%= t(".service") %></th><th><%= t("common.host") %></th><th><%= t(".path") %></th><th><%= t(".target") %></th><th><%= t(".state") %></th><th>TLS</th></tr></thead>
           <tbody>
             <% @routes.each do |route| %>
               <tr>
@@ -28,9 +28,9 @@
   <% durations = @traffic.map(&:duration_ms).sort %>
   <div class="mb-6 grid gap-3 sm:grid-cols-4">
     <% [
-      [ "Requests (1 h)", total ],
-      [ "Errors (5xx)", @traffic.count { |r| r.status >= 500 } ],
-      [ "Median", total.positive? ? "#{durations[total / 2]} ms" : "–" ],
+      [ t(".requests_1h"), total ],
+      [ t(".errors_5xx"), @traffic.count { |r| r.status >= 500 } ],
+      [ t(".median"), total.positive? ? "#{durations[total / 2]} ms" : "–" ],
       [ "p95", total.positive? ? "#{durations[(total * 0.95).floor.clamp(0, total - 1)]} ms" : "–" ]
     ].each do |label, value| %>
       <div class="card p-4">
@@ -42,7 +42,7 @@
 
   <div class="card mb-6">
     <div class="card-header">
-      <h2 class="card-title">Traffic</h2>
+      <h2 class="card-title"><%= t(".traffic") %></h2>
       <div class="flex items-center gap-3 text-xs text-zinc-500">
         <% { "2xx" => "bg-emerald-500", "3xx" => "bg-sky-500", "4xx" => "bg-amber-500", "5xx" => "bg-red-500" }.each do |label, color| %>
           <span class="flex items-center gap-1"><span class="inline-block h-2 w-2 rounded-sm <%= color %>"></span><%= label %></span>
@@ -51,12 +51,12 @@
     </div>
     <div class="card-body">
       <% if @chart.empty? %>
-        <p class="py-6 text-center text-sm text-zinc-500">No requests to this app in the last hour.</p>
+        <p class="py-6 text-center text-sm text-zinc-500"><%= t(".no_requests") %></p>
       <% else %>
         <% colors = { "2xx" => "#10b981", "3xx" => "#0ea5e9", "4xx" => "#f59e0b", "5xx" => "#ef4444" } %>
         <% bar = 10 %>
         <% height = 120.0 %>
-        <svg viewBox="0 0 <%= @chart.minutes * bar %> <%= height.to_i %>" preserveAspectRatio="none" class="h-32 w-full" role="img" aria-label="Requests per minute in the last hour">
+        <svg viewBox="0 0 <%= @chart.minutes * bar %> <%= height.to_i %>" preserveAspectRatio="none" class="h-32 w-full" role="img" aria-label="<%= t(".chart_label") %>">
           <% @chart.buckets.each_with_index do |bucket, index| %>
             <g>
               <title><%= bucket.time.strftime("%H:%M") %>: <%= bucket.counts.map { |status_class, count| "#{count} #{status_class}" }.join(", ") %></title>
@@ -74,7 +74,7 @@
         </svg>
         <div class="mt-1 flex justify-between text-xs text-zinc-600">
           <span><%= @chart.buckets.first.time.strftime("%H:%M") %></span>
-          <span>peak <%= @chart.peak %>/min</span>
+          <span><%= t(".peak", count: @chart.peak) %></span>
           <span><%= @chart.buckets.last.time.strftime("%H:%M") %></span>
         </div>
       <% end %>
@@ -83,15 +83,15 @@
 
   <div class="card">
     <div class="card-header">
-      <h2 class="card-title">Recent requests</h2>
-      <span class="text-xs text-zinc-500">this app, latest 300</span>
+      <h2 class="card-title"><%= t(".recent_requests") %></h2>
+      <span class="text-xs text-zinc-500"><%= t(".latest_300") %></span>
     </div>
     <% if @requests.empty? %>
-      <p class="px-4 py-6 text-center text-sm text-zinc-500">No requests to this app in the last hour.</p>
+      <p class="px-4 py-6 text-center text-sm text-zinc-500"><%= t(".no_requests") %></p>
     <% else %>
       <div class="max-h-[60vh] overflow-auto">
         <table class="table">
-          <thead class="sticky top-0 bg-zinc-900"><tr><th>Time</th><th>Status</th><th>Method</th><th>Host</th><th>Path</th><th>Duration</th><th>Service</th></tr></thead>
+          <thead class="sticky top-0 bg-zinc-900"><tr><th><%= t(".time") %></th><th><%= t("common.status") %></th><th><%= t(".method") %></th><th><%= t("common.host") %></th><th><%= t(".path") %></th><th><%= t("common.duration") %></th><th><%= t(".service") %></th></tr></thead>
           <tbody>
             <% @requests.each do |request| %>
               <tr>

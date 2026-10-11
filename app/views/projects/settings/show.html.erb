@@ -1,43 +1,43 @@
-<% content_for :title, "Settings · #{@project.name}" %>
+<% content_for :title, "#{t("common.settings")} · #{@project.name}" %>
 <%= render "projects/header", project: @project %>
 
 <div class="max-w-4xl space-y-6">
   <div class="card">
     <div class="card-header">
-      <h2 class="card-title">Project</h2>
-      <%= link_to "Edit", edit_project_path(@project), class: "btn btn-sm" %>
+      <h2 class="card-title"><%= t("common.project") %></h2>
+      <%= link_to t("common.edit"), edit_project_path(@project), class: "btn btn-sm" %>
     </div>
     <dl class="card-body grid gap-3 text-sm sm:grid-cols-2">
-      <div><dt class="label">Source</dt><dd><%= @project.git? ? "Git: #{@project.repository_url} (#{@project.branch})" : @project.local? ? "Folder: #{@project.local_path}" : "Detected on this server (#{@project.discovered_service})" %></dd></div>
-      <div><dt class="label">Config file</dt><dd class="font-mono"><%= @project.config_file %></dd></div>
-      <div><dt class="label">SSH key</dt><dd><%= @project.ssh_private_key.present? ? "Stored" : "Not set" %></dd></div>
-      <div><dt class="label">Notifications</dt><dd><%= @project.notification_webhook_url.present? ? @project.notification_format.capitalize : "Off" %></dd></div>
+      <div><dt class="label"><%= t(".source") %></dt><dd><%= @project.git? ? t(".source_git", url: @project.repository_url, branch: @project.branch) : @project.local? ? t(".source_local", path: @project.local_path) : t(".source_discovered", service: @project.discovered_service) %></dd></div>
+      <div><dt class="label"><%= t(".config_file") %></dt><dd class="font-mono"><%= @project.config_file %></dd></div>
+      <div><dt class="label"><%= t(".ssh_key") %></dt><dd><%= @project.ssh_private_key.present? ? t(".stored") : t(".not_set") %></dd></div>
+      <div><dt class="label"><%= t(".notifications") %></dt><dd><%= @project.notification_webhook_url.present? ? t("projects.form.formats.#{@project.notification_format}", default: @project.notification_format.capitalize) : t(".off") %></dd></div>
     </dl>
   </div>
 
   <div class="card">
     <div class="card-header">
       <div>
-        <h2 class="card-title">Environment variables</h2>
-        <p class="text-xs text-zinc-500">Available to Kamal, its hooks and <code>.kamal/secrets</code>, e.g. <code>KAMAL_REGISTRY_PASSWORD</code>. Values are encrypted.</p>
+        <h2 class="card-title"><%= t(".variables") %></h2>
+        <p class="text-xs text-zinc-500"><%= t(".variables_hint_html") %></p>
       </div>
-      <%= link_to "Add variable", new_project_environment_variable_path(@project), class: "btn btn-sm" %>
+      <%= link_to t(".add_variable"), new_project_environment_variable_path(@project), class: "btn btn-sm" %>
     </div>
     <% if @project.environment_variables.empty? %>
-      <p class="px-4 py-6 text-center text-sm text-zinc-500">No variables yet.</p>
+      <p class="px-4 py-6 text-center text-sm text-zinc-500"><%= t(".no_variables") %></p>
     <% else %>
       <div class="overflow-x-auto"><table class="table">
-        <thead><tr><th>Name</th><th>Destination</th><th>Value</th><th></th></tr></thead>
+        <thead><tr><th><%= t(".name") %></th><th><%= t("common.destination") %></th><th><%= t(".value") %></th><th></th></tr></thead>
         <tbody>
           <% @project.environment_variables.each do |variable| %>
             <tr>
               <td class="font-mono text-xs text-zinc-100"><%= variable.key %></td>
-              <td class="text-zinc-400"><%= variable.destination || "all" %></td>
+              <td class="text-zinc-400"><%= variable.destination || t(".all") %></td>
               <td class="text-zinc-500">••••••••</td>
               <td class="text-right">
                 <div class="flex justify-end gap-2">
-                  <%= link_to "Edit", edit_project_environment_variable_path(@project, variable), class: "btn btn-sm" %>
-                  <%= button_to "Delete", project_environment_variable_path(@project, variable), method: :delete, class: "btn btn-sm btn-danger", form: { data: { turbo_confirm: "Delete #{variable.key}?" } } %>
+                  <%= link_to t("common.edit"), edit_project_environment_variable_path(@project, variable), class: "btn btn-sm" %>
+                  <%= button_to t("common.delete"), project_environment_variable_path(@project, variable), method: :delete, class: "btn btn-sm btn-danger", form: { data: { turbo_confirm: t(".confirm_delete", name: variable.key) } } %>
                 </div>
               </td>
             </tr>
@@ -50,30 +50,30 @@
   <div class="card">
     <div class="card-header">
       <div>
-        <h2 class="card-title">Secret files</h2>
-        <p class="text-xs text-zinc-500">Written into the project before every command, for files that aren't in git such as <code>config/master.key</code>.</p>
+        <h2 class="card-title"><%= t(".files") %></h2>
+        <p class="text-xs text-zinc-500"><%= t(".files_hint_html") %></p>
       </div>
       <div class="flex gap-2">
         <% unless @project.project_files.any? { |file| file.path == "config/master.key" } %>
-          <%= link_to "Add master.key", new_project_project_file_path(@project, path: "config/master.key"), class: "btn btn-sm" %>
+          <%= link_to t(".add_master_key"), new_project_project_file_path(@project, path: "config/master.key"), class: "btn btn-sm" %>
         <% end %>
-        <%= link_to "Add file", new_project_project_file_path(@project), class: "btn btn-sm" %>
+        <%= link_to t(".add_file"), new_project_project_file_path(@project), class: "btn btn-sm" %>
       </div>
     </div>
     <% if @project.project_files.empty? %>
-      <p class="px-4 py-6 text-center text-sm text-zinc-500">No files yet.</p>
+      <p class="px-4 py-6 text-center text-sm text-zinc-500"><%= t(".no_files") %></p>
     <% else %>
       <div class="overflow-x-auto"><table class="table">
-        <thead><tr><th>Path</th><th>Updated</th><th></th></tr></thead>
+        <thead><tr><th><%= t(".path") %></th><th><%= t(".updated") %></th><th></th></tr></thead>
         <tbody>
           <% @project.project_files.each do |file| %>
             <tr>
               <td class="font-mono text-xs text-zinc-100"><%= file.path %></td>
-              <td class="text-zinc-500"><%= time_ago_in_words(file.updated_at) %> ago</td>
+              <td class="text-zinc-500"><%= time_ago(file.updated_at) %></td>
               <td>
                 <div class="flex justify-end gap-2">
-                  <%= link_to "Replace", edit_project_project_file_path(@project, file), class: "btn btn-sm" %>
-                  <%= button_to "Delete", project_project_file_path(@project, file), method: :delete, class: "btn btn-sm btn-danger", form: { data: { turbo_confirm: "Delete #{file.path}?" } } %>
+                  <%= link_to t(".replace"), edit_project_project_file_path(@project, file), class: "btn btn-sm" %>
+                  <%= button_to t("common.delete"), project_project_file_path(@project, file), method: :delete, class: "btn btn-sm btn-danger", form: { data: { turbo_confirm: t(".confirm_delete", name: file.path) } } %>
                 </div>
               </td>
             </tr>
@@ -86,26 +86,26 @@
   <div class="card">
     <div class="card-header">
       <div>
-        <h2 class="card-title">Deploy webhook</h2>
-        <p class="text-xs text-zinc-500">POST to this URL from CI or a GitHub/GitLab push webhook to deploy. Pushes to other branches than <code><%= @project.branch %></code> are ignored.</p>
+        <h2 class="card-title"><%= t(".webhook") %></h2>
+        <p class="text-xs text-zinc-500"><%= t(".webhook_hint_html", branch: tag.code(@project.branch)) %></p>
       </div>
-      <%= button_to "Regenerate", project_webhook_token_path(@project), class: "btn btn-sm", form: { data: { turbo_confirm: "The current URL will stop working. Continue?" } } %>
+      <%= button_to t(".regenerate"), project_webhook_token_path(@project), class: "btn btn-sm", form: { data: { turbo_confirm: t(".confirm_regenerate") } } %>
     </div>
     <div class="card-body space-y-2">
       <% hook_url = deploy_hook_url(@project.deploy_webhook_token) %>
       <div class="flex gap-2">
         <input type="text" readonly value="<%= hook_url %>" class="input font-mono text-xs">
-        <button class="btn" data-controller="clipboard" data-clipboard-text-value="<%= hook_url %>" data-action="clipboard#copy">Copy</button>
+        <button class="btn" data-controller="clipboard" data-clipboard-copied-value="<%= t("common.copied") %>" data-clipboard-text-value="<%= hook_url %>" data-action="clipboard#copy"><%= t("common.copy") %></button>
       </div>
-      <p class="hint">Add <code>?destination=staging</code> to deploy a specific destination. Example: <code class="break-all">curl -X POST "<%= hook_url %>?destination=<%= @project.destinations.compact.first || "production" %>"</code></p>
+      <p class="hint"><%= t(".webhook_example_html", example: tag.code(%(curl -X POST "#{hook_url}?destination=#{@project.destinations.compact.first || "production"}"), class: "break-all")) %></p>
     </div>
   </div>
 
   <div class="card border-red-500/30">
-    <div class="card-header"><h2 class="card-title text-red-300">Danger zone</h2></div>
+    <div class="card-header"><h2 class="card-title text-red-300"><%= t(".danger_zone") %></h2></div>
     <div class="card-body flex items-center justify-between gap-4">
-      <p class="text-sm text-zinc-400">Deletes the project, its history, variables, files and its local clone. Nothing changes on your servers.</p>
-      <%= button_to "Delete project", project_path(@project), method: :delete, class: "btn btn-danger", form: { data: { turbo_confirm: "Delete #{@project.name}? This cannot be undone." } } %>
+      <p class="text-sm text-zinc-400"><%= t(".delete_hint") %></p>
+      <%= button_to t(".delete_project"), project_path(@project), method: :delete, class: "btn btn-danger", form: { data: { turbo_confirm: t(".confirm_delete_project", project: @project.name) } } %>
     </div>
   </div>
 </div>

@@ -9,7 +9,7 @@ class Projects::ProjectFilesController < Projects::BaseController
     @file = @project.project_files.new(file_params)
 
     if @file.save
-      redirect_to project_settings_path(@project), notice: "#{@file.path} saved."
+      redirect_to project_settings_path(@project), notice: t("flash.saved", name: @file.path)
     else
       render :new, status: :unprocessable_entity
     end
@@ -23,7 +23,7 @@ class Projects::ProjectFilesController < Projects::BaseController
     attributes.delete(:content) if attributes[:content].blank?
 
     if @file.update(attributes)
-      redirect_to project_settings_path(@project), notice: "#{@file.path} saved."
+      redirect_to project_settings_path(@project), notice: t("flash.saved", name: @file.path)
     else
       render :edit, status: :unprocessable_entity
     end
@@ -31,7 +31,7 @@ class Projects::ProjectFilesController < Projects::BaseController
 
   def destroy
     @file.destroy!
-    redirect_to project_settings_path(@project), notice: "#{@file.path} deleted.", status: :see_other
+    redirect_to project_settings_path(@project), notice: t("flash.deleted", name: @file.path), status: :see_other
   end
 
   private

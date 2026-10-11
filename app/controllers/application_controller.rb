@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   include Authentication
+  include Preferences
   before_action :require_allowed_ip
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
@@ -11,6 +12,6 @@ class ApplicationController < ActionController::Base
     # The deploy webhook and the status board use their own secret URLs and
     # skip this, so CI and wallboards keep working from anywhere.
     def require_allowed_ip
-      render plain: "Kamal Web isn't reachable from #{request.remote_ip}.\n", status: :forbidden unless AccessPassword.allowed_ip?(request.remote_ip)
+      render plain: I18n.t("access_password.ip_not_allowed", ip: request.remote_ip) + "\n", status: :forbidden unless AccessPassword.allowed_ip?(request.remote_ip)
     end
 end

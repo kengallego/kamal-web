@@ -15,7 +15,7 @@ class ProjectFile < ApplicationRecord
       return if path.blank?
 
       if path.start_with?("/") || path.split("/").include?("..") || path.start_with?(".git/") || path == ".git"
-        errors.add(:path, "must be a relative path inside the project")
+        errors.add(:path, :outside_project)
       end
     end
 end

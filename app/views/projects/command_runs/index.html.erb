@@ -1,14 +1,14 @@
-<% content_for :title, "Activity · #{@project.name}" %>
+<% content_for :title, "#{t("common.activity")} · #{@project.name}" %>
 <%= render "projects/header", project: @project %>
 
 <div class="mb-4 flex flex-wrap gap-2 text-sm">
-  <%= link_to "All", project_command_runs_path(@project), class: [ "btn btn-sm", ("btn-primary" unless params.key?(:destination) || params[:kind]) ] %>
+  <%= link_to t(".all"), project_command_runs_path(@project), class: [ "btn btn-sm", ("btn-primary" unless params.key?(:destination) || params[:kind]) ] %>
   <% @project.destinations.each do |destination| %>
     <%= link_to destination_label(destination), project_command_runs_path(@project, destination: destination.to_s), class: [ "btn btn-sm", ("btn-primary" if params.key?(:destination) && params[:destination].presence == destination) ] %>
   <% end %>
   <span class="mx-2 border-l border-zinc-800"></span>
   <% %w[ deploy redeploy rollback ].each do |kind| %>
-    <%= link_to kind.capitalize, project_command_runs_path(@project, kind: kind), class: [ "btn btn-sm", ("btn-primary" if params[:kind] == kind) ] %>
+    <%= link_to CommandCatalog.find(kind).label, project_command_runs_path(@project, kind: kind), class: [ "btn btn-sm", ("btn-primary" if params[:kind] == kind) ] %>
   <% end %>
 </div>
 

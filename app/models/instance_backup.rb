@@ -8,6 +8,7 @@ require "zlib"
 # Restoring stages the archive as storage/restore.tar.gz; script/apply_restore.rb
 # swaps the files in when the container next boots, before the database opens.
 module InstanceBackup
+  # The message is a key under flash.backups.invalid.
   class Invalid < StandardError; end
 
   APP = "kamal-web".freeze
@@ -41,13 +42,13 @@ module InstanceBackup
 
   # Checks an uploaded archive and keeps it for the next boot.
   def stage!(path)
-    raise Invalid, "The backup is larger than #{MAX_SIZE / 1.megabyte} MB." if File.size(path) > MAX_SIZE
+    raise Invalid, "too_large" if File.size(path) > MAX_SIZE
 
     entries = read(path)
     manifest = JSON.parse(entries.fetch("manifest.json")) rescue nil
-    raise Invalid, "This isn't a Kamal Web backup." unless manifest.is_a?(Hash) && manifest["app"] == APP
-    raise Invalid, "The backup has no database." unless entries["database.sqlite3"].to_s.start_with?("SQLite format 3\0")
-    raise Invalid, "The backup has no secret key." if entries["secret_key_base"].to_s.strip.length < 32
+    raise Invalid, "not_backup" unless manifest.is_a?(Hash) && manifest["app"] == APP
+    raise Invalid, "no_database" unless entries["database.sqlite3"].to_s.start_with?("SQLite format 3\0")
+    raise Invalid, "no_key" if entries["secret_key_base"].to_s.strip.length < 32
 
     FileUtils.cp(path, STAGED_PATH)
     manifest
@@ -62,7 +63,7 @@ module InstanceBackup
     end
     entries
   rescue Zlib::Error, Gem::Package::TarInvalidError, Gem::Package::FormatError
-    raise Invalid, "The file isn't a .tar.gz archive."
+    raise Invalid, "not_archive"
   end
 
   def add(tar, name, content)

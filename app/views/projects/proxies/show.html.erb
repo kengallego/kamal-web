@@ -1,8 +1,8 @@
-<% content_for :title, "Proxy · #{@project.name}" %>
+<% content_for :title, "#{t("common.proxy")} · #{@project.name}" %>
 <%= render "projects/header", project: @project, destination: @destination %>
 
 <% if @hosts.empty? %>
-  <div class="card card-body text-center text-sm text-zinc-500">No app hosts found in the Kamal config.</div>
+  <div class="card card-body text-center text-sm text-zinc-500"><%= t(".no_hosts") %></div>
 <% else %>
   <div class="mb-4 flex flex-wrap items-center gap-2">
     <% @hosts.each do |host| %>
@@ -10,11 +10,11 @@
     <% end %>
     <span class="mx-2 h-5 border-l border-zinc-800"></span>
     <% [ nil, "2xx", "3xx", "4xx", "5xx" ].each do |status| %>
-      <%= link_to status || "All", project_proxy_path(@project, destination: @destination.to_s, host: @host, status: status), class: [ "btn btn-sm", ("btn-primary" if params[:status].presence == status) ] %>
+      <%= link_to status || t(".all"), project_proxy_path(@project, destination: @destination.to_s, host: @host, status: status), class: [ "btn btn-sm", ("btn-primary" if params[:status].presence == status) ] %>
     <% end %>
   </div>
 
   <%= turbo_frame_tag "proxy_data", src: project_proxy_path(@project, destination: @destination.to_s, host: @host, status: params[:status]), loading: :lazy do %>
-    <div class="card card-body text-center text-sm text-zinc-500">Connecting to <%= @host %>…</div>
+    <div class="card card-body text-center text-sm text-zinc-500"><%= t(".connecting", host: @host) %></div>
   <% end %>
 <% end %>

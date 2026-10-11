@@ -36,13 +36,13 @@ module AccessPassword
   # Why Kamal Web can't let anyone in with the current settings, if it can't.
   def problem
     if value.blank?
-      "KAMAL_WEB_PASSWORD is not set. Add it to .env and run kamal deploy."
+      I18n.t("access_password.missing")
     elsif value.length < MINIMUM_LENGTH
-      "KAMAL_WEB_PASSWORD must be at least #{MINIMUM_LENGTH} characters long. Change it in .env and run kamal deploy."
+      I18n.t("access_password.too_short", count: MINIMUM_LENGTH)
     elsif two_factor? && !Totp.valid_secret?(totp_secret)
-      "KAMAL_WEB_TOTP_SECRET isn't a valid secret. Generate one with bin/totp-secret."
+      I18n.t("access_password.invalid_totp")
     elsif (invalid = invalid_networks).any?
-      "KAMAL_WEB_ALLOWED_IPS has invalid entries: #{invalid.join(", ")}."
+      I18n.t("access_password.invalid_ips", entries: invalid.join(", "))
     end
   end
 

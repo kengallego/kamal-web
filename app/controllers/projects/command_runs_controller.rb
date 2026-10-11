@@ -25,12 +25,12 @@ class Projects::CommandRunsController < Projects::BaseController
       redirect_back fallback_location: project_commands_path(@project), alert: run.errors.full_messages.to_sentence
     end
   rescue KeyError
-    redirect_back fallback_location: project_commands_path(@project), alert: "Unknown command."
+    redirect_back fallback_location: project_commands_path(@project), alert: t("flash.command_runs.unknown")
   end
 
   def cancel
     @run.cancel!
-    redirect_to project_command_run_path(@project, @run), notice: "Command canceled."
+    redirect_to project_command_run_path(@project, @run), notice: t("flash.command_runs.canceled")
   end
 
   private

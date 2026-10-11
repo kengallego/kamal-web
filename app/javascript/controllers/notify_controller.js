@@ -3,7 +3,8 @@ import { Controller } from "@hotwired/stimulus"
 // Attached to run status badges that arrive by broadcast. Shows a browser
 // notification when a command finishes while the tab is in the background.
 export default class extends Controller {
-  static values = { status: String, label: String }
+  // statusText is the translated status; status is the raw one.
+  static values = { status: String, statusText: String, label: String }
 
   connect() {
     if (!("Notification" in window)) return
@@ -11,7 +12,7 @@ export default class extends Controller {
 
     const finished = ["succeeded", "failed", "canceled"].includes(this.statusValue)
     if (finished && document.visibilityState !== "visible" && Notification.permission === "granted") {
-      new Notification(`${this.labelValue} ${this.statusValue}`)
+      new Notification(`${this.labelValue} ${this.statusTextValue || this.statusValue}`)
     }
   }
 }

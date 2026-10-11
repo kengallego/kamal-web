@@ -8,7 +8,7 @@
       <p class="mt-1 truncate text-sm text-zinc-500">
         <%= project.source_description %>
         <% if project.git_revision %> · <span class="font-mono"><%= short_sha(project.git_revision) %></span><% end %>
-        <% if project.synced_at %> · synced <%= time_ago_in_words(project.synced_at) %> ago<% end %>
+        <% if project.synced_at %> · <%= t(".synced", time: time_ago(project.synced_at)) %><% end %>
       </p>
     </div>
 
@@ -21,13 +21,13 @@
           <% end %>
         </div>
       <% end %>
-      <%= button_to "Sync", sync_project_path(project), class: "btn", title: "Pull the latest code and re-read deploy.yml" %>
+      <%= button_to t("common.sync"), sync_project_path(project), class: "btn", title: t(".sync_title") %>
     </div>
   </div>
 
   <% if project.sync_error.present? %>
     <div class="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300">
-      <p class="font-medium">Last sync failed</p>
+      <p class="font-medium"><%= t(".sync_failed") %></p>
       <pre class="mt-1 whitespace-pre-wrap font-mono text-xs"><%= project.sync_error %></pre>
     </div>
   <% end %>
@@ -36,18 +36,18 @@
     <% metrics = project.latest_metrics %>
     <% if (failed = metrics.select(&:error)).any? %>
       <div class="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-200">
-        <p class="font-medium">Kamal Web can't connect to <%= failed.map(&:host).to_sentence %> over SSH</p>
+        <p class="font-medium"><%= t(".ssh_failed", hosts: failed.map(&:host).to_sentence) %></p>
         <pre class="mt-1 whitespace-pre-wrap font-mono text-xs text-amber-200/80"><%= failed.first.error.to_s.last(500) %></pre>
         <% if project.ssh_private_key.blank? %>
-          <p class="mt-2 text-amber-200/80">Authorize Kamal Web's key by running this from your Kamal Web checkout:</p>
+          <p class="mt-2 text-amber-200/80"><%= t(".authorize") %></p>
           <pre class="mt-1 overflow-x-auto rounded bg-zinc-950 p-2 font-mono text-xs text-zinc-200"><%= Setting::AUTHORIZE_THIS_SERVER %></pre>
-          <p class="mt-1 text-xs text-amber-200/60">Checked every minute. <%= link_to "Monitoring", project_monitoring_path(project), class: "underline" %> can check again right away.</p>
+          <p class="mt-1 text-xs text-amber-200/60"><%= t(".checked_every_minute_html", monitoring: link_to(t("common.monitoring"), project_monitoring_path(project), class: "underline")) %></p>
         <% end %>
       </div>
     <% end %>
     <p class="mt-4 text-sm text-zinc-500">
-      Detected on this server<%= " · checking SSH access…" if metrics.empty? && project.monitoring_enabled? %>.
-      To deploy from Kamal Web too, <%= link_to "add its git repository", edit_project_path(project), class: "underline hover:text-zinc-300" %>.
+      <%= t(".detected") %><%= t(".checking_ssh") if metrics.empty? && project.monitoring_enabled? %>.
+      <%= t(".connect_repository_html", link: link_to(t(".add_repository"), edit_project_path(project), class: "underline hover:text-zinc-300")) %>
     </p>
   <% end %>
 
@@ -56,14 +56,15 @@
   <% dest = destination == :none ? {} : { destination: destination.to_s } %>
   <nav class="mt-6 flex gap-6 overflow-x-auto border-b border-zinc-800">
     <% [
-      [ "Overview", project_path(project, dest) ],
-      [ "Commands", project_commands_path(project, dest) ],
-      [ "Console", project_console_sessions_path(project, dest) ],
-      [ "Activity", project_command_runs_path(project) ],
-      [ "Monitoring", project_monitoring_path(project) ],
-      [ "Proxy", project_proxy_path(project, dest) ],
-      [ "Config", project_config_path(project, dest) ]
-    ].push([ "Settings", project_settings_path(project) ]).each do |label, path| %>
+      [ t("common.overview"), project_path(project, dest) ],
+      [ t("common.commands"), project_commands_path(project, dest) ],
+      [ t("common.console"), project_console_sessions_path(project, dest) ],
+      [ t("common.activity"), project_command_runs_path(project) ],
+      [ t("common.monitoring"), project_monitoring_path(project) ],
+      [ t("common.proxy"), project_proxy_path(project, dest) ],
+      [ t("common.config"), project_config_path(project, dest) ],
+      [ t("common.settings"), project_settings_path(project) ]
+    ].each do |label, path| %>
       <%= link_to label, path, class: [ "tab", ("tab-active" if request.path == URI(path).path) ] %>
     <% end %>
   </nav>

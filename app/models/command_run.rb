@@ -63,7 +63,7 @@ class CommandRun < ApplicationRecord
   end
 
   def triggered_by
-    trigger == "webhook" ? "Deploy webhook" : "Dashboard"
+    I18n.t("command_runs.triggers.#{trigger == "webhook" ? "webhook" : "manual"}")
   end
 
   def start!(pid: nil)
@@ -126,7 +126,7 @@ class CommandRun < ApplicationRecord
     end
 
     def kind_is_known
-      errors.add(:kind, "is not a supported command") unless CommandCatalog.exists?(kind)
+      errors.add(:kind, :unsupported) unless CommandCatalog.exists?(kind)
     end
 
     def arguments_are_valid
@@ -137,13 +137,13 @@ class CommandRun < ApplicationRecord
 
     def destination_is_known
       unless project.destinations.include?(destination)
-        errors.add(:destination, "is not configured in this project")
+        errors.add(:destination, :unknown)
       end
     end
 
     def project_allows_command
       if CommandCatalog.exists?(kind) && !project.allows_command?(command)
-        errors.add(:base, "#{command.label} needs the project's repository, because the config detected on the server has no env or secrets. Connect it in the project settings.")
+        errors.add(:base, :needs_repository, command: command.label)
       end
     end
 
@@ -151,7 +151,7 @@ class CommandRun < ApplicationRecord
       return unless CommandCatalog.exists?(kind) && mutating?
 
       if (running = project.active_operation)
-        errors.add(:base, "#{running.command.label} is already running for this project. Wait for it to finish or cancel it.")
+        errors.add(:base, :operation_running, command: running.command.label)
       end
     end
 

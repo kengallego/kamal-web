@@ -6,7 +6,7 @@ import { FitAddon } from "@xterm/addon-fit"
 // Attaches an xterm.js terminal to a ConsoleChannel subscription.
 export default class extends Controller {
   static targets = [ "screen", "status" ]
-  static values = { sessionId: Number }
+  static values = { sessionId: Number, messages: Object }
 
   async connect() {
     this.terminal = new Terminal({
@@ -28,9 +28,9 @@ export default class extends Controller {
     this.subscription = await cable.subscribeTo(
       { channel: "ConsoleChannel", id: this.sessionIdValue, rows: this.terminal.rows, cols: this.terminal.cols },
       {
-        connected: () => this.setStatus("Connected", "success"),
-        disconnected: () => this.ended || this.setStatus("Disconnected", "danger"),
-        rejected: () => this.setStatus("This session can't be opened anymore. Start a new one.", "danger"),
+        connected: () => this.setStatus(this.message("connected"), "success"),
+        disconnected: () => this.ended || this.setStatus(this.message("disconnected"), "danger"),
+        rejected: () => this.setStatus(this.message("rejected"), "danger"),
         received: (message) => this.received(message)
       }
     )
@@ -51,9 +51,14 @@ export default class extends Controller {
     } else if (message.type === "exit") {
       this.ended = true
       const code = message.code ?? "unknown"
-      this.setStatus(`Session ended (exit code ${code})`, code === 0 ? "neutral" : "danger")
-      this.terminal.write("\r\n\x1b[2m[session ended]\x1b[0m\r\n")
+      this.setStatus(this.message("ended").replace("%{code}", code), code === 0 ? "neutral" : "danger")
+      this.terminal.write(`\r\n\x1b[2m[${this.message("ended_short")}]\x1b[0m\r\n`)
     }
+  }
+
+  // Texts come translated from the page, in data-console-messages-value.
+  message(key) {
+    return this.messagesValue[key] ?? key
   }
 
   setStatus(text, tone) {

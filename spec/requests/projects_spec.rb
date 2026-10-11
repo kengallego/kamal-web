@@ -76,7 +76,7 @@ RSpec.describe "Projects" do
     get project_releases_path(project)
 
     expect(response.body).not_to include("Roll back</button>")
-    expect(response.body).to include("needs the app's repository")
+    expect(CGI.unescapeHTML(response.body)).to include("needs the app's repository")
   end
 
   it "charts the proxy traffic of this app only" do

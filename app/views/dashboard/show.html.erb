@@ -1,22 +1,20 @@
-<% content_for :title, "Dashboard" %>
+<% content_for :title, t("common.dashboard") %>
 
 <div class="mb-6 flex items-center justify-between">
-  <h1 class="text-xl font-semibold text-zinc-100">Dashboard</h1>
+  <h1 class="text-xl font-semibold text-zinc-100"><%= t("common.dashboard") %></h1>
   <div class="flex gap-2">
-    <%= button_to "Scan this server", discovery_path, class: "btn", title: "Find Kamal apps running on this server and add them" %>
-    <%= link_to "New project", new_project_path, class: "btn btn-primary" %>
+    <%= button_to t("common.scan_this_server"), discovery_path, class: "btn", title: t(".scan_title") %>
+    <%= link_to t("common.new_project"), new_project_path, class: "btn btn-primary" %>
   </div>
 </div>
 
 <% if @projects.empty? %>
   <div class="card card-body py-16 text-center">
-    <h2 class="text-lg font-semibold text-zinc-100">No projects yet</h2>
+    <h2 class="text-lg font-semibold text-zinc-100"><%= t(".empty_title") %></h2>
     <p class="mx-auto mt-2 max-w-md text-sm text-zinc-400">
-      A project points at a repository (or a mounted folder) with a Kamal <code>config/deploy.yml</code>.
-      Kamal Web runs Kamal for it and shows what is happening on your servers.
-      Kamal apps already running on this server are detected and added automatically.
+      <%= t(".empty_html") %>
     </p>
-    <%= link_to "Add your first project", new_project_path, class: "btn btn-primary mt-6" %>
+    <%= link_to t(".add_first"), new_project_path, class: "btn btn-primary mt-6" %>
   </div>
 <% else %>
   <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -28,22 +26,22 @@
             <p class="truncate text-xs text-zinc-500"><%= project.source_description %></p>
           </div>
           <% if project.sync_error.present? %>
-            <span class="badge badge-danger">sync error</span>
+            <span class="badge badge-danger"><%= t(".sync_error") %></span>
           <% elsif (operation = project.active_operation) %>
-            <span class="badge badge-info"><%= operation.command.label.downcase %> running</span>
+            <span class="badge badge-info"><%= t(".operation_running", command: operation.command.label.downcase) %></span>
           <% end %>
         </div>
 
         <div class="mt-4 space-y-2">
           <% project.destinations.each do |destination| %>
             <% deploy = project.last_deploy(destination) %>
-            <div class="flex items-center justify-between text-sm">
-              <span class="text-zinc-300"><%= destination_label(destination) %></span>
-              <span class="flex items-center gap-2 text-xs text-zinc-500">
+            <div class="flex items-center justify-between gap-3 text-sm">
+              <span class="shrink-0 text-zinc-300"><%= destination_label(destination) %></span>
+              <span class="flex min-w-0 flex-wrap items-center justify-end gap-x-2 text-right text-xs text-zinc-500">
                 <% if deploy %>
-                  <%= short_sha(deploy.git_revision) %> · <%= time_ago_in_words(deploy.created_at) %> ago <%= status_badge(deploy.status) %>
+                  <%= short_sha(deploy.git_revision) %> · <%= time_ago(deploy.created_at) %> <%= status_badge(deploy.status) %>
                 <% else %>
-                  never deployed
+                  <%= t("common.never_deployed") %>
                 <% end %>
               </span>
             </div>
@@ -52,7 +50,7 @@
 
         <% if (metrics = @latest_metrics[project.id]).present? %>
           <div class="mt-4 grid grid-cols-3 gap-3 border-t border-zinc-800 pt-3 text-xs text-zinc-500">
-            <% { "CPU" => metrics.filter_map(&:cpu_percent).max, "RAM" => metrics.filter_map(&:memory_percent).max, "Disk" => metrics.filter_map(&:disk_percent).max }.each do |label, value| %>
+            <% { t("common.cpu") => metrics.filter_map(&:cpu_percent).max, t("common.ram") => metrics.filter_map(&:memory_percent).max, t("common.disk") => metrics.filter_map(&:disk_percent).max }.each do |label, value| %>
               <div>
                 <div class="mb-1 flex justify-between"><span><%= label %></span><span><%= value ? "#{value.round}%" : "–" %></span></div>
                 <%= meter(value) %>
@@ -65,7 +63,7 @@
   </div>
 
   <div class="card mt-8">
-    <div class="card-header"><h2 class="card-title">Recent activity</h2></div>
+    <div class="card-header"><h2 class="card-title"><%= t("common.recent_activity") %></h2></div>
     <%= render "command_runs/table", runs: @recent_runs, show_project: true %>
   </div>
 <% end %>

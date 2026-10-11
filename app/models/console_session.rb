@@ -23,7 +23,7 @@ class ConsoleSession < ApplicationRecord
   scope :latest_first, -> { order(created_at: :desc) }
 
   def label
-    KINDS.fetch(kind)[:label]
+    I18n.t("console_kinds.#{kind}", default: KINDS.fetch(kind)[:label])
   end
 
   def arguments
@@ -56,12 +56,12 @@ class ConsoleSession < ApplicationRecord
 
   private
     def destination_is_known
-      errors.add(:destination, "is not configured in this project") unless project.destinations.include?(destination)
+      errors.add(:destination, :unknown) unless project.destinations.include?(destination)
     end
 
     def host_is_known
       if host && !project.config_for(destination).all_hosts.include?(host)
-        errors.add(:host, "is not in this destination's config")
+        errors.add(:host, :unknown)
       end
     end
 end

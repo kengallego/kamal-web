@@ -1,9 +1,8 @@
-<% content_for :title, "Config · #{@project.name}" %>
+<% content_for :title, "#{t("common.config")} · #{@project.name}" %>
 <%= render "projects/header", project: @project, destination: @destination %>
 
 <p class="mb-4 text-sm text-zinc-500">
-  Merged configuration for <span class="text-zinc-300"><%= destination_label(@destination) %></span>
-  from <code><%= @project.config_file %></code><%= " and its #{@destination} override" if @destination %>, with ERB rendered. Secret values are not shown.
+  <%= t(@destination ? ".intro_with_override_html" : ".intro_html", destination: tag.span(destination_label(@destination), class: "text-zinc-300"), file: tag.code(@project.config_file), override: @destination) %>
 </p>
 
 <% if @config.error %>
@@ -11,5 +10,5 @@
 <% elsif @config.raw_config %>
   <pre class="terminal"><%= @config.raw_config.to_yaml.delete_prefix("---\n") %></pre>
 <% else %>
-  <div class="card card-body text-sm text-zinc-500">Config not loaded yet. Press Sync.</div>
+  <div class="card card-body text-sm text-zinc-500"><%= t(".not_loaded") %></div>
 <% end %>

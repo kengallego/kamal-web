@@ -5,17 +5,21 @@ module ApplicationHelper
   }.freeze
 
   def status_badge(status)
-    tag.span status, class: "badge #{STATUS_BADGES.fetch(status.to_s, "badge-neutral")}"
+    tag.span t("statuses.#{status}", default: status.to_s), class: "badge #{STATUS_BADGES.fetch(status.to_s, "badge-neutral")}"
   end
 
   def destination_label(destination)
-    destination.presence || "default"
+    destination.presence || t("common.default_destination")
   end
 
   def meter(percent)
     percent = percent.to_f.clamp(0, 100)
     color = percent >= 90 ? "bg-red-400" : percent >= 70 ? "bg-amber-400" : "bg-emerald-400"
     tag.div(class: "meter") { tag.span(class: color, style: "width: #{percent}%") }
+  end
+
+  def time_ago(time)
+    t("common.ago", time: time_ago_in_words(time))
   end
 
   def short_sha(sha)

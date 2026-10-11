@@ -23,7 +23,7 @@ class Project < ApplicationRecord
   validates :notification_format, inclusion: { in: NOTIFICATION_FORMATS }
   validates :branch, :config_file, presence: true
   validates :repository_url, presence: true, if: :git?
-  validates :repository_url, format: { with: %r{\A(https://|ssh://|[\w.-]+@[\w.-]+:)\S+\z}, message: "must be an https or ssh git URL" }, allow_blank: true
+  validates :repository_url, format: { with: %r{\A(https://|ssh://|[\w.-]+@[\w.-]+:)\S+\z}, message: :invalid_git_url }, allow_blank: true
   validates :local_path, presence: true, if: :local?
   validates :discovered_service, presence: true, if: :discovered?
   validates :notification_webhook_url, format: { with: %r{\Ahttps?://\S+\z} }, allow_blank: true
@@ -59,7 +59,7 @@ class Project < ApplicationRecord
   def source_description
     if git? then "#{repository_url} · #{branch}"
     elsif local? then local_path
-    else "Detected on this server"
+    else I18n.t("projects.form.kind_discovered")
     end
   end
 
@@ -136,7 +136,7 @@ class Project < ApplicationRecord
 
     def config_file_is_relative
       if config_file.present? && (config_file.start_with?("/") || config_file.split("/").include?(".."))
-        errors.add(:config_file, "must be relative to the project root")
+        errors.add(:config_file, :not_relative)
       end
     end
 
@@ -146,14 +146,14 @@ class Project < ApplicationRecord
       root = Rails.configuration.x.projects_path.expand_path.to_s
       path = File.expand_path(local_path)
       unless path == root || path.start_with?("#{root}/")
-        errors.add(:local_path, "must be inside #{root} (mount your projects there)")
+        errors.add(:local_path, :outside_root, root: root)
       end
     end
 
     def ssh_keys_are_private_keys
       { ssh_private_key: ssh_private_key, git_ssh_private_key: git_ssh_private_key }.each do |attribute, key|
         next if key.blank?
-        errors.add(attribute, "doesn't look like a private key") unless key.include?("PRIVATE KEY-----")
+        errors.add(attribute, :not_private_key) unless key.include?("PRIVATE KEY-----")
       end
     end
 end

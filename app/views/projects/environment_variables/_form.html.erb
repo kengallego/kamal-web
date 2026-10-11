@@ -1,19 +1,19 @@
 <%= form_with model: [ @project, variable ], class: "card card-body max-w-xl space-y-4" do |form| %>
   <%= form_errors(variable) %>
   <div>
-    <%= form.label :key, "Name", class: "label" %>
+    <%= form.label :key, t(".name"), class: "label" %>
     <%= form.text_field :key, required: true, class: "input font-mono", placeholder: "KAMAL_REGISTRY_PASSWORD" %>
   </div>
   <div>
-    <%= form.label :value, class: "label" %>
-    <%= form.text_area :value, value: nil, rows: 3, class: "input font-mono", autocomplete: "off", placeholder: variable.persisted? ? "Leave empty to keep the current value" : "" %>
+    <%= form.label :value, t(".value"), class: "label" %>
+    <%= form.text_area :value, value: nil, rows: 3, class: "input font-mono", autocomplete: "off", placeholder: variable.persisted? ? t(".keep_value") : "" %>
   </div>
   <div>
-    <%= form.label :destination, class: "label" %>
-    <%= form.select :destination, [ [ "All destinations", "" ] ] + @project.destinations.compact.map { |d| [ d, d ] }, {}, class: "input" %>
+    <%= form.label :destination, t("common.destination"), class: "label" %>
+    <%= form.select :destination, [ [ t(".all_destinations"), "" ] ] + @project.destinations.compact.map { |d| [ d, d ] }, {}, class: "input" %>
   </div>
   <div class="flex gap-3">
-    <%= form.submit "Save", class: "btn btn-primary" %>
-    <%= link_to "Cancel", project_settings_path(@project), class: "btn" %>
+    <%= form.submit t("common.save"), class: "btn btn-primary" %>
+    <%= link_to t("common.cancel"), project_settings_path(@project), class: "btn" %>
   </div>
 <% end %>

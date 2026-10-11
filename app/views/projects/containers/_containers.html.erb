@@ -5,7 +5,7 @@
     <p class="px-4 py-2 text-xs text-red-300"><%= host %>: <%= message %></p>
   <% end %>
   <% if @containers.empty? && @errors.empty? %>
-    <p class="px-4 py-4 text-sm text-zinc-500">No containers of this app yet.</p>
+    <p class="px-4 py-4 text-sm text-zinc-500"><%= t(".empty") %></p>
   <% else %>
     <ul class="divide-y divide-zinc-800">
       <% @containers.each do |container| %>
@@ -19,5 +19,5 @@
       <% end %>
     </ul>
   <% end %>
-  <p class="border-t border-zinc-800 px-4 py-2 text-xs text-zinc-600">Updated <%= l(Time.current, format: "%H:%M:%S") %></p>
+  <p class="border-t border-zinc-800 px-4 py-2 text-xs text-zinc-600"><%= t("common.updated_at", time: l(Time.current, format: "%H:%M:%S")) %></p>
 <% end %>

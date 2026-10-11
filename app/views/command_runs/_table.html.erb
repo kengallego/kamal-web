@@ -1,18 +1,18 @@
 <% if runs.empty? %>
-  <p class="px-4 py-6 text-center text-sm text-zinc-500">No commands have run yet.</p>
+  <p class="px-4 py-6 text-center text-sm text-zinc-500"><%= t("common.no_runs") %></p>
 <% else %>
   <div class="overflow-x-auto">
     <table class="table">
       <thead>
         <tr>
-          <th>Command</th>
-          <% if local_assigns[:show_project] %><th>Project</th><% end %>
-          <th>Destination</th>
-          <th>Status</th>
-          <th>Revision</th>
-          <th>From</th>
-          <th>When</th>
-          <th>Duration</th>
+          <th><%= t("common.command") %></th>
+          <% if local_assigns[:show_project] %><th><%= t("common.project") %></th><% end %>
+          <th><%= t("common.destination") %></th>
+          <th><%= t("common.status") %></th>
+          <th><%= t("common.revision") %></th>
+          <th><%= t("common.from") %></th>
+          <th><%= t("common.when") %></th>
+          <th><%= t("common.duration") %></th>
         </tr>
       </thead>
       <tbody>
@@ -24,7 +24,7 @@
             <td><%= render "command_runs/status", run: run %></td>
             <td class="font-mono text-xs text-zinc-500"><%= short_sha(run.git_revision) || "–" %></td>
             <td class="text-zinc-400"><%= run.triggered_by %></td>
-            <td class="whitespace-nowrap text-zinc-500" title="<%= run.created_at %>"><%= time_ago_in_words(run.created_at) %> ago</td>
+            <td class="whitespace-nowrap text-zinc-500" title="<%= run.created_at %>"><%= time_ago(run.created_at) %></td>
             <td class="text-zinc-500"><%= duration_in_words(run.duration) %></td>
           </tr>
         <% end %>

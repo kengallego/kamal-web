@@ -7,10 +7,9 @@ class BackupsController < ApplicationController
     file = params.require(:backup)
     manifest = InstanceBackup.stage!(file.path)
     restart_soon
-    redirect_to edit_settings_path, notice: "Backup from #{manifest["created_at"]&.then { |time| l(Time.zone.parse(time), format: :long) }} accepted. " \
-      "Kamal Web is restarting to restore it; sign in again in a few seconds."
+    redirect_to edit_settings_path, notice: t("flash.backups.accepted", date: manifest["created_at"]&.then { |time| l(Time.zone.parse(time), format: :long) })
   rescue InstanceBackup::Invalid, ActionController::ParameterMissing => error
-    redirect_to edit_settings_path, alert: error.is_a?(InstanceBackup::Invalid) ? error.message : "Choose a backup file."
+    redirect_to edit_settings_path, alert: error.is_a?(InstanceBackup::Invalid) ? t("flash.backups.invalid.#{error.message}") : t("flash.backups.choose_file")
   end
 
   private

@@ -9,7 +9,7 @@ class Projects::EnvironmentVariablesController < Projects::BaseController
     @variable = @project.environment_variables.new(variable_params)
 
     if @variable.save
-      redirect_to project_settings_path(@project), notice: "#{@variable.key} saved."
+      redirect_to project_settings_path(@project), notice: t("flash.saved", name: @variable.key)
     else
       render :new, status: :unprocessable_entity
     end
@@ -23,7 +23,7 @@ class Projects::EnvironmentVariablesController < Projects::BaseController
     attributes.delete(:value) if attributes[:value].blank?
 
     if @variable.update(attributes)
-      redirect_to project_settings_path(@project), notice: "#{@variable.key} saved."
+      redirect_to project_settings_path(@project), notice: t("flash.saved", name: @variable.key)
     else
       render :edit, status: :unprocessable_entity
     end
@@ -31,7 +31,7 @@ class Projects::EnvironmentVariablesController < Projects::BaseController
 
   def destroy
     @variable.destroy!
-    redirect_to project_settings_path(@project), notice: "#{@variable.key} deleted.", status: :see_other
+    redirect_to project_settings_path(@project), notice: t("flash.deleted", name: @variable.key), status: :see_other
   end
 
   private

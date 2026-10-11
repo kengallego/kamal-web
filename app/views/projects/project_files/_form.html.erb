@@ -1,16 +1,16 @@
 <%= form_with model: [ @project, file ], class: "card card-body max-w-2xl space-y-4" do |form| %>
   <%= form_errors(file) %>
   <div>
-    <%= form.label :path, class: "label" %>
+    <%= form.label :path, t(".path"), class: "label" %>
     <%= form.text_field :path, required: true, class: "input font-mono", placeholder: "config/master.key" %>
-    <p class="hint">Relative to the project root.</p>
+    <p class="hint"><%= t(".path_hint") %></p>
   </div>
   <div>
-    <%= form.label :content, class: "label" %>
-    <%= form.text_area :content, value: nil, rows: 8, class: "input font-mono text-xs", autocomplete: "off", placeholder: file.persisted? ? "Leave empty to keep the current content" : "" %>
+    <%= form.label :content, t(".content"), class: "label" %>
+    <%= form.text_area :content, value: nil, rows: 8, class: "input font-mono text-xs", autocomplete: "off", placeholder: file.persisted? ? t(".keep_content") : "" %>
   </div>
   <div class="flex gap-3">
-    <%= form.submit "Save", class: "btn btn-primary" %>
-    <%= link_to "Cancel", project_settings_path(@project), class: "btn" %>
+    <%= form.submit t("common.save"), class: "btn btn-primary" %>
+    <%= link_to t("common.cancel"), project_settings_path(@project), class: "btn" %>
   </div>
 <% end %>

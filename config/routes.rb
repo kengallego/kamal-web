@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   resource :session
+  resource :preferences, only: :update
 
   resources :projects do
     member do

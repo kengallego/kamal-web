@@ -1,7 +1,17 @@
 # Every Kamal command the UI can run. Arguments are always built as arrays and
 # executed without a shell, so user-provided options can't inject commands.
 class CommandCatalog
-  Command = Data.define(:key, :label, :group, :mutating, :fields, :builder, :description) do
+  # Labels are English defaults; config/locales translates them under
+  # commands.<key>, command_fields.<name> and command_groups.<group>.
+  Command = Data.define(:key, :default_label, :group, :mutating, :fields, :builder, :default_description) do
+    def label
+      I18n.t("commands.#{key}.label", default: default_label)
+    end
+
+    def description
+      default_description && I18n.t("commands.#{key}.description", default: default_description)
+    end
+
     def arguments(options = {})
       builder.call(options.to_h.stringify_keys.transform_values { |value| value.to_s.strip })
     end
@@ -11,7 +21,19 @@ class CommandCatalog
     end
   end
 
-  Field = Data.define(:name, :label, :type, :required, :placeholder)
+  Field = Data.define(:name, :default_label, :type, :required, :default_placeholder) do
+    def label
+      I18n.t("command_fields.#{name}.label", default: default_label)
+    end
+
+    def placeholder
+      default_placeholder && I18n.t("command_fields.#{name}.placeholder", default: default_placeholder)
+    end
+  end
+
+  def self.group_label(group)
+    I18n.t("command_groups.#{group}", default: GROUPS.fetch(group, group))
+  end
 
   GROUPS = {
     "deploy" => "Deploy",
@@ -42,11 +64,11 @@ class CommandCatalog
 
     private
       def command(key, label, group:, mutating: false, fields: [], description: nil, &builder)
-        all[key] = Command.new(key:, label:, group:, mutating:, fields:, builder:, description:)
+        all[key] = Command.new(key:, default_label: label, group:, mutating:, fields:, builder:, default_description: description)
       end
 
       def field(name, label, type: :text, required: false, placeholder: nil)
-        Field.new(name:, label:, type:, required:, placeholder:)
+        Field.new(name:, default_label: label, type:, required:, default_placeholder: placeholder)
       end
 
       def lines(options, default = 200)

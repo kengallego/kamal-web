@@ -23,7 +23,7 @@ RSpec.describe "Discovered projects" do
     expect(response.body).to include("Detected on this server")
 
     get project_commands_path(project)
-    expect(response.body).to include("More commands available with the app's code")
+    expect(CGI.unescapeHTML(response.body)).to include("More commands available with the app's code")
   end
 
   it "only shows the SSH instructions while the server refuses Kamal Web's key" do
@@ -31,7 +31,7 @@ RSpec.describe "Discovered projects" do
 
     project.server_metrics.create!(host: "192.0.2.10", collected_at: 2.minutes.ago, error: "Permission denied (publickey)")
     get project_path(project)
-    expect(response.body).to include("can't connect to 192.0.2.10 over SSH", "Permission denied (publickey)")
+    expect(CGI.unescapeHTML(response.body)).to include("can't connect to 192.0.2.10 over SSH", "Permission denied (publickey)")
 
     project.server_metrics.create!(host: "192.0.2.10", collected_at: 1.minute.ago, cpu_percent: 5)
     get project_path(project)

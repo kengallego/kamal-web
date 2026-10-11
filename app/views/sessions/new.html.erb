@@ -1,7 +1,7 @@
-<% content_for :title, "Sign in" %>
+<% content_for :title, t(".title") %>
 
 <div class="card card-body">
-  <h1 class="mb-6 text-lg font-semibold text-zinc-100">Sign in</h1>
+  <h1 class="mb-6 text-lg font-semibold text-zinc-100"><%= t(".title") %></h1>
 
   <% if (problem = AccessPassword.problem) %>
     <p class="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300"><%= problem %></p>
@@ -10,20 +10,20 @@
       <%# Lets password managers tell this instance apart from others. %>
       <%= hidden_field_tag :username, "kamal-web@#{request.host}", autocomplete: "username", id: nil %>
       <div>
-        <%= form.label :password, class: "label" %>
+        <%= form.label :password, t(".password"), class: "label" %>
         <%= form.password_field :password, required: true, autofocus: true, autocomplete: "current-password", class: "input" %>
       </div>
 
       <% if AccessPassword.two_factor? %>
         <div>
-          <%= form.label :code, "Code from your authenticator app", class: "label" %>
+          <%= form.label :code, t(".code"), class: "label" %>
           <%= form.text_field :code, required: true, inputmode: "numeric", pattern: "[0-9 ]{6,7}", maxlength: 7, autocomplete: "one-time-code", class: "input font-mono tracking-widest" %>
         </div>
       <% end %>
 
-      <%= form.submit "Sign in", class: "btn btn-primary w-full" %>
+      <%= form.submit t(".title"), class: "btn btn-primary w-full" %>
     <% end %>
 
-    <p class="mt-4 text-center text-xs text-zinc-500">The password is <code class="text-zinc-400">KAMAL_WEB_PASSWORD</code> from the <code class="text-zinc-400">.env</code> file Kamal Web was deployed with.</p>
+    <p class="mt-4 text-center text-xs text-zinc-500"><%= t(".hint_html") %></p>
   <% end %>
 </div>

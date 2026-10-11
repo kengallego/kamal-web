@@ -7,10 +7,10 @@ class Projects::MonitoringController < Projects::BaseController
   # Collects a fresh sample from every host right away.
   def create
     if @project.ssh_keys.empty?
-      redirect_to project_monitoring_path(@project), alert: "Add an SSH key to the project to collect metrics."
+      redirect_to project_monitoring_path(@project), alert: t("flash.monitoring.no_key")
     else
       @project.hosts.each { |host| ServerProbe.new(@project, host).collect }
-      redirect_to project_monitoring_path(@project), notice: "Metrics refreshed."
+      redirect_to project_monitoring_path(@project), notice: t("flash.monitoring.refreshed")
     end
   end
 end

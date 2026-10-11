@@ -1,3 +1,3 @@
-<% content_for :title, "Edit #{@project.name}" %>
+<% content_for :title, t(".title", project: @project.name) %>
 <%= render "projects/header", project: @project %>
 <div class="max-w-3xl"><%= render "form", project: @project %></div>

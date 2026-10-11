@@ -21,7 +21,8 @@ You deploy it with Kamal, like your other apps, and it runs as one container nex
 - **One password.** No accounts to manage: the password lives in your Kamal secrets.
 - **Notifications.** Slack, Discord or JSON webhooks when an operation finishes, plus browser notifications.
 - **Deploy webhook.** Trigger deploys from CI or a GitHub/GitLab push.
-- **Status board.** A read-only page for a TV or for stakeholders, behind a secret URL.
+- **Status board.** A read-only page for a TV or for stakeholders, behind a secret URL. It updates live as deploys run and metrics arrive.
+- **English and Spanish, light and dark.** Follows the browser's language and theme, or pick them in the sidebar.
 - **Backups.** Download everything from Settings and restore it in one step.
 - **Update notice.** The sidebar tells you when a new Kamal Web release is out.
 

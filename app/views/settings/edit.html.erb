@@ -1,28 +1,28 @@
-<% content_for :title, "Settings" %>
-<h1 class="mb-6 text-xl font-semibold text-zinc-100">Settings</h1>
+<% content_for :title, t("common.settings") %>
+<h1 class="mb-6 text-xl font-semibold text-zinc-100"><%= t("common.settings") %></h1>
 
 <div class="max-w-3xl space-y-6">
   <div class="card">
     <div class="card-header">
       <div>
-        <h2 class="card-title">Status board</h2>
-        <p class="text-xs text-zinc-500">A read-only page for a TV or for your team, with deploy status and server health. Anyone with the link can see it.</p>
+        <h2 class="card-title"><%= t(".status_board") %></h2>
+        <p class="text-xs text-zinc-500"><%= t(".status_board_hint") %></p>
       </div>
     </div>
     <div class="card-body space-y-4">
       <%= form_with model: @setting, url: settings_path, method: :patch, class: "flex items-center gap-3" do |form| %>
-        <label class="flex items-center gap-2 text-sm"><%= form.check_box :status_board_enabled %> Enabled</label>
-        <%= form.submit "Save", class: "btn btn-sm" %>
+        <label class="flex items-center gap-2 text-sm"><%= form.check_box :status_board_enabled %> <%= t(".enabled") %></label>
+        <%= form.submit t("common.save"), class: "btn btn-sm" %>
       <% end %>
 
       <% if @setting.status_board_enabled? %>
         <% url = status_board_url(@setting.status_board_token) %>
         <div class="flex gap-2">
           <input type="text" readonly value="<%= url %>" class="input font-mono text-xs">
-          <button class="btn" data-controller="clipboard" data-clipboard-text-value="<%= url %>" data-action="clipboard#copy">Copy</button>
-          <%= link_to "Open", url, target: "_blank", class: "btn" %>
+          <button class="btn" data-controller="clipboard" data-clipboard-copied-value="<%= t("common.copied") %>" data-clipboard-text-value="<%= url %>" data-action="clipboard#copy"><%= t("common.copy") %></button>
+          <%= link_to t(".open"), url, target: "_blank", class: "btn" %>
         </div>
-        <%= button_to "Regenerate URL", regenerate_status_board_token_settings_path, class: "btn btn-sm", form: { data: { turbo_confirm: "The current URL will stop working." } } %>
+        <%= button_to t(".regenerate"), regenerate_status_board_token_settings_path, class: "btn btn-sm", form: { data: { turbo_confirm: t(".confirm_regenerate") } } %>
       <% end %>
     </div>
   </div>
@@ -30,25 +30,25 @@
   <div class="card">
     <div class="card-header">
       <div>
-        <h2 class="card-title">Server access key</h2>
-        <p class="text-xs text-zinc-500">Used for every project without its own SSH key, including the apps detected on this server.</p>
+        <h2 class="card-title"><%= t(".access_key") %></h2>
+        <p class="text-xs text-zinc-500"><%= t(".access_key_hint") %></p>
       </div>
     </div>
     <div class="card-body space-y-3 text-sm">
       <% [
-        [ "For the server running Kamal Web, from your Kamal Web checkout:", Setting::AUTHORIZE_THIS_SERVER ],
-        [ "On any other server, as the user Kamal deploys with (usually <code>root</code>):".html_safe, @setting.authorize_command ]
+        [ t(".this_server"), Setting::AUTHORIZE_THIS_SERVER ],
+        [ t(".other_servers_html"), @setting.authorize_command ]
       ].each do |intro, command| %>
         <p class="text-zinc-400"><%= intro %></p>
         <div class="flex gap-2">
           <input type="text" readonly value="<%= command %>" class="input font-mono text-xs">
-          <button class="btn" data-controller="clipboard" data-clipboard-text-value="<%= command %>" data-action="clipboard#copy">Copy</button>
+          <button class="btn" data-controller="clipboard" data-clipboard-copied-value="<%= t("common.copied") %>" data-clipboard-text-value="<%= command %>" data-action="clipboard#copy"><%= t("common.copy") %></button>
         </div>
       <% end %>
       <% if @setting.ignored_services.any? %>
         <div class="flex items-center justify-between gap-3 border-t border-zinc-800 pt-3">
-          <p class="text-zinc-400">Not detected again because you removed them: <span class="font-mono text-zinc-300"><%= @setting.ignored_services.to_sentence %></span></p>
-          <%= button_to "Detect again", reset_ignored_services_settings_path, class: "btn btn-sm" %>
+          <p class="text-zinc-400"><%= t(".ignored_html", services: tag.span(@setting.ignored_services.to_sentence, class: "font-mono text-zinc-300")) %></p>
+          <%= button_to t(".detect_again"), reset_ignored_services_settings_path, class: "btn btn-sm" %>
         </div>
       <% end %>
     </div>
@@ -57,32 +57,32 @@
   <div class="card">
     <div class="card-header">
       <div>
-        <h2 class="card-title">Backup</h2>
-        <p class="text-xs text-zinc-500">Projects, encrypted variables and keys, settings and history, plus the key that decrypts them. Keep the file somewhere safe: it unlocks every secret stored here.</p>
+        <h2 class="card-title"><%= t(".backup") %></h2>
+        <p class="text-xs text-zinc-500"><%= t(".backup_hint") %></p>
       </div>
     </div>
     <div class="card-body space-y-4 text-sm">
-      <%= link_to "Download backup", backup_path, class: "btn", data: { turbo: false } %>
+      <%= link_to t(".download"), backup_path, class: "btn", data: { turbo: false } %>
       <%= form_with url: backup_path, multipart: true, class: "flex flex-wrap items-center gap-2 border-t border-zinc-800 pt-4",
-        data: { turbo_confirm: "Replace everything in this instance with the backup? Kamal Web restarts to restore it." } do |form| %>
+        data: { turbo_confirm: t(".confirm_restore") } do |form| %>
         <%= form.file_field :backup, accept: ".gz,application/gzip", required: true, class: "text-xs text-zinc-400 file:mr-3 file:cursor-pointer file:rounded-lg file:border-0 file:bg-zinc-800 file:px-3 file:py-1.5 file:text-sm file:text-zinc-100 hover:file:bg-zinc-700" %>
-        <%= form.submit "Restore", class: "btn btn-danger" %>
+        <%= form.submit t(".restore"), class: "btn btn-danger" %>
       <% end %>
-      <p class="text-xs text-zinc-500">Restoring replaces the current data. What it replaces is kept in <code>storage/before-restore-*</code> in the volume.</p>
+      <p class="text-xs text-zinc-500"><%= t(".restore_hint_html") %></p>
     </div>
   </div>
 
   <div id="version" class="card card-body text-sm text-zinc-400 space-y-1">
-    <p class="font-medium text-zinc-200">Instance</p>
+    <p class="font-medium text-zinc-200"><%= t(".instance") %></p>
     <% if @setting.update_available? %>
       <p class="text-emerald-300">
-        Kamal Web <%= @setting.latest_version %> is available<%= link_to " (release notes)", @setting.latest_version_url, target: "_blank", rel: "noopener", class: "underline" if @setting.latest_version_url&.start_with?("https://github.com/") %>.
-        Update from your Kamal Web checkout with <code>git pull &amp;&amp; kamal deploy</code>.
+        <%= t("layouts.application.update_available", version: @setting.latest_version) %><%= link_to t(".release_notes"), @setting.latest_version_url, target: "_blank", rel: "noopener", class: "underline" if @setting.latest_version_url&.start_with?("https://github.com/") %>.
+        <%= t(".update_how_html") %>
       </p>
     <% elsif !CheckForUpdatesJob.enabled? %>
-      <p>Update check turned off (<code>KAMAL_WEB_UPDATE_CHECK=false</code>).</p>
+      <p><%= t(".update_check_off_html") %></p>
     <% elsif @setting.update_checked_at %>
-      <p>Up to date. Checked GitHub <%= time_ago_in_words(@setting.update_checked_at) %> ago.</p>
+      <p><%= t(".up_to_date", time: time_ago(@setting.update_checked_at)) %></p>
     <% end %>
     <p>Kamal Web <%= KamalWeb::VERSION %> · Kamal <%= Gem.loaded_specs["kamal"]&.version %> · Rails <%= Rails.version %> · Ruby <%= RUBY_VERSION %></p>
   </div>

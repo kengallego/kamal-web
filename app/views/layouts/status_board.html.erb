@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html class="h-full">
+<html class="h-full" lang="<%= I18n.locale %>"<%= %( data-theme="#{current_theme}").html_safe unless current_theme == "system" %>>
   <head>
-    <title>Status · Kamal Web</title>
+    <title><%= t("status_boards.show.title") %> · Kamal Web</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="color-scheme" content="dark">
+    <meta name="color-scheme" content="<%= { "light" => "light", "dark" => "dark" }.fetch(current_theme, "dark light") %>">
     <meta name="robots" content="noindex">
     <%= stylesheet_link_tag :app %>
     <%= javascript_importmap_tags %>

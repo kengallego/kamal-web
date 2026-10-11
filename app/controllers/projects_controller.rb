@@ -22,7 +22,7 @@ class ProjectsController < ApplicationController
 
     if @project.save
       sync_after_save
-      redirect_to @project, notice: sync_notice("Project created.")
+      redirect_to @project, notice: sync_notice(t("flash.projects.created"))
     else
       render :new, status: :unprocessable_entity
     end
@@ -38,7 +38,7 @@ class ProjectsController < ApplicationController
 
     if @project.update(attributes)
       sync_after_save
-      redirect_to @project, notice: sync_notice("Project updated.")
+      redirect_to @project, notice: sync_notice(t("flash.projects.updated"))
     else
       render :edit, status: :unprocessable_entity
     end
@@ -46,14 +46,14 @@ class ProjectsController < ApplicationController
 
   def destroy
     @project.destroy!
-    redirect_to root_path, notice: "Project deleted.", status: :see_other
+    redirect_to root_path, notice: t("flash.projects.deleted"), status: :see_other
   end
 
   def sync
     ProjectWorkspace.new(@project).sync!
-    redirect_back fallback_location: @project, notice: "Project synced."
+    redirect_back fallback_location: @project, notice: t("flash.projects.synced")
   rescue ProjectWorkspace::Error, SshAgent::Error => error
-    redirect_back fallback_location: @project, alert: "Sync failed: #{error.message.truncate(500)}"
+    redirect_back fallback_location: @project, alert: t("flash.projects.sync_failed", error: error.message.truncate(500))
   end
 
   private
@@ -79,6 +79,6 @@ class ProjectsController < ApplicationController
     end
 
     def sync_notice(message)
-      @project.sync_error.present? ? "#{message} The first sync failed, see the details below." : message
+      @project.sync_error.present? ? t("flash.projects.first_sync_failed", message: message) : message
     end
 end
