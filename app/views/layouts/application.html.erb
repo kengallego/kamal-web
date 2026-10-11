@@ -1,88 +1,33 @@
 <!DOCTYPE html>
-<html class="h-full" lang="<%= I18n.locale %>"<%= %( data-theme="#{current_theme}").html_safe unless current_theme == "system" %>>
+<html class="h-full" lang="<%= I18n.locale %>"<%= %( data-theme="#{current_theme}").html_safe unless current_theme == 'system' %>>
   <head>
-    <title><%= [ content_for(:title), "Kamal Web" ].compact.join(" · ") %></title>
+    <title><%= [ content_for(:title), 'Kamal Web' ].compact.join(' · ') %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="application-name" content="Kamal Web">
-    <meta name="color-scheme" content="<%= { "light" => "light", "dark" => "dark" }.fetch(current_theme, "dark light") %>">
+    <meta name="color-scheme" content="<%= { 'light' => 'light', 'dark' => 'dark' }.fetch(current_theme, 'light dark') %>">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= action_cable_meta_tag %>
     <%= yield :head %>
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag :app, 'data-turbo-track': 'reload' %>
     <%= javascript_importmap_tags %>
   </head>
-
   <body class="h-full">
     <% if authenticated? %>
-      <div class="flex min-h-full">
-        <aside class="hidden w-60 shrink-0 flex-col border-r border-line bg-canvas p-4 lg:flex">
-          <%= link_to root_path, class: "mb-6 flex items-center gap-2 px-2" do %>
-            <span class="grid size-7 place-items-center rounded-lg bg-success text-sm font-black text-zinc-950">K</span>
-            <span class="font-semibold text-foreground">Kamal Web</span>
-          <% end %>
-
-          <nav class="space-y-1">
-            <%= nav_link t("common.dashboard"), root_path %>
-          </nav>
-
-          <div class="mt-6 mb-2 flex items-center justify-between px-3">
-            <span class="text-xs font-medium uppercase tracking-wide text-muted"><%= t(".projects") %></span>
-            <%= link_to "+", new_project_path, class: "text-muted hover:text-foreground", title: t("common.new_project") %>
-          </div>
-          <nav class="space-y-1">
-            <% Project.ordered.each do |project| %>
-              <%= nav_link project.name, project_path(project), active: request.path.start_with?(project_path(project)) %>
-            <% end %>
-          </nav>
-
-          <div class="mt-auto space-y-1 border-t border-line pt-4">
-            <%= nav_link t("common.settings"), edit_settings_path %>
-            <%= button_to t(".sign_out"), session_path, method: :delete, class: "w-full rounded-lg px-3 py-1.5 text-left text-sm text-muted hover:bg-surface hover:text-foreground cursor-pointer" %>
-            <% setting = Setting.instance %>
-            <% if setting.update_available? %>
-              <%= link_to t(".update_available", version: setting.latest_version), edit_settings_path(anchor: "version"), class: "mt-2 block rounded-lg bg-success/10 px-3 py-1.5 text-xs text-success hover:bg-success/20" %>
-            <% else %>
-              <p class="px-3 pt-2 text-xs text-faint">Kamal Web <%= KamalWeb::VERSION %></p>
-            <% end %>
-            <div class="px-3 pt-2"><%= render "shared/preferences" %></div>
-          </div>
-        </aside>
-
-        <div class="min-w-0 flex-1">
-          <header class="flex items-center justify-between border-b border-line px-4 py-3 lg:hidden">
-            <%= link_to "Kamal Web", root_path, class: "font-semibold" %>
-            <details class="relative">
-              <summary class="btn btn-sm list-none"><%= t(".menu") %></summary>
-              <div class="absolute right-0 z-10 mt-2 w-56 space-y-1 rounded-xl border border-line bg-surface p-2">
-                <%= nav_link t("common.dashboard"), root_path %>
-                <% Project.ordered.each do |project| %>
-                  <%= nav_link project.name, project_path(project) %>
-                <% end %>
-                <%= nav_link t("common.settings"), edit_settings_path %>
-                <%= button_to t(".sign_out"), session_path, method: :delete, class: "w-full rounded-lg px-3 py-1.5 text-left text-sm text-muted cursor-pointer" %>
-                <div class="px-3 py-2"><%= render "shared/preferences" %></div>
-              </div>
-            </details>
-          </header>
-
-          <main class="mx-auto max-w-7xl px-4 py-6 lg:px-8">
-            <%= render "shared/flash" %>
-            <%= yield %>
-          </main>
-        </div>
-      </div>
+      <%= render Ui::ShellComponent.new(projects: Project.ordered, setting: Setting.instance) do %>
+        <%= yield %>
+      <% end %>
     <% else %>
-      <main class="grid min-h-full place-items-center px-4 py-12">
+      <main id="main-content" class="grid min-h-full place-items-center px-5 py-12">
         <div class="w-full max-w-sm">
-          <div class="mb-8 flex items-center justify-center gap-2">
-            <span class="grid size-9 place-items-center rounded-xl bg-success font-black text-zinc-950">K</span>
-            <span class="text-xl font-semibold text-foreground">Kamal Web</span>
+          <div class="mb-9 flex items-center justify-center gap-3">
+            <span class="grid size-10 place-items-center rounded-xl bg-action text-white"><%= render Ui::IconComponent.new(name: :cube, size: 25) %></span>
+            <span class="text-xl font-semibold tracking-tight text-foreground">Kamal Web</span>
           </div>
-          <%= render "shared/flash" %>
+          <%= render 'shared/flash' %>
           <%= yield %>
-          <div class="mt-6 flex justify-center"><%= render "shared/preferences" %></div>
+          <div class="mt-6 flex justify-center"><%= render 'shared/preferences' %></div>
         </div>
       </main>
     <% end %>

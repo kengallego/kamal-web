@@ -1,0 +1,33 @@
+<%= link_to project_path(@project), class: 'card group flex flex-col transition-colors hover:border-accent/40' do %>
+  <div class="flex items-start justify-between gap-3 p-5">
+    <div class="flex min-w-0 items-center gap-3">
+      <span class="grid size-10 shrink-0 place-items-center rounded-xl border border-line bg-subtle text-accent"><%= render Ui::IconComponent.new(name: :cube, size: 21) %></span>
+      <div class="min-w-0"><h3 class="truncate text-sm font-semibold text-foreground group-hover:text-accent"><%= @project.name %></h3><p class="mt-1 truncate text-xs text-muted" title="<%= @project.source_description %>"><%= @project.source_description %></p></div>
+    </div>
+    <span class="mt-1 text-faint group-hover:text-accent"><%= render Ui::IconComponent.new(name: :arrow, size: 16) %></span>
+  </div>
+  <% if @project.sync_error.present? %>
+    <div class="px-5 pb-4"><%= render Ui::BadgeComponent.new(label: t('dashboard.show.sync_error'), tone: :danger, dot: true) %></div>
+  <% elsif (operation = @project.active_operation) %>
+    <div class="px-5 pb-4"><%= render Ui::BadgeComponent.new(label: t('dashboard.show.operation_running', command: operation.command.label.downcase), tone: :info, dot: true) %></div>
+  <% end %>
+  <div class="mt-auto space-y-3 border-t border-line bg-subtle/30 px-5 py-4">
+    <% @project.destinations.each do |destination| %>
+      <% deploy = @project.last_deploy(destination) %>
+      <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+        <span class="flex items-center gap-1.5 text-body"><%= render Ui::IconComponent.new(name: :globe, size: 13) %><%= helpers.destination_label(destination) %></span>
+        <span class="flex min-w-0 flex-wrap items-center justify-end gap-2 text-muted">
+          <% if deploy %><span class="font-mono"><%= helpers.short_sha(deploy.git_revision) %></span><%= helpers.status_badge(deploy.status) %><% else %><%= t('common.never_deployed') %><% end %>
+        </span>
+      </div>
+      <% if deploy %><p class="text-right text-[11px] text-faint"><%= helpers.time_ago(deploy.created_at) %></p><% end %>
+    <% end %>
+  </div>
+  <% if @metrics.present? %>
+    <div class="grid grid-cols-3 gap-4 border-t border-line px-5 py-4">
+      <% {t('common.cpu') => @metrics.filter_map(&:cpu_percent).max, t('common.ram') => @metrics.filter_map(&:memory_percent).max, t('common.disk') => @metrics.filter_map(&:disk_percent).max}.each do |label, value| %>
+        <div><div class="mb-2 flex justify-between text-[10px] text-muted"><span><%= label %></span><span class="tabular-nums"><%= value ? "#{value.round}%" : '–' %></span></div><%= render Ui::MeterComponent.new(percent: value) %></div>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

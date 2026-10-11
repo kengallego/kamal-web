@@ -1,0 +1,24 @@
+<nav aria-label="<%= t('ui.navigation') %>" class="space-y-1">
+  <%= render Ui::NavLinkComponent.new(label: t('common.dashboard'), path: root_path, active: current_page?(root_path), icon: :grid) %>
+  <%= render Ui::NavLinkComponent.new(label: t('common.settings'), path: edit_settings_path, active: current_page?(edit_settings_path), icon: :settings) %>
+</nav>
+<div class="mt-8 mb-2 flex items-center justify-between px-3">
+  <span class="section-label"><%= t('layouts.application.projects') %></span>
+  <%= link_to new_project_path, class: 'icon-button', aria: { label: t('common.new_project') }, title: t('common.new_project') do %><%= render Ui::IconComponent.new(name: :plus, size: 15) %><% end %>
+</div>
+<nav aria-label="<%= t('layouts.application.projects') %>" class="min-h-16 flex-1 space-y-1 overflow-y-auto">
+  <% @projects.each do |project| %>
+    <%= render Ui::NavLinkComponent.new(label: project.name, path: project_path(project), active: request.path == project_path(project) || request.path.start_with?(project_path(project) + '/'), icon: :cube) %>
+  <% end %>
+  <% if @projects.empty? %><p class="px-3 py-2 text-xs text-faint"><%= t('ui.no_projects') %></p><% end %>
+</nav>
+<div class="mt-6 space-y-4 border-t border-line pt-5">
+  <div class="px-3"><%= render 'shared/preferences' %></div>
+  <%= button_to session_path, method: :delete, class: 'nav-link w-full' do %><%= render Ui::IconComponent.new(name: :logout, size: 17) %><%= t('layouts.application.sign_out') %><% end %>
+  <div class="flex items-center justify-between gap-2 px-3 pb-1 text-[11px] text-faint">
+    <span>Kamal Web <%= KamalWeb::VERSION %></span>
+    <% if @setting.update_available? %>
+      <%= link_to edit_settings_path(anchor: 'version'), class: 'text-accent', title: t('layouts.application.update_available', version: @setting.latest_version) do %><%= render Ui::IconComponent.new(name: :arrow, size: 14) %><% end %>
+    <% end %>
+  </div>
+</div>
