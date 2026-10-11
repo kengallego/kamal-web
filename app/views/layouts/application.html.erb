@@ -24,10 +24,10 @@
           <div class="mb-9 flex items-center justify-center gap-3">
             <span class="grid size-10 place-items-center rounded-xl bg-action text-white"><%= render Ui::IconComponent.new(name: :cube, size: 25) %></span>
             <span class="text-xl font-semibold tracking-tight text-foreground">Kamal Web</span>
+            <%= render Ui::ThemeSwitcherComponent.new %>
           </div>
           <%= render 'shared/flash' %>
           <%= yield %>
-          <div class="mt-6 flex justify-center"><%= render 'shared/preferences' %></div>
         </div>
       </main>
     <% end %>

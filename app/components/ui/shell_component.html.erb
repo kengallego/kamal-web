@@ -6,6 +6,7 @@
         <span class="grid size-8 place-items-center rounded-[10px] bg-action text-white"><%= render Ui::IconComponent.new(name: :cube, size: 21) %></span>
         <span class="whitespace-nowrap text-[15px] font-semibold tracking-tight">Kamal Web</span>
       <% end %>
+      <%= render Ui::ThemeSwitcherComponent.new %>
     </div>
     <%= render Ui::NavigationComponent.new(projects: @projects, setting: @setting) %>
   </aside>
@@ -13,6 +14,7 @@
     <header class="sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b border-line bg-surface px-5 sm:px-8 lg:px-10">
       <div class="flex min-w-0 items-center gap-3 text-xs">
         <%= link_to root_path, class: 'flex items-center gap-2 font-semibold text-foreground lg:hidden', aria: { label: 'Kamal Web' } do %><span class="text-accent"><%= render Ui::IconComponent.new(name: :cube, size: 21) %></span><span class="hidden sm:inline">Kamal Web</span><% end %>
+        <div class="lg:hidden"><%= render Ui::ThemeSwitcherComponent.new(align: :start) %></div>
         <span class="hidden text-muted lg:inline"><%= t('ui.workspace') %></span>
         <span class="text-strong-line"><%= render Ui::IconComponent.new(name: :chevron, size: 13) %></span>
         <span class="truncate font-medium text-foreground"><%= helpers.content_for(:title).presence || t('common.dashboard') %></span>

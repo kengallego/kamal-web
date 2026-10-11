@@ -1,0 +1,7 @@
+<div class="inline-flex gap-1 rounded-lg border border-line p-1" role="group" aria-label="<%= t('shared.preferences.language') %>">
+  <% I18n.available_locales.each do |locale| %>
+    <%= button_to LABELS.fetch(locale), preferences_path, method: :patch, params: { locale: locale },
+      class: ['rounded-md px-3 py-1.5 text-sm font-medium', I18n.locale == locale ? 'bg-accent-soft text-accent' : 'text-muted hover:bg-subtle hover:text-foreground'],
+      form: { data: { turbo: false } }, 'aria-pressed': I18n.locale == locale, lang: locale %>
+  <% end %>
+</div>

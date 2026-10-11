@@ -2,6 +2,9 @@
 <%= render Ui::PageHeaderComponent.new(title: t("common.settings")) %>
 
 <div class="max-w-3xl space-y-6">
+  <%= render Ui::PanelComponent.new(title: t('shared.preferences.language')) do %>
+    <div class="card-body"><%= render Ui::LanguageSwitcherComponent.new %></div>
+  <% end %>
   <%= render Ui::PanelComponent.new do %>
     <div class="card-header">
       <div>
