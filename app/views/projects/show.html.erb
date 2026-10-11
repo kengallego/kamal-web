@@ -4,9 +4,9 @@
 <div class="grid gap-6 lg:grid-cols-3">
   <div class="min-w-0 space-y-6 lg:col-span-2">
     <% unless @project.discovered? %>
-      <div class="card">
+      <%= render Ui::PanelComponent.new do %>
         <div class="card-header">
-          <h2 class="card-title"><%= t(".deploy_to_html", destination: tag.span(destination_label(@destination), class: "font-normal text-zinc-500")) %></h2>
+          <h2 class="card-title"><%= t(".deploy_to_html", destination: tag.span(destination_label(@destination), class: "font-normal text-muted")) %></h2>
         </div>
         <div class="card-body flex flex-wrap items-end gap-3">
           <%= button_to t(".deploy"), project_command_runs_path(@project), params: { kind: "deploy", destination: @destination },
@@ -14,108 +14,108 @@
           <%= button_to t(".redeploy"), project_command_runs_path(@project), params: { kind: "redeploy", destination: @destination },
             class: "btn", form: { data: { turbo_confirm: t(".confirm_redeploy", project: @project.name, destination: destination_label(@destination)) } } %>
         </div>
-      </div>
+      <% end %>
     <% end %>
 
-    <div class="card">
+    <%= render Ui::PanelComponent.new do %>
       <div class="card-header">
         <h2 class="card-title"><%= t(".versions") %></h2>
-        <span class="text-xs text-zinc-500"><%= t(".versions_hint") %></span>
+        <span class="text-xs text-muted"><%= t(".versions_hint") %></span>
       </div>
       <%= turbo_frame_tag "releases", src: project_releases_path(@project, destination: @destination), loading: :lazy do %>
-        <p class="px-4 py-4 text-sm text-zinc-500"><%= t("common.loading") %></p>
+        <p class="px-4 py-4 text-sm text-muted"><%= t("common.loading") %></p>
       <% end %>
-    </div>
+    <% end %>
 
-    <div class="card">
+    <%= render Ui::PanelComponent.new do %>
       <div class="card-header">
         <h2 class="card-title"><%= t("common.recent_activity") %></h2>
-        <%= link_to t(".all_activity"), project_command_runs_path(@project), class: "text-xs text-zinc-400 hover:text-zinc-100" %>
+        <%= link_to t(".all_activity"), project_command_runs_path(@project), class: "text-xs text-muted hover:text-foreground" %>
       </div>
       <%= render "command_runs/table", runs: @recent_runs %>
-    </div>
+    <% end %>
   </div>
 
   <div class="min-w-0 space-y-6">
-    <div class="card">
+    <%= render Ui::PanelComponent.new do %>
       <div class="card-header"><h2 class="card-title"><%= t(".checks") %></h2></div>
-      <ul class="divide-y divide-zinc-800">
+      <ul class="divide-y divide-line">
         <% @checks.each do |check| %>
           <li class="flex gap-3 px-4 py-2.5 text-sm">
-            <span class="mt-0.5 w-4 shrink-0 text-center font-semibold <%= check.ok? ? "text-emerald-400" : check.failed? ? "text-red-400" : "text-zinc-500" %>"><%= check.ok? ? "✓" : check.failed? ? "✗" : "–" %></span>
+            <span class="mt-0.5 w-4 shrink-0 text-center font-semibold <%= check.ok? ? "text-success" : check.failed? ? "text-danger" : "text-muted" %>"><%= check.ok? ? "✓" : check.failed? ? "✗" : "–" %></span>
             <div class="min-w-0">
-              <p class="text-zinc-200"><%= check.label %></p>
-              <p class="break-words text-xs <%= check.failed? ? "text-red-300/80" : "text-zinc-500" %>"><%= check.detail %></p>
+              <p class="text-body"><%= check.label %></p>
+              <p class="break-words text-xs <%= check.failed? ? "text-danger/80" : "text-muted" %>"><%= check.detail %></p>
             </div>
           </li>
         <% end %>
       </ul>
-    </div>
+    <% end %>
 
     <% if @config.present? %>
-      <div class="card">
+      <%= render Ui::PanelComponent.new do %>
         <div class="card-header"><h2 class="card-title"><%= t(".servers") %></h2></div>
-        <div class="divide-y divide-zinc-800">
+        <div class="divide-y divide-line">
           <% @config.roles.each do |role, hosts| %>
             <div class="px-4 py-3">
               <p class="label"><%= role %></p>
               <% hosts.each do |host| %>
                 <% metric = @latest_metrics[host] %>
                 <div class="flex items-center justify-between py-1 text-sm">
-                  <span class="font-mono text-zinc-200" data-controller="clipboard" data-clipboard-copied-value="<%= t("common.copied") %>" data-clipboard-text-value="<%= host %>" data-action="click->clipboard#copy" title="<%= t(".click_to_copy") %>"><%= host %></span>
+                  <span class="font-mono text-body" data-controller="clipboard" data-clipboard-copied-value="<%= t("common.copied") %>" data-clipboard-text-value="<%= host %>" data-action="click->clipboard#copy" title="<%= t(".click_to_copy") %>"><%= host %></span>
                   <% if metric&.error %>
                     <span class="badge badge-danger" title="<%= metric.error %>"><%= t("common.unreachable") %></span>
                   <% elsif metric %>
-                    <span class="text-xs text-zinc-500"><%= t("common.cpu") %> <%= metric.cpu_percent&.round || "–" %>% · <%= t("common.ram") %> <%= metric.memory_percent&.round || "–" %>%</span>
+                    <span class="text-xs text-muted"><%= t("common.cpu") %> <%= metric.cpu_percent&.round || "–" %>% · <%= t("common.ram") %> <%= metric.memory_percent&.round || "–" %>%</span>
                   <% end %>
                 </div>
               <% end %>
             </div>
           <% end %>
         </div>
-      </div>
+      <% end %>
 
       <% if @config.accessories.any? %>
-        <div class="card">
+        <%= render Ui::PanelComponent.new do %>
           <div class="card-header"><h2 class="card-title"><%= t(".accessories") %></h2></div>
-          <div class="divide-y divide-zinc-800">
+          <div class="divide-y divide-line">
             <% @config.accessories.each do |name, hosts| %>
               <div class="flex items-center justify-between px-4 py-2 text-sm">
-                <span class="text-zinc-200"><%= name %></span>
-                <span class="font-mono text-xs text-zinc-500"><%= hosts.join(", ") %></span>
+                <span class="text-body"><%= name %></span>
+                <span class="font-mono text-xs text-muted"><%= hosts.join(", ") %></span>
               </div>
             <% end %>
           </div>
-        </div>
+        <% end %>
       <% end %>
 
-      <div class="card">
+      <%= render Ui::PanelComponent.new do %>
         <div class="card-header"><h2 class="card-title"><%= t(".service") %></h2></div>
         <dl class="card-body space-y-2 text-sm">
-          <div class="flex justify-between gap-4"><dt class="text-zinc-500"><%= t(".service") %></dt><dd class="text-zinc-200"><%= @config.service %></dd></div>
-          <div class="flex justify-between gap-4"><dt class="text-zinc-500"><%= t(".image") %></dt><dd class="truncate text-zinc-200"><%= @config.image %></dd></div>
-          <div class="flex justify-between gap-4"><dt class="text-zinc-500">SSH</dt><dd class="text-zinc-200"><%= @config.ssh_user %>:<%= @config.ssh_port %></dd></div>
+          <div class="flex justify-between gap-4"><dt class="text-muted"><%= t(".service") %></dt><dd class="text-body"><%= @config.service %></dd></div>
+          <div class="flex justify-between gap-4"><dt class="text-muted"><%= t(".image") %></dt><dd class="truncate text-body"><%= @config.image %></dd></div>
+          <div class="flex justify-between gap-4"><dt class="text-muted">SSH</dt><dd class="text-body"><%= @config.ssh_user %>:<%= @config.ssh_port %></dd></div>
           <% if @config.proxy_hosts.any? %>
             <div class="flex justify-between gap-4">
-              <dt class="text-zinc-500"><%= t(".domains") %></dt>
+              <dt class="text-muted"><%= t(".domains") %></dt>
               <dd class="space-y-1 text-right">
                 <% @config.proxy_hosts.each do |host| %>
-                  <%= link_to host, "https://#{host}", target: "_blank", rel: "noopener", class: "block text-emerald-300 hover:underline" %>
+                  <%= link_to host, "https://#{host}", target: "_blank", rel: "noopener", class: "block text-accent hover:underline" %>
                 <% end %>
               </dd>
             </div>
           <% end %>
         </dl>
-      </div>
+      <% end %>
     <% else %>
-      <div class="card card-body text-sm text-zinc-400">
-        <p class="font-medium text-zinc-200"><%= t(".config_not_loaded") %></p>
+      <%= render Ui::PanelComponent.new(class: 'card-body text-sm text-muted') do %>
+        <p class="font-medium text-body"><%= t(".config_not_loaded") %></p>
         <% if (error = @project.config_for(@destination).error) %>
-          <pre class="mt-2 whitespace-pre-wrap font-mono text-xs text-red-300"><%= error %></pre>
+          <pre class="mt-2 whitespace-pre-wrap font-mono text-xs text-danger"><%= error %></pre>
         <% else %>
           <p class="mt-1"><%= t(".press_sync_html", file: tag.code(@project.config_file)) %></p>
         <% end %>
-      </div>
+      <% end %>
     <% end %>
   </div>
 </div>

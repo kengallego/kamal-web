@@ -2,7 +2,7 @@
 <%= render "projects/header", project: @project %>
 
 <div class="max-w-4xl space-y-6">
-  <div class="card">
+  <%= render Ui::PanelComponent.new do %>
     <div class="card-header">
       <h2 class="card-title"><%= t("common.project") %></h2>
       <%= link_to t("common.edit"), edit_project_path(@project), class: "btn btn-sm" %>
@@ -13,27 +13,27 @@
       <div><dt class="label"><%= t(".ssh_key") %></dt><dd><%= @project.ssh_private_key.present? ? t(".stored") : t(".not_set") %></dd></div>
       <div><dt class="label"><%= t(".notifications") %></dt><dd><%= @project.notification_webhook_url.present? ? t("projects.form.formats.#{@project.notification_format}", default: @project.notification_format.capitalize) : t(".off") %></dd></div>
     </dl>
-  </div>
+  <% end %>
 
-  <div class="card">
+  <%= render Ui::PanelComponent.new do %>
     <div class="card-header">
       <div>
         <h2 class="card-title"><%= t(".variables") %></h2>
-        <p class="text-xs text-zinc-500"><%= t(".variables_hint_html") %></p>
+        <p class="text-xs text-muted"><%= t(".variables_hint_html") %></p>
       </div>
       <%= link_to t(".add_variable"), new_project_environment_variable_path(@project), class: "btn btn-sm" %>
     </div>
     <% if @project.environment_variables.empty? %>
-      <p class="px-4 py-6 text-center text-sm text-zinc-500"><%= t(".no_variables") %></p>
+      <p class="px-4 py-6 text-center text-sm text-muted"><%= t(".no_variables") %></p>
     <% else %>
       <div class="overflow-x-auto"><table class="table">
         <thead><tr><th><%= t(".name") %></th><th><%= t("common.destination") %></th><th><%= t(".value") %></th><th></th></tr></thead>
         <tbody>
           <% @project.environment_variables.each do |variable| %>
             <tr>
-              <td class="font-mono text-xs text-zinc-100"><%= variable.key %></td>
-              <td class="text-zinc-400"><%= variable.destination || t(".all") %></td>
-              <td class="text-zinc-500">••••••••</td>
+              <td class="font-mono text-xs text-foreground"><%= variable.key %></td>
+              <td class="text-muted"><%= variable.destination || t(".all") %></td>
+              <td class="text-muted">••••••••</td>
               <td class="text-right">
                 <div class="flex justify-end gap-2">
                   <%= link_to t("common.edit"), edit_project_environment_variable_path(@project, variable), class: "btn btn-sm" %>
@@ -45,13 +45,13 @@
         </tbody>
       </table></div>
     <% end %>
-  </div>
+  <% end %>
 
-  <div class="card">
+  <%= render Ui::PanelComponent.new do %>
     <div class="card-header">
       <div>
         <h2 class="card-title"><%= t(".files") %></h2>
-        <p class="text-xs text-zinc-500"><%= t(".files_hint_html") %></p>
+        <p class="text-xs text-muted"><%= t(".files_hint_html") %></p>
       </div>
       <div class="flex gap-2">
         <% unless @project.project_files.any? { |file| file.path == "config/master.key" } %>
@@ -61,15 +61,15 @@
       </div>
     </div>
     <% if @project.project_files.empty? %>
-      <p class="px-4 py-6 text-center text-sm text-zinc-500"><%= t(".no_files") %></p>
+      <p class="px-4 py-6 text-center text-sm text-muted"><%= t(".no_files") %></p>
     <% else %>
       <div class="overflow-x-auto"><table class="table">
         <thead><tr><th><%= t(".path") %></th><th><%= t(".updated") %></th><th></th></tr></thead>
         <tbody>
           <% @project.project_files.each do |file| %>
             <tr>
-              <td class="font-mono text-xs text-zinc-100"><%= file.path %></td>
-              <td class="text-zinc-500"><%= time_ago(file.updated_at) %></td>
+              <td class="font-mono text-xs text-foreground"><%= file.path %></td>
+              <td class="text-muted"><%= time_ago(file.updated_at) %></td>
               <td>
                 <div class="flex justify-end gap-2">
                   <%= link_to t(".replace"), edit_project_project_file_path(@project, file), class: "btn btn-sm" %>
@@ -81,13 +81,13 @@
         </tbody>
       </table></div>
     <% end %>
-  </div>
+  <% end %>
 
-  <div class="card">
+  <%= render Ui::PanelComponent.new do %>
     <div class="card-header">
       <div>
         <h2 class="card-title"><%= t(".webhook") %></h2>
-        <p class="text-xs text-zinc-500"><%= t(".webhook_hint_html", branch: tag.code(@project.branch)) %></p>
+        <p class="text-xs text-muted"><%= t(".webhook_hint_html", branch: tag.code(@project.branch)) %></p>
       </div>
       <%= button_to t(".regenerate"), project_webhook_token_path(@project), class: "btn btn-sm", form: { data: { turbo_confirm: t(".confirm_regenerate") } } %>
     </div>
@@ -99,13 +99,13 @@
       </div>
       <p class="hint"><%= t(".webhook_example_html", example: tag.code(%(curl -X POST "#{hook_url}?destination=#{@project.destinations.compact.first || "production"}"), class: "break-all")) %></p>
     </div>
-  </div>
+  <% end %>
 
-  <div class="card border-red-500/30">
-    <div class="card-header"><h2 class="card-title text-red-300"><%= t(".danger_zone") %></h2></div>
+  <%= render Ui::PanelComponent.new(class: 'border-danger/30') do %>
+    <div class="card-header"><h2 class="card-title text-danger"><%= t(".danger_zone") %></h2></div>
     <div class="card-body flex items-center justify-between gap-4">
-      <p class="text-sm text-zinc-400"><%= t(".delete_hint") %></p>
+      <p class="text-sm text-muted"><%= t(".delete_hint") %></p>
       <%= button_to t(".delete_project"), project_path(@project), method: :delete, class: "btn btn-danger", form: { data: { turbo_confirm: t(".confirm_delete_project", project: @project.name) } } %>
     </div>
-  </div>
+  <% end %>
 </div>

@@ -1,22 +1,22 @@
 <%= turbo_frame_tag "releases" do %>
   <% if @error %>
-    <p class="px-4 py-4 text-sm text-red-300"><%= @error %></p>
+    <p class="px-4 py-4 text-sm text-danger"><%= @error %></p>
   <% elsif @releases.empty? %>
-    <p class="px-4 py-4 text-sm text-zinc-500"><%= t(".empty") %></p>
+    <p class="px-4 py-4 text-sm text-muted"><%= t(".empty") %></p>
   <% else %>
     <% can_roll_back = @project.allows_command?(CommandCatalog.find("rollback")) %>
-    <ul class="divide-y divide-zinc-800">
+    <ul class="divide-y divide-line">
       <% @releases.each do |release| %>
         <li class="flex items-center justify-between gap-3 px-4 py-2 text-sm">
           <div class="min-w-0">
-            <span class="font-mono text-zinc-200" title="<%= release.version %>"><%= release.version.match?(/\A\h{40}\z/) ? short_sha(release.version) : release.version.truncate(24) %></span>
+            <span class="font-mono text-body" title="<%= release.version %>"><%= release.version.match?(/\A\h{40}\z/) ? short_sha(release.version) : release.version.truncate(24) %></span>
             <% if release.current %>
               <span class="badge badge-success ml-1"><%= t(".live") %></span>
             <% elsif release.running? %>
               <span class="badge badge-warning ml-1"><%= t("statuses.running") %></span>
             <% end %>
             <% if release.created_at %>
-              <span class="ml-1 text-xs text-zinc-500"><%= t(".deployed", time: time_ago(release.created_at)) %></span>
+              <span class="ml-1 text-xs text-muted"><%= t(".deployed", time: time_ago(release.created_at)) %></span>
             <% end %>
           </div>
           <% if !release.current && can_roll_back %>
@@ -27,7 +27,7 @@
       <% end %>
     </ul>
     <% if !can_roll_back && @releases.size > 1 %>
-      <p class="border-t border-zinc-800 px-4 py-3 text-xs text-zinc-500"><%= t(".needs_repository") %></p>
+      <p class="border-t border-line px-4 py-3 text-xs text-muted"><%= t(".needs_repository") %></p>
     <% end %>
   <% end %>
 <% end %>

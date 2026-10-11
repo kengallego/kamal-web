@@ -154,7 +154,7 @@ bundle exec rspec
 
 In development the password is `kamal-web-development` unless `KAMAL_WEB_PASSWORD` is set.
 
-Built with Rails 8, Hotwire, Tailwind, SQLite and Solid Queue/Cable/Cache. Kamal runs as a subprocess, using the version pinned in this app's `Gemfile.lock`.
+Built with Rails 8, Hotwire, Tailwind, ViewComponent, SQLite and Solid Queue/Cable/Cache. Kamal runs as a subprocess, using the version pinned in this app's `Gemfile.lock`.
 
 ## License
 

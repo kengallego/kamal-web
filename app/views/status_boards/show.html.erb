@@ -1,14 +1,14 @@
 <%= turbo_stream_from StatusBoardsController::STREAM %>
 <div class="mb-6 flex items-center justify-between">
-  <h1 class="text-2xl font-semibold text-zinc-100"><%= t(".title") %></h1>
-  <span class="flex items-center gap-2 text-sm text-zinc-500"><span class="size-2 animate-pulse rounded-full bg-emerald-400"></span><%= t(".live", time: l(Time.current, format: "%H:%M:%S")) %></span>
+  <h1 class="text-2xl font-semibold text-foreground"><%= t(".title") %></h1>
+  <span class="flex items-center gap-2 text-sm text-muted"><span class="size-2 animate-pulse rounded-full bg-success"></span><%= t(".live", time: l(Time.current, format: "%H:%M:%S")) %></span>
 </div>
 
 <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
   <% @projects.each do |project| %>
-    <div class="card p-5">
+    <%= render Ui::PanelComponent.new(class: 'p-5') do %>
       <div class="flex items-center justify-between">
-        <h2 class="text-lg font-semibold text-zinc-100"><%= project.name %></h2>
+        <h2 class="text-lg font-semibold text-foreground"><%= project.name %></h2>
         <% if (operation = project.active_operation) %>
           <span class="badge badge-info"><%= t("dashboard.show.operation_running", command: operation.command.label.downcase) %></span>
         <% end %>
@@ -17,23 +17,23 @@
         <% project.destinations.each do |destination| %>
           <% deploy = project.last_deploy(destination) %>
           <div class="flex items-center justify-between">
-            <span class="text-zinc-300"><%= destination_label(destination) %></span>
-            <span class="flex items-center gap-2 text-sm text-zinc-500">
+            <span class="text-body"><%= destination_label(destination) %></span>
+            <span class="flex items-center gap-2 text-sm text-muted">
               <% if deploy %><%= time_ago(deploy.created_at) %> <%= status_badge(deploy.status) %><% else %>–<% end %>
             </span>
           </div>
         <% end %>
       </div>
       <% (@latest_metrics[project.id] || []).each do |metric| %>
-        <div class="mt-3 flex items-center justify-between border-t border-zinc-800 pt-3 text-sm">
-          <span class="font-mono text-zinc-400"><%= metric.host %></span>
+        <div class="mt-3 flex items-center justify-between border-t border-line pt-3 text-sm">
+          <span class="font-mono text-muted"><%= metric.host %></span>
           <% if metric.error %>
             <span class="badge badge-danger"><%= t("common.unreachable") %></span>
           <% else %>
-            <span class="text-zinc-500"><%= t("common.cpu") %> <%= metric.cpu_percent&.round %>% · <%= t("common.ram") %> <%= metric.memory_percent&.round %>% · <%= t("common.disk") %> <%= metric.disk_percent&.round %>%</span>
+            <span class="text-muted"><%= t("common.cpu") %> <%= metric.cpu_percent&.round %>% · <%= t("common.ram") %> <%= metric.memory_percent&.round %>% · <%= t("common.disk") %> <%= metric.disk_percent&.round %>%</span>
           <% end %>
         </div>
       <% end %>
-    </div>
+    <% end %>
   <% end %>
 </div>

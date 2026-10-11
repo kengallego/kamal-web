@@ -6,12 +6,12 @@
   <% @project.destinations.each do |destination| %>
     <%= link_to destination_label(destination), project_command_runs_path(@project, destination: destination.to_s), class: [ "btn btn-sm", ("btn-primary" if params.key?(:destination) && params[:destination].presence == destination) ] %>
   <% end %>
-  <span class="mx-2 border-l border-zinc-800"></span>
+  <span class="mx-2 border-l border-line"></span>
   <% %w[ deploy redeploy rollback ].each do |kind| %>
     <%= link_to CommandCatalog.find(kind).label, project_command_runs_path(@project, kind: kind), class: [ "btn btn-sm", ("btn-primary" if params[:kind] == kind) ] %>
   <% end %>
 </div>
 
-<div class="card">
+<%= render Ui::PanelComponent.new do %>
   <%= render "command_runs/table", runs: @runs %>
-</div>
+<% end %>

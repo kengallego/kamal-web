@@ -14,7 +14,7 @@ export default class extends Controller {
       fontFamily: '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace',
       fontSize: 13,
       scrollback: 5000,
-      theme: { background: "#000000", foreground: "#d4d4d8", cursor: "#34d399" }
+      theme: { background: "#111722", foreground: "#e2e8f0", cursor: "#b49af4" }
     })
     this.fitAddon = new FitAddon()
     this.terminal.loadAddon(this.fitAddon)

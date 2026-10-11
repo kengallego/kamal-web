@@ -1,10 +1,10 @@
 <% content_for :title, t("common.new_project") %>
-<h1 class="mb-6 text-xl font-semibold text-zinc-100"><%= t("common.new_project") %></h1>
+<%= render Ui::PageHeaderComponent.new(title: t("common.new_project")) %>
 <div class="max-w-3xl">
-  <div class="mb-6 rounded-lg border border-sky-500/30 bg-sky-500/10 p-4 text-sm text-sky-200">
+  <div class="mb-6 rounded-lg border border-info/30 bg-info/10 p-4 text-sm text-info">
     <p class="font-medium"><%= t(".terminal_title") %></p>
-    <div class="mt-1 text-sky-200/80">
-      <%= t(".terminal_html", scan: button_to(t("common.scan_this_server"), discovery_path, class: "inline cursor-pointer underline hover:text-sky-100", form_class: "inline")) %>
+    <div class="mt-1 text-info/80">
+      <%= t(".terminal_html", scan: button_to(t("common.scan_this_server"), discovery_path, class: "inline cursor-pointer underline hover:text-info", form_class: "inline")) %>
     </div>
   </div>
   <%= render "form", project: @project %>

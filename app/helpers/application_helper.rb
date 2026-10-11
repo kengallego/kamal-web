@@ -5,7 +5,7 @@ module ApplicationHelper
   }.freeze
 
   def status_badge(status)
-    tag.span t("statuses.#{status}", default: status.to_s), class: "badge #{STATUS_BADGES.fetch(status.to_s, "badge-neutral")}"
+    render Ui::BadgeComponent.new(label: t("statuses.#{status}", default: status.to_s), tone: STATUS_BADGES.fetch(status.to_s, "badge-neutral").delete_prefix("badge-"), dot: true)
   end
 
   def destination_label(destination)
@@ -13,9 +13,7 @@ module ApplicationHelper
   end
 
   def meter(percent)
-    percent = percent.to_f.clamp(0, 100)
-    color = percent >= 90 ? "bg-red-400" : percent >= 70 ? "bg-amber-400" : "bg-emerald-400"
-    tag.div(class: "meter") { tag.span(class: color, style: "width: #{percent}%") }
+    render Ui::MeterComponent.new(percent: percent)
   end
 
   def time_ago(time)
@@ -34,14 +32,13 @@ module ApplicationHelper
   end
 
   def nav_link(label, path, active: current_page?(path))
-    link_to label, path, class: [ "flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm",
-      active ? "bg-zinc-800 text-zinc-100" : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100" ]
+    render Ui::NavLinkComponent.new(label: label, path: path, active: active)
   end
 
   def form_errors(record)
     return if record.errors.none?
 
-    tag.div(class: "mb-4 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300") do
+    tag.div(class: "mb-4 rounded-lg border border-danger/30 bg-danger/10 p-3 text-sm text-danger") do
       tag.ul(class: "list-inside list-disc") { safe_join(record.errors.full_messages.map { |message| tag.li(message) }) }
     end
   end

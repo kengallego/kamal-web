@@ -5,10 +5,10 @@
 <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
   <div>
     <div class="flex items-center gap-3">
-      <h2 class="text-lg font-semibold text-zinc-100"><%= @run.command.label %></h2>
+      <h2 class="text-lg font-semibold text-foreground"><%= @run.command.label %></h2>
       <%= render "command_runs/status", run: @run %>
     </div>
-    <p class="mt-1 text-sm text-zinc-500">
+    <p class="mt-1 text-sm text-muted">
       <%= destination_label(@run.destination) %> · <%= t(".from", source: @run.triggered_by) %> · <%= l(@run.created_at, format: :long) %>
       <% if @run.git_revision %> · <span class="font-mono"><%= short_sha(@run.git_revision) %></span><% end %>
       <% if @run.exit_code %> · <%= t(".exit_code", code: @run.exit_code) %><% end %>
@@ -30,18 +30,18 @@
   <div class="min-w-0 lg:col-span-3">
     <pre id="run_output_<%= @run.id %>" class="terminal" data-controller="autoscroll"><%= @run.output %></pre>
     <% if @run.output.bytesize >= CommandRun::OUTPUT_LIMIT %>
-      <p class="mt-2 text-xs text-amber-300">
+      <p class="mt-2 text-xs text-warning">
         <%= t(".truncated", size: number_to_human_size(CommandRun::OUTPUT_LIMIT)) %><%= t(".still_streaming") if @run.follow? %>
       </p>
     <% end %>
   </div>
 
   <% if @run.mutating? %>
-    <div class="card self-start">
+    <%= render Ui::PanelComponent.new(class: 'self-start') do %>
       <div class="card-header"><h2 class="card-title"><%= t(".containers") %></h2></div>
       <%= turbo_frame_tag "containers", src: project_containers_path(@project, destination: @run.destination, run_id: @run.id), data: { controller: "poll-frame" } do %>
-        <p class="px-4 py-4 text-sm text-zinc-500"><%= t("common.loading") %></p>
+        <p class="px-4 py-4 text-sm text-muted"><%= t("common.loading") %></p>
       <% end %>
-    </div>
+    <% end %>
   <% end %>
 </div>

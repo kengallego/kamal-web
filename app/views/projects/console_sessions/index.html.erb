@@ -2,7 +2,7 @@
 <%= render "projects/header", project: @project, destination: @destination %>
 
 <div class="grid gap-6 lg:grid-cols-3">
-  <div class="card min-w-0 lg:col-span-1">
+  <%= render Ui::PanelComponent.new(class: 'min-w-0 lg:col-span-1') do %>
     <div class="card-header"><h2 class="card-title"><%= t(".open_title") %></h2></div>
     <%= form_with url: project_console_sessions_path(@project), class: "card-body space-y-4" do |form| %>
         <%= hidden_field_tag :destination, @destination, id: nil %>
@@ -15,13 +15,13 @@
           <%= select_tag :host, options_for_select(@config.all_hosts), include_blank: @config.primary_host ? t(".primary_host_named", host: @config.primary_host) : t(".primary_host"), class: "input", id: "console_host" %>
         </div>
         <p class="hint">
-          <%= t(".hint_html", command: tag.span("kamal app exec --interactive --reuse", class: "font-mono"), destination: tag.span(destination_label(@destination), class: "text-zinc-300"), idle: distance_of_time_in_words(ConsoleProcess::IDLE_TIMEOUT)) %>
+          <%= t(".hint_html", command: tag.span("kamal app exec --interactive --reuse", class: "font-mono"), destination: tag.span(destination_label(@destination), class: "text-body"), idle: distance_of_time_in_words(ConsoleProcess::IDLE_TIMEOUT)) %>
         </p>
         <%= form.submit t(".open"), class: "btn btn-primary" %>
     <% end %>
-  </div>
+  <% end %>
 
-  <div class="card min-w-0 lg:col-span-2">
+  <%= render Ui::PanelComponent.new(class: 'min-w-0 lg:col-span-2') do %>
     <div class="card-header"><h2 class="card-title"><%= t(".recent") %></h2></div>
     <% if @sessions.any? %>
       <div class="overflow-x-auto">
@@ -30,21 +30,21 @@
           <tbody>
             <% @sessions.each do |session| %>
               <tr>
-                <td class="text-zinc-200">
+                <td class="text-body">
                   <%= session.label %>
                   <% if session.active? %><span class="badge badge-success ml-1"><%= t(".open_badge") %></span><% end %>
                 </td>
-                <td class="text-zinc-400"><%= destination_label(session.destination) %></td>
-                <td class="font-mono text-xs text-zinc-400"><%= session.host || t(".primary") %></td>
-                <td class="text-zinc-500"><%= time_ago(session.created_at) %></td>
-                <td class="text-zinc-500"><%= session.duration ? distance_of_time_in_words(session.duration) : t(".never_opened") %></td>
+                <td class="text-muted"><%= destination_label(session.destination) %></td>
+                <td class="font-mono text-xs text-muted"><%= session.host || t(".primary") %></td>
+                <td class="text-muted"><%= time_ago(session.created_at) %></td>
+                <td class="text-muted"><%= session.duration ? distance_of_time_in_words(session.duration) : t(".never_opened") %></td>
               </tr>
             <% end %>
           </tbody>
         </table>
       </div>
     <% else %>
-      <p class="card-body text-sm text-zinc-500"><%= t(".empty") %></p>
+      <p class="card-body text-sm text-muted"><%= t(".empty") %></p>
     <% end %>
-  </div>
+  <% end %>
 </div>

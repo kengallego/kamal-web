@@ -2,7 +2,7 @@
 <%= render "projects/header", project: @project %>
 
 <div class="mb-4 flex items-center justify-between gap-4">
-  <p class="text-sm text-zinc-500">
+  <p class="text-sm text-muted">
     <% if @project.monitoring_enabled? %>
       <%= t(".sampled") %>
     <% else %>
@@ -13,23 +13,23 @@
 </div>
 
 <% if @hosts.empty? %>
-  <div class="card card-body text-center text-sm text-zinc-500"><%= t(".no_hosts") %></div>
+  <%= render Ui::PanelComponent.new(class: 'card-body text-center text-sm text-muted') do %><%= t(".no_hosts") %><% end %>
 <% end %>
 
 <div class="space-y-6">
   <% @hosts.each do |host| %>
     <% samples = @history[host] || [] %>
     <% latest = samples.last %>
-    <div class="card">
+    <%= render Ui::PanelComponent.new do %>
       <div class="card-header">
         <h2 class="card-title font-mono"><%= host %></h2>
-        <span class="text-xs text-zinc-500">
+        <span class="text-xs text-muted">
           <% if latest %><%= t(".updated", time: time_ago(latest.collected_at)) %><% else %><%= t(".no_samples") %><% end %>
         </span>
       </div>
 
       <% if latest&.error %>
-        <div class="card-body text-sm text-red-300"><%= latest.error %></div>
+        <div class="card-body text-sm text-danger"><%= latest.error %></div>
       <% elsif latest %>
         <div class="card-body grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <% [
@@ -38,17 +38,17 @@
             [ t(".memory"), latest.memory_percent, "#{number_to_human_size(latest.memory_used)} / #{number_to_human_size(latest.memory_total)}", samples.map(&:memory_percent) ],
             [ t("common.disk"), latest.disk_percent, "#{number_to_human_size(latest.disk_used)} / #{number_to_human_size(latest.disk_total)}", samples.map(&:disk_percent) ]
           ].each do |label, percent, detail, history| %>
-            <div class="rounded-lg border border-zinc-800 p-3">
+            <div class="rounded-lg border border-line p-3">
               <div class="flex items-baseline justify-between">
                 <span class="label mb-0"><%= label %></span>
-                <span class="text-lg font-semibold text-zinc-100"><%= percent ? "#{percent.round}%" : "–" %></span>
+                <span class="text-lg font-semibold text-foreground"><%= percent ? "#{percent.round}%" : "–" %></span>
               </div>
-              <p class="mb-2 text-xs text-zinc-500"><%= detail %></p>
+              <p class="mb-2 text-xs text-muted"><%= detail %></p>
               <%= meter(percent) %>
               <div class="mt-3 flex h-10 items-end gap-px" title="<%= t(".last_24h") %>">
                 <% history.last(60).each do |value| %>
                   <% value = value.to_f.clamp(0, 100) %>
-                  <span class="flex-1 rounded-sm <%= value >= 90 ? "bg-red-400/70" : value >= 70 ? "bg-amber-400/70" : "bg-emerald-400/50" %>" style="height: <%= [ value, 3 ].max %>%"></span>
+                  <span class="flex-1 rounded-sm <%= value >= 90 ? "bg-danger/70" : value >= 70 ? "bg-warning/70" : "bg-success/50" %>" style="height: <%= [ value, 3 ].max %>%"></span>
                 <% end %>
               </div>
             </div>
@@ -56,21 +56,21 @@
         </div>
 
         <% if latest.containers.any? %>
-          <div class="overflow-x-auto border-t border-zinc-800">
+          <div class="overflow-x-auto border-t border-line">
             <table class="table">
               <thead><tr><th><%= t(".container") %></th><th><%= t(".image") %></th><th><%= t("common.status") %></th><th><%= t(".ports") %></th><th></th></tr></thead>
               <tbody>
                 <% latest.containers.each do |container| %>
                   <tr>
-                    <td class="font-mono text-xs text-zinc-200">
+                    <td class="font-mono text-xs text-body">
                       <span class="flex items-center gap-2">
-                        <span class="size-2 shrink-0 rounded-full <%= container["State"] == "running" ? "bg-emerald-400" : "bg-zinc-600" %>"></span>
+                        <span class="size-2 shrink-0 rounded-full <%= container["State"] == "running" ? "bg-success" : "bg-faint" %>"></span>
                         <%= container["Names"] %>
                       </span>
                     </td>
-                    <td class="font-mono text-xs text-zinc-500"><%= container["Image"].to_s.truncate(60) %></td>
-                    <td class="text-xs text-zinc-400"><%= container["Status"] %></td>
-                    <td class="font-mono text-xs text-zinc-500"><%= container["Ports"] %></td>
+                    <td class="font-mono text-xs text-muted"><%= container["Image"].to_s.truncate(60) %></td>
+                    <td class="text-xs text-muted"><%= container["Status"] %></td>
+                    <td class="font-mono text-xs text-muted"><%= container["Ports"] %></td>
                     <td class="text-right">
                       <%= button_to t(".logs"), project_command_runs_path(@project), class: "btn btn-sm",
                         params: { kind: "app_logs", destination: @project.destination_for_host(host),
@@ -83,6 +83,6 @@
           </div>
         <% end %>
       <% end %>
-    </div>
+    <% end %>
   <% end %>
 </div>

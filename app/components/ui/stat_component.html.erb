@@ -1,0 +1,8 @@
+<%= render Ui::PanelComponent.new(class: 'p-3 sm:p-5') do %>
+  <div class="flex items-start justify-between gap-2">
+    <p class="min-h-8 text-[11px] leading-4 font-medium text-muted sm:min-h-0 sm:text-xs"><%= @label %></p>
+    <span class="hidden text-faint sm:inline"><%= render Ui::IconComponent.new(name: @icon, size: 17) %></span>
+  </div>
+  <p class="mt-2 text-2xl leading-none font-semibold tracking-tight text-foreground tabular-nums sm:mt-3 sm:text-[30px]"><%= @value %></p>
+  <% if @caption %><p class="mt-2 hidden text-xs text-muted sm:block"><%= @caption %></p><% end %>
+<% end %>

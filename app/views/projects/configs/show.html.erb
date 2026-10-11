@@ -1,14 +1,14 @@
 <% content_for :title, "#{t("common.config")} · #{@project.name}" %>
 <%= render "projects/header", project: @project, destination: @destination %>
 
-<p class="mb-4 text-sm text-zinc-500">
-  <%= t(@destination ? ".intro_with_override_html" : ".intro_html", destination: tag.span(destination_label(@destination), class: "text-zinc-300"), file: tag.code(@project.config_file), override: @destination) %>
+<p class="mb-4 text-sm text-muted">
+  <%= t(@destination ? ".intro_with_override_html" : ".intro_html", destination: tag.span(destination_label(@destination), class: "text-body"), file: tag.code(@project.config_file), override: @destination) %>
 </p>
 
 <% if @config.error %>
-  <div class="card card-body"><pre class="whitespace-pre-wrap font-mono text-xs text-red-300"><%= @config.error %></pre></div>
+  <%= render Ui::PanelComponent.new(class: 'card-body') do %><pre class="whitespace-pre-wrap font-mono text-xs text-danger"><%= @config.error %></pre><% end %>
 <% elsif @config.raw_config %>
   <pre class="terminal"><%= @config.raw_config.to_yaml.delete_prefix("---\n") %></pre>
 <% else %>
-  <div class="card card-body text-sm text-zinc-500"><%= t(".not_loaded") %></div>
+  <%= render Ui::PanelComponent.new(class: 'card-body text-sm text-muted') do %><%= t(".not_loaded") %><% end %>
 <% end %>

@@ -1,0 +1,4 @@
+<%= link_to @path, class: ["nav-link", ("nav-link-active" if @active)], aria: { current: ("page" if @active) } do %>
+  <% if @icon %><%= render Ui::IconComponent.new(name: @icon, size: 17) %><% end %>
+  <span class="truncate"><%= @label %></span>
+<% end %>

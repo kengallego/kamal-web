@@ -1,0 +1,6 @@
+<div class="flex flex-col items-center px-5 py-16 text-center">
+  <span class="mb-5 grid size-14 place-items-center rounded-2xl border border-accent/10 bg-accent-soft text-accent"><%= render Ui::IconComponent.new(name: @icon, size: 26) %></span>
+  <h2 class="text-lg font-semibold text-foreground"><%= @title %></h2>
+  <div class="mt-2 max-w-lg text-sm leading-relaxed text-muted"><%= @description %></div>
+  <% if content.present? %><div class="mt-6"><%= content %></div><% end %>
+</div>

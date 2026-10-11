@@ -590,3 +590,18 @@ en:
     queued: queued
     running: running
     succeeded: succeeded
+
+  ui:
+    project_navigation: "Project navigation"
+    navigation: "Main navigation"
+    skip_navigation: "Skip to content"
+    workspace: "Workspace"
+    infrastructure: "Infrastructure console"
+    no_projects: "Your projects will appear here"
+    dashboard_title: "Infrastructure overview"
+    dashboard_description: "Deploy your applications, follow activity and keep your servers in view."
+    servers: "Servers"
+    active_operations: "Active operations"
+    projects_caption: "Applications in your workspace"
+    servers_caption: "Unique hosts in your configuration"
+    operations_caption: "Server changes currently in progress"

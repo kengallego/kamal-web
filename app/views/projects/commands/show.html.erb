@@ -1,8 +1,8 @@
 <% content_for :title, "#{t("common.commands")} · #{@project.name}" %>
 <%= render "projects/header", project: @project, destination: @destination %>
 
-<p class="mb-4 text-sm text-zinc-500">
-  <%= t(".intro_html", destination: tag.span(destination_label(@destination), class: "text-zinc-300")) %>
+<p class="mb-4 text-sm text-muted">
+  <%= t(".intro_html", destination: tag.span(destination_label(@destination), class: "text-body")) %>
 </p>
 
 <% unavailable = [] %>
@@ -12,7 +12,7 @@
     <% unavailable.concat(blocked) %>
     <% next if commands.empty? %>
     <section>
-      <h2 class="mb-3 text-sm font-semibold text-zinc-300"><%= CommandCatalog.group_label(group) %></h2>
+      <h2 class="mb-3 text-sm font-semibold text-body"><%= CommandCatalog.group_label(group) %></h2>
       <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         <% commands.each do |command| %>
           <%= form_with url: project_command_runs_path(@project), class: "card flex flex-col gap-3 p-4",
@@ -22,20 +22,20 @@
 
             <div class="flex items-start justify-between gap-2">
               <div>
-                <p class="font-medium text-zinc-100"><%= command.label %></p>
-                <p class="font-mono text-xs text-zinc-500">kamal <%= command.arguments(command.fields.to_h { |f| [ f.name, f.required ? "…" : "" ] }).join(" ") rescue command.key.tr("_", " ") %></p>
+                <p class="font-medium text-foreground"><%= command.label %></p>
+                <p class="font-mono text-xs text-muted">kamal <%= command.arguments(command.fields.to_h { |f| [ f.name, f.required ? "…" : "" ] }).join(" ") rescue command.key.tr("_", " ") %></p>
               </div>
               <% if command.mutating? %><span class="badge badge-warning"><%= t(".changes_servers") %></span><% end %>
             </div>
 
             <% if command.description %>
-              <p class="text-xs text-zinc-400"><%= command.description %></p>
+              <p class="text-xs text-muted"><%= command.description %></p>
             <% end %>
 
             <% command.fields.each do |field| %>
               <% if field.type == :boolean %>
-                <label class="flex items-center gap-2 text-sm text-zinc-300">
-                  <%= check_box_tag "options[#{field.name}]", "1", false, class: "accent-emerald-500", id: nil %>
+                <label class="flex items-center gap-2 text-sm text-body">
+                  <%= check_box_tag "options[#{field.name}]", "1", false, class: "accent-accent", id: nil %>
                   <%= field.label %>
                 </label>
                 <% next %>
@@ -69,14 +69,14 @@
 </div>
 
 <% if unavailable.any? %>
-  <details class="mt-8 rounded-lg border border-zinc-800 p-4 text-sm">
-    <summary class="cursor-pointer text-zinc-400"><%= t(".more_commands", count: unavailable.size) %></summary>
-    <p class="mt-3 text-zinc-500">
-      <%= t(".unavailable_html", link: link_to(t(".add_repository"), edit_project_path(@project), class: "underline hover:text-zinc-300")) %>
+  <details class="mt-8 rounded-lg border border-line p-4 text-sm">
+    <summary class="cursor-pointer text-muted"><%= t(".more_commands", count: unavailable.size) %></summary>
+    <p class="mt-3 text-muted">
+      <%= t(".unavailable_html", link: link_to(t(".add_repository"), edit_project_path(@project), class: "underline hover:text-body")) %>
     </p>
     <div class="mt-3 flex flex-wrap gap-2">
       <% unavailable.each do |command| %>
-        <span class="rounded-md border border-zinc-800 px-2 py-1 text-xs text-zinc-400"><%= command.label %></span>
+        <span class="rounded-md border border-line px-2 py-1 text-xs text-muted"><%= command.label %></span>
       <% end %>
     </div>
   </details>

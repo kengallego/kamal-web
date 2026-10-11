@@ -1,8 +1,8 @@
 <%= turbo_frame_tag "proxy_data" do %>
-  <div class="card mb-6">
+  <%= render Ui::PanelComponent.new(class: 'mb-6') do %>
     <div class="card-header"><h2 class="card-title"><%= t(".routes") %></h2></div>
     <% if @routes.empty? %>
-      <p class="px-4 py-6 text-center text-sm text-zinc-500"><%= t(".no_routes", host: @host) %></p>
+      <p class="px-4 py-6 text-center text-sm text-muted"><%= t(".no_routes", host: @host) %></p>
     <% else %>
       <div class="overflow-x-auto">
         <table class="table">
@@ -10,10 +10,10 @@
           <tbody>
             <% @routes.each do |route| %>
               <tr>
-                <td class="text-zinc-100"><%= route.service %></td>
-                <td class="text-zinc-300"><%= route.host %></td>
-                <td class="font-mono text-xs text-zinc-400"><%= route.path %></td>
-                <td class="font-mono text-xs text-zinc-400"><%= route.target %></td>
+                <td class="text-foreground"><%= route.service %></td>
+                <td class="text-body"><%= route.host %></td>
+                <td class="font-mono text-xs text-muted"><%= route.path %></td>
+                <td class="font-mono text-xs text-muted"><%= route.target %></td>
                 <td><span class="badge <%= route.state.casecmp?("running") ? "badge-success" : "badge-warning" %>"><%= route.state %></span></td>
                 <td><span class="badge <%= route.tls.casecmp?("yes") ? "badge-success" : "badge-neutral" %>"><%= route.tls %></span></td>
               </tr>
@@ -22,7 +22,7 @@
         </table>
       </div>
     <% end %>
-  </div>
+  <% end %>
 
   <% total = @traffic.size %>
   <% durations = @traffic.map(&:duration_ms).sort %>
@@ -33,27 +33,27 @@
       [ t(".median"), total.positive? ? "#{durations[total / 2]} ms" : "–" ],
       [ "p95", total.positive? ? "#{durations[(total * 0.95).floor.clamp(0, total - 1)]} ms" : "–" ]
     ].each do |label, value| %>
-      <div class="card p-4">
+      <%= render Ui::PanelComponent.new(class: 'p-4') do %>
         <p class="label"><%= label %></p>
-        <p class="text-xl font-semibold text-zinc-100"><%= value %></p>
-      </div>
+        <p class="text-xl font-semibold text-foreground"><%= value %></p>
+      <% end %>
     <% end %>
   </div>
 
-  <div class="card mb-6">
+  <%= render Ui::PanelComponent.new(class: 'mb-6') do %>
     <div class="card-header">
       <h2 class="card-title"><%= t(".traffic") %></h2>
-      <div class="flex items-center gap-3 text-xs text-zinc-500">
-        <% { "2xx" => "bg-emerald-500", "3xx" => "bg-sky-500", "4xx" => "bg-amber-500", "5xx" => "bg-red-500" }.each do |label, color| %>
+      <div class="flex items-center gap-3 text-xs text-muted">
+        <% { "2xx" => "bg-success", "3xx" => "bg-info", "4xx" => "bg-warning", "5xx" => "bg-danger" }.each do |label, color| %>
           <span class="flex items-center gap-1"><span class="inline-block h-2 w-2 rounded-sm <%= color %>"></span><%= label %></span>
         <% end %>
       </div>
     </div>
     <div class="card-body">
       <% if @chart.empty? %>
-        <p class="py-6 text-center text-sm text-zinc-500"><%= t(".no_requests") %></p>
+        <p class="py-6 text-center text-sm text-muted"><%= t(".no_requests") %></p>
       <% else %>
-        <% colors = { "2xx" => "#10b981", "3xx" => "#0ea5e9", "4xx" => "#f59e0b", "5xx" => "#ef4444" } %>
+        <% colors = { "2xx" => "var(--ui-success)", "3xx" => "var(--ui-info)", "4xx" => "var(--ui-warning)", "5xx" => "var(--ui-danger)" } %>
         <% bar = 10 %>
         <% height = 120.0 %>
         <svg viewBox="0 0 <%= @chart.minutes * bar %> <%= height.to_i %>" preserveAspectRatio="none" class="h-32 w-full" role="img" aria-label="<%= t(".chart_label") %>">
@@ -72,41 +72,41 @@
             </g>
           <% end %>
         </svg>
-        <div class="mt-1 flex justify-between text-xs text-zinc-600">
+        <div class="mt-1 flex justify-between text-xs text-faint">
           <span><%= @chart.buckets.first.time.strftime("%H:%M") %></span>
           <span><%= t(".peak", count: @chart.peak) %></span>
           <span><%= @chart.buckets.last.time.strftime("%H:%M") %></span>
         </div>
       <% end %>
     </div>
-  </div>
+  <% end %>
 
-  <div class="card">
+  <%= render Ui::PanelComponent.new do %>
     <div class="card-header">
       <h2 class="card-title"><%= t(".recent_requests") %></h2>
-      <span class="text-xs text-zinc-500"><%= t(".latest_300") %></span>
+      <span class="text-xs text-muted"><%= t(".latest_300") %></span>
     </div>
     <% if @requests.empty? %>
-      <p class="px-4 py-6 text-center text-sm text-zinc-500"><%= t(".no_requests") %></p>
+      <p class="px-4 py-6 text-center text-sm text-muted"><%= t(".no_requests") %></p>
     <% else %>
       <div class="max-h-[60vh] overflow-auto">
         <table class="table">
-          <thead class="sticky top-0 bg-zinc-900"><tr><th><%= t(".time") %></th><th><%= t("common.status") %></th><th><%= t(".method") %></th><th><%= t("common.host") %></th><th><%= t(".path") %></th><th><%= t("common.duration") %></th><th><%= t(".service") %></th></tr></thead>
+          <thead class="sticky top-0 bg-surface"><tr><th><%= t(".time") %></th><th><%= t("common.status") %></th><th><%= t(".method") %></th><th><%= t("common.host") %></th><th><%= t(".path") %></th><th><%= t("common.duration") %></th><th><%= t(".service") %></th></tr></thead>
           <tbody>
             <% @requests.each do |request| %>
               <tr>
-                <td class="whitespace-nowrap text-xs text-zinc-500"><%= request.time&.strftime("%H:%M:%S") %></td>
+                <td class="whitespace-nowrap text-xs text-muted"><%= request.time&.strftime("%H:%M:%S") %></td>
                 <td><span class="badge <%= request.status >= 500 ? "badge-danger" : request.status >= 400 ? "badge-warning" : request.status >= 300 ? "badge-info" : "badge-success" %>"><%= request.status %></span></td>
-                <td class="text-xs text-zinc-400"><%= request.method %></td>
-                <td class="text-xs text-zinc-300"><%= request.host %></td>
-                <td class="max-w-md truncate font-mono text-xs text-zinc-300" title="<%= request.path %>"><%= request.path %></td>
-                <td class="whitespace-nowrap text-xs text-zinc-400"><%= request.duration_ms %> ms</td>
-                <td class="text-xs text-zinc-500"><%= request.service %></td>
+                <td class="text-xs text-muted"><%= request.method %></td>
+                <td class="text-xs text-body"><%= request.host %></td>
+                <td class="max-w-md truncate font-mono text-xs text-body" title="<%= request.path %>"><%= request.path %></td>
+                <td class="whitespace-nowrap text-xs text-muted"><%= request.duration_ms %> ms</td>
+                <td class="text-xs text-muted"><%= request.service %></td>
               </tr>
             <% end %>
           </tbody>
         </table>
       </div>
     <% end %>
-  </div>
+  <% end %>
 <% end %>

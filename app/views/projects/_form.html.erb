@@ -1,7 +1,7 @@
 <%= form_with model: project, class: "space-y-6", data: { controller: "source-kind" } do |form| %>
   <%= form_errors(project) %>
 
-  <div class="card">
+  <%= render Ui::PanelComponent.new do %>
     <div class="card-header"><h2 class="card-title"><%= t(".source") %></h2></div>
     <div class="card-body space-y-4">
       <div>
@@ -54,9 +54,9 @@
         <p class="hint"><%= t(".config_file_hint_html") %></p>
       </div>
     </div>
-  </div>
+  <% end %>
 
-  <div class="card">
+  <%= render Ui::PanelComponent.new do %>
     <div class="card-header"><h2 class="card-title"><%= t(".server_access") %></h2></div>
     <div class="card-body space-y-4">
       <div>
@@ -69,9 +69,9 @@
         <%= form.check_box :monitoring_enabled %> <%= t(".monitoring") %>
       </label>
     </div>
-  </div>
+  <% end %>
 
-  <div class="card">
+  <%= render Ui::PanelComponent.new do %>
     <div class="card-header"><h2 class="card-title"><%= t(".notifications") %></h2></div>
     <div class="card-body grid gap-4 sm:grid-cols-3">
       <div class="sm:col-span-2">
@@ -84,7 +84,7 @@
         <%= form.select :notification_format, Project::NOTIFICATION_FORMATS.map { |f| [ t(".formats.#{f}", default: f.capitalize), f ] }, {}, class: "input" %>
       </div>
     </div>
-  </div>
+  <% end %>
 
   <div class="flex gap-3">
     <%= form.submit project.new_record? ? t(".create") : t(".save"), class: "btn btn-primary" %>

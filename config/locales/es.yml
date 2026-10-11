@@ -589,3 +589,18 @@ es:
     queued: en cola
     running: en curso
     succeeded: completado
+
+  ui:
+    project_navigation: "Navegación del proyecto"
+    navigation: "Navegación principal"
+    skip_navigation: "Ir al contenido"
+    workspace: "Espacio de trabajo"
+    infrastructure: "Consola de infraestructura"
+    no_projects: "Tus proyectos aparecerán aquí"
+    dashboard_title: "Tu infraestructura, de un vistazo"
+    dashboard_description: "Despliega tus aplicaciones, revisa la actividad y supervisa tus servidores."
+    servers: "Servidores"
+    active_operations: "Operaciones activas"
+    projects_caption: "Aplicaciones en tu espacio de trabajo"
+    servers_caption: "Hosts únicos en tu configuración"
+    operations_caption: "Cambios en servidores en curso"

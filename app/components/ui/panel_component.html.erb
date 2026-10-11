@@ -1,0 +1,4 @@
+<%= tag.div(**@attributes) do %>
+  <% if @title %><div class="card-header"><h2 class="card-title"><%= @title %></h2></div><% end %>
+  <%= content %>
+<% end %>

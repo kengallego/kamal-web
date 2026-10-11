@@ -1,12 +1,12 @@
 <% content_for :title, t("common.settings") %>
-<h1 class="mb-6 text-xl font-semibold text-zinc-100"><%= t("common.settings") %></h1>
+<%= render Ui::PageHeaderComponent.new(title: t("common.settings")) %>
 
 <div class="max-w-3xl space-y-6">
-  <div class="card">
+  <%= render Ui::PanelComponent.new do %>
     <div class="card-header">
       <div>
         <h2 class="card-title"><%= t(".status_board") %></h2>
-        <p class="text-xs text-zinc-500"><%= t(".status_board_hint") %></p>
+        <p class="text-xs text-muted"><%= t(".status_board_hint") %></p>
       </div>
     </div>
     <div class="card-body space-y-4">
@@ -25,13 +25,13 @@
         <%= button_to t(".regenerate"), regenerate_status_board_token_settings_path, class: "btn btn-sm", form: { data: { turbo_confirm: t(".confirm_regenerate") } } %>
       <% end %>
     </div>
-  </div>
+  <% end %>
 
-  <div class="card">
+  <%= render Ui::PanelComponent.new do %>
     <div class="card-header">
       <div>
         <h2 class="card-title"><%= t(".access_key") %></h2>
-        <p class="text-xs text-zinc-500"><%= t(".access_key_hint") %></p>
+        <p class="text-xs text-muted"><%= t(".access_key_hint") %></p>
       </div>
     </div>
     <div class="card-body space-y-3 text-sm">
@@ -39,43 +39,43 @@
         [ t(".this_server"), Setting::AUTHORIZE_THIS_SERVER ],
         [ t(".other_servers_html"), @setting.authorize_command ]
       ].each do |intro, command| %>
-        <p class="text-zinc-400"><%= intro %></p>
+        <p class="text-muted"><%= intro %></p>
         <div class="flex gap-2">
           <input type="text" readonly value="<%= command %>" class="input font-mono text-xs">
           <button class="btn" data-controller="clipboard" data-clipboard-copied-value="<%= t("common.copied") %>" data-clipboard-text-value="<%= command %>" data-action="clipboard#copy"><%= t("common.copy") %></button>
         </div>
       <% end %>
       <% if @setting.ignored_services.any? %>
-        <div class="flex items-center justify-between gap-3 border-t border-zinc-800 pt-3">
-          <p class="text-zinc-400"><%= t(".ignored_html", services: tag.span(@setting.ignored_services.to_sentence, class: "font-mono text-zinc-300")) %></p>
+        <div class="flex items-center justify-between gap-3 border-t border-line pt-3">
+          <p class="text-muted"><%= t(".ignored_html", services: tag.span(@setting.ignored_services.to_sentence, class: "font-mono text-body")) %></p>
           <%= button_to t(".detect_again"), reset_ignored_services_settings_path, class: "btn btn-sm" %>
         </div>
       <% end %>
     </div>
-  </div>
+  <% end %>
 
-  <div class="card">
+  <%= render Ui::PanelComponent.new do %>
     <div class="card-header">
       <div>
         <h2 class="card-title"><%= t(".backup") %></h2>
-        <p class="text-xs text-zinc-500"><%= t(".backup_hint") %></p>
+        <p class="text-xs text-muted"><%= t(".backup_hint") %></p>
       </div>
     </div>
     <div class="card-body space-y-4 text-sm">
       <%= link_to t(".download"), backup_path, class: "btn", data: { turbo: false } %>
-      <%= form_with url: backup_path, multipart: true, class: "flex flex-wrap items-center gap-2 border-t border-zinc-800 pt-4",
+      <%= form_with url: backup_path, multipart: true, class: "flex flex-wrap items-center gap-2 border-t border-line pt-4",
         data: { turbo_confirm: t(".confirm_restore") } do |form| %>
-        <%= form.file_field :backup, accept: ".gz,application/gzip", required: true, class: "text-xs text-zinc-400 file:mr-3 file:cursor-pointer file:rounded-lg file:border-0 file:bg-zinc-800 file:px-3 file:py-1.5 file:text-sm file:text-zinc-100 hover:file:bg-zinc-700" %>
+        <%= form.file_field :backup, accept: ".gz,application/gzip", required: true, class: "text-xs text-muted file:mr-3 file:cursor-pointer file:rounded-lg file:border-0 file:bg-subtle file:px-3 file:py-1.5 file:text-sm file:text-foreground hover:file:bg-hover" %>
         <%= form.submit t(".restore"), class: "btn btn-danger" %>
       <% end %>
-      <p class="text-xs text-zinc-500"><%= t(".restore_hint_html") %></p>
+      <p class="text-xs text-muted"><%= t(".restore_hint_html") %></p>
     </div>
-  </div>
+  <% end %>
 
-  <div id="version" class="card card-body text-sm text-zinc-400 space-y-1">
-    <p class="font-medium text-zinc-200"><%= t(".instance") %></p>
+  <div id="version" class="card card-body text-sm text-muted space-y-1">
+    <p class="font-medium text-body"><%= t(".instance") %></p>
     <% if @setting.update_available? %>
-      <p class="text-emerald-300">
+      <p class="text-success">
         <%= t("layouts.application.update_available", version: @setting.latest_version) %><%= link_to t(".release_notes"), @setting.latest_version_url, target: "_blank", rel: "noopener", class: "underline" if @setting.latest_version_url&.start_with?("https://github.com/") %>.
         <%= t(".update_how_html") %>
       </p>

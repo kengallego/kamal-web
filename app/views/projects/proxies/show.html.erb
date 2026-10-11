@@ -2,19 +2,19 @@
 <%= render "projects/header", project: @project, destination: @destination %>
 
 <% if @hosts.empty? %>
-  <div class="card card-body text-center text-sm text-zinc-500"><%= t(".no_hosts") %></div>
+  <%= render Ui::PanelComponent.new(class: 'card-body text-center text-sm text-muted') do %><%= t(".no_hosts") %><% end %>
 <% else %>
   <div class="mb-4 flex flex-wrap items-center gap-2">
     <% @hosts.each do |host| %>
       <%= link_to host, project_proxy_path(@project, destination: @destination.to_s, host: host, status: params[:status]), class: [ "btn btn-sm font-mono", ("btn-primary" if host == @host) ] %>
     <% end %>
-    <span class="mx-2 h-5 border-l border-zinc-800"></span>
+    <span class="mx-2 h-5 border-l border-line"></span>
     <% [ nil, "2xx", "3xx", "4xx", "5xx" ].each do |status| %>
       <%= link_to status || t(".all"), project_proxy_path(@project, destination: @destination.to_s, host: @host, status: status), class: [ "btn btn-sm", ("btn-primary" if params[:status].presence == status) ] %>
     <% end %>
   </div>
 
   <%= turbo_frame_tag "proxy_data", src: project_proxy_path(@project, destination: @destination.to_s, host: @host, status: params[:status]), loading: :lazy do %>
-    <div class="card card-body text-center text-sm text-zinc-500"><%= t(".connecting", host: @host) %></div>
+    <%= render Ui::PanelComponent.new(class: 'card-body text-center text-sm text-muted') do %><%= t(".connecting", host: @host) %><% end %>
   <% end %>
 <% end %>

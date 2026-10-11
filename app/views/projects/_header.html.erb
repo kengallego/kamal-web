@@ -2,31 +2,20 @@
 <%= turbo_stream_from project %>
 
 <div class="mb-6">
-  <div class="flex flex-wrap items-start justify-between gap-4">
-    <div class="min-w-0">
-      <h1 class="text-xl font-semibold text-zinc-100"><%= project.name %></h1>
-      <p class="mt-1 truncate text-sm text-zinc-500">
-        <%= project.source_description %>
-        <% if project.git_revision %> · <span class="font-mono"><%= short_sha(project.git_revision) %></span><% end %>
-        <% if project.synced_at %> · <%= t(".synced", time: time_ago(project.synced_at)) %><% end %>
-      </p>
-    </div>
-
-    <div class="flex items-center gap-2">
-      <% unless destination == :none || project.destinations.size < 2 %>
-        <div class="flex rounded-lg border border-zinc-800 p-0.5">
-          <% project.destinations.each do |name| %>
-            <%= link_to destination_label(name), url_for(request.query_parameters.merge(destination: name.to_s)),
-              class: [ "rounded-md px-3 py-1 text-sm", name == destination ? "bg-zinc-800 text-zinc-100" : "text-zinc-400 hover:text-zinc-100" ] %>
-          <% end %>
-        </div>
-      <% end %>
-      <%= button_to t("common.sync"), sync_project_path(project), class: "btn", title: t(".sync_title") %>
-    </div>
-  </div>
+  <% description = [project.source_description, short_sha(project.git_revision), (t('.synced', time: time_ago(project.synced_at)) if project.synced_at)].compact_blank.join(' · ') %>
+  <%= render Ui::PageHeaderComponent.new(title: project.name, description: description, eyebrow: t('common.project')) do %>
+    <% unless destination == :none || project.destinations.size < 2 %>
+      <div class="flex rounded-lg border border-line bg-surface p-1">
+        <% project.destinations.each do |name| %>
+          <%= link_to destination_label(name), url_for(request.query_parameters.merge(destination: name.to_s)), class: ['rounded-md px-3 py-1.5 text-xs font-medium', name == destination ? 'bg-accent-soft text-accent' : 'text-muted hover:text-foreground'], aria: { current: ('page' if name == destination) } %>
+        <% end %>
+      </div>
+    <% end %>
+    <%= button_to sync_project_path(project), class: 'btn', title: t('.sync_title') do %><%= render Ui::IconComponent.new(name: :refresh, size: 15) %><%= t('common.sync') %><% end %>
+  <% end %>
 
   <% if project.sync_error.present? %>
-    <div class="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300">
+    <div class="mt-4 rounded-lg border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
       <p class="font-medium"><%= t(".sync_failed") %></p>
       <pre class="mt-1 whitespace-pre-wrap font-mono text-xs"><%= project.sync_error %></pre>
     </div>
@@ -35,37 +24,37 @@
   <% if project.discovered? %>
     <% metrics = project.latest_metrics %>
     <% if (failed = metrics.select(&:error)).any? %>
-      <div class="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-200">
+      <div class="mt-4 rounded-lg border border-warning/30 bg-warning/10 p-3 text-sm text-warning">
         <p class="font-medium"><%= t(".ssh_failed", hosts: failed.map(&:host).to_sentence) %></p>
-        <pre class="mt-1 whitespace-pre-wrap font-mono text-xs text-amber-200/80"><%= failed.first.error.to_s.last(500) %></pre>
+        <pre class="mt-1 whitespace-pre-wrap font-mono text-xs text-warning/80"><%= failed.first.error.to_s.last(500) %></pre>
         <% if project.ssh_private_key.blank? %>
-          <p class="mt-2 text-amber-200/80"><%= t(".authorize") %></p>
-          <pre class="mt-1 overflow-x-auto rounded bg-zinc-950 p-2 font-mono text-xs text-zinc-200"><%= Setting::AUTHORIZE_THIS_SERVER %></pre>
-          <p class="mt-1 text-xs text-amber-200/60"><%= t(".checked_every_minute_html", monitoring: link_to(t("common.monitoring"), project_monitoring_path(project), class: "underline")) %></p>
+          <p class="mt-2 text-warning/80"><%= t(".authorize") %></p>
+          <pre class="mt-1 overflow-x-auto rounded bg-canvas p-2 font-mono text-xs text-body"><%= Setting::AUTHORIZE_THIS_SERVER %></pre>
+          <p class="mt-1 text-xs text-warning/60"><%= t(".checked_every_minute_html", monitoring: link_to(t("common.monitoring"), project_monitoring_path(project), class: "underline")) %></p>
         <% end %>
       </div>
     <% end %>
-    <p class="mt-4 text-sm text-zinc-500">
+    <p class="mt-4 text-sm text-muted">
       <%= t(".detected") %><%= t(".checking_ssh") if metrics.empty? && project.monitoring_enabled? %>.
-      <%= t(".connect_repository_html", link: link_to(t(".add_repository"), edit_project_path(project), class: "underline hover:text-zinc-300")) %>
+      <%= t(".connect_repository_html", link: link_to(t(".add_repository"), edit_project_path(project), class: "underline hover:text-body")) %>
     </p>
   <% end %>
 
   <%= render "projects/activity", project: project %>
 
   <% dest = destination == :none ? {} : { destination: destination.to_s } %>
-  <nav class="mt-6 flex gap-6 overflow-x-auto border-b border-zinc-800">
+  <nav aria-label="<%= t('ui.project_navigation') %>" class="mt-6 flex gap-5 overflow-x-auto border-b border-line">
     <% [
-      [ t("common.overview"), project_path(project, dest) ],
-      [ t("common.commands"), project_commands_path(project, dest) ],
-      [ t("common.console"), project_console_sessions_path(project, dest) ],
-      [ t("common.activity"), project_command_runs_path(project) ],
-      [ t("common.monitoring"), project_monitoring_path(project) ],
-      [ t("common.proxy"), project_proxy_path(project, dest) ],
-      [ t("common.config"), project_config_path(project, dest) ],
-      [ t("common.settings"), project_settings_path(project) ]
-    ].each do |label, path| %>
-      <%= link_to label, path, class: [ "tab", ("tab-active" if request.path == URI(path).path) ] %>
+      [ :grid, t("common.overview"), project_path(project, dest) ],
+      [ :terminal, t("common.commands"), project_commands_path(project, dest) ],
+      [ :code, t("common.console"), project_console_sessions_path(project, dest) ],
+      [ :activity, t("common.activity"), project_command_runs_path(project) ],
+      [ :server, t("common.monitoring"), project_monitoring_path(project) ],
+      [ :globe, t("common.proxy"), project_proxy_path(project, dest) ],
+      [ :branch, t("common.config"), project_config_path(project, dest) ],
+      [ :settings, t("common.settings"), project_settings_path(project) ]
+    ].each do |icon, label, path| %>
+      <%= link_to path, class: ["tab", ("tab-active" if request.path == URI(path).path)], aria: { current: ("page" if request.path == URI(path).path) } do %><%= render Ui::IconComponent.new(name: icon, size: 15) %><%= label %><% end %>
     <% end %>
   </nav>
 </div>
