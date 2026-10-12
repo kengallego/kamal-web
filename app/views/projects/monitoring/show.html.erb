@@ -1,7 +1,7 @@
 <% content_for :title, "#{t("common.monitoring")} · #{@project.name}" %>
 <%= render "projects/header", project: @project %>
 
-<div class="mb-4 flex items-center justify-between gap-4">
+<div class="mb-6 flex flex-wrap items-center justify-between gap-4">
   <p class="text-sm text-muted">
     <% if @project.monitoring_enabled? %>
       <%= t(".sampled") %>

@@ -1,6 +1,9 @@
-<% if notice.present? %>
-  <div class="mb-4 rounded-lg border border-success/30 bg-success/10 px-4 py-2 text-sm text-success"><%= notice %></div>
-<% end %>
-<% if alert.present? %>
-  <div class="mb-4 rounded-lg border border-danger/30 bg-danger/10 px-4 py-2 text-sm text-danger"><%= alert %></div>
+<% { notice: :success, alert: :danger }.each do |kind, tone| %>
+  <% if flash[kind].present? %>
+    <div class="flash-message <%= kind == :notice ? 'border-success/20 bg-success/5 text-success' : 'border-danger/20 bg-danger/5 text-danger' %>" data-controller="dismiss" role="<%= kind == :alert ? 'alert' : 'status' %>">
+      <%= render Ui::IconComponent.new(name: kind == :notice ? :check : :shield, size: 18) %>
+      <p class="flex-1"><%= flash[kind] %></p>
+      <button type="button" class="icon-button" data-action="dismiss#close" aria-label="<%= t('ui.dismiss') %>"><span aria-hidden="true">×</span></button>
+    </div>
+  <% end %>
 <% end %>

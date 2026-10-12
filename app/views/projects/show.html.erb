@@ -18,7 +18,7 @@
           <% end %>
         </div>
         <%= turbo_frame_tag "deploy_preview", src: project_deploy_preview_path(@project, destination: @destination), loading: :lazy, class: "block" do %>
-          <p class="border-t border-line px-5 py-3 text-sm text-muted"><%= t("common.loading") %></p>
+        <%= render 'shared/loading' %>
         <% end %>
       <% end %>
     <% end %>
@@ -29,7 +29,7 @@
         <span class="text-xs text-muted"><%= t(".versions_hint") %></span>
       </div>
       <%= turbo_frame_tag "releases", src: project_releases_path(@project, destination: @destination), loading: :lazy do %>
-        <p class="px-4 py-4 text-sm text-muted"><%= t("common.loading") %></p>
+        <%= render 'shared/loading' %>
       <% end %>
     <% end %>
 
@@ -68,7 +68,7 @@
               <% hosts.each do |host| %>
                 <% metric = @latest_metrics[host] %>
                 <div class="flex items-center justify-between py-1 text-sm">
-                  <span class="font-mono text-body" data-controller="clipboard" data-clipboard-copied-value="<%= t("common.copied") %>" data-clipboard-text-value="<%= host %>" data-action="click->clipboard#copy" title="<%= t(".click_to_copy") %>"><%= host %></span>
+                  <button type="button" class="rounded-md font-mono text-body hover:text-accent" data-controller="clipboard" data-clipboard-error-value="<%= t('ui.copy_failed') %>" data-clipboard-copied-value="<%= t("common.copied") %>" data-clipboard-text-value="<%= host %>" data-action="clipboard#copy" title="<%= t(".click_to_copy") %>"><%= host %></button>
                   <% if metric&.error %>
                     <span class="badge badge-danger" title="<%= metric.error %>"><%= t("common.unreachable") %></span>
                   <% elsif metric %>

@@ -1,4 +1,4 @@
-<details class="relative shrink-0">
+<details class="relative shrink-0" data-controller="workspace" data-action="keydown.esc@window->workspace#close click@window->workspace#dismiss" data-workspace-target="menu">
   <summary class="icon-button list-none [&::-webkit-details-marker]:hidden" aria-label="<%= t('shared.preferences.theme') %>" title="<%= t('shared.preferences.theme') %>">
     <%= render Ui::IconComponent.new(name: ICONS.fetch(helpers.current_theme), size: 17) %>
   </summary>

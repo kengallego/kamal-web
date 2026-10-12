@@ -11,9 +11,9 @@
 
       <div>
         <span class="label"><%= t(".where") %></span>
-        <div class="flex gap-4 text-sm">
-          <label class="flex items-center gap-2"><%= form.radio_button :source_kind, "git", data: { action: "source-kind#toggle" } %> <%= t(".kind_git") %></label>
-          <label class="flex items-center gap-2"><%= form.radio_button :source_kind, "local", data: { action: "source-kind#toggle" } %> <%= t(".kind_local") %></label>
+        <div class="flex flex-wrap gap-3 text-sm">
+          <label class="flex cursor-pointer items-center gap-2 rounded-xl border border-line px-4 py-3 has-[:checked]:border-accent has-[:checked]:bg-accent-soft has-[:checked]:text-accent"><%= form.radio_button :source_kind, "git", data: { action: "source-kind#toggle" } %> <%= t(".kind_git") %></label>
+          <label class="flex cursor-pointer items-center gap-2 rounded-xl border border-line px-4 py-3 has-[:checked]:border-accent has-[:checked]:bg-accent-soft has-[:checked]:text-accent"><%= form.radio_button :source_kind, "local", data: { action: "source-kind#toggle" } %> <%= t(".kind_local") %></label>
           <% if project.discovered? || project.discovered_service.present? %>
             <label class="flex items-center gap-2"><%= form.radio_button :source_kind, "discovered", data: { action: "source-kind#toggle" } %> <%= t(".kind_discovered") %></label>
           <% end %>
@@ -86,8 +86,8 @@
     </div>
   <% end %>
 
-  <%= render Ui::PanelComponent.new do %>
-    <div class="card-header"><h2 class="card-title"><%= t(".notifications") %></h2></div>
+  <details class="disclosure" <%= 'open' if project.notification_webhook_url.present? || project.errors[:notification_webhook_url].any? %>>
+    <summary><%= t(".notifications") %><span class="ml-auto text-xs font-normal text-muted"><%= t('ui.optional') %></span></summary>
     <div class="card-body grid gap-4 sm:grid-cols-3">
       <div class="sm:col-span-2">
         <%= form.label :notification_webhook_url, t(".webhook_url"), class: "label" %>
@@ -99,9 +99,9 @@
         <%= form.select :notification_format, Project::NOTIFICATION_FORMATS.map { |f| [ t(".formats.#{f}", default: f.capitalize), f ] }, {}, class: "input" %>
       </div>
     </div>
-  <% end %>
+  </details>
 
-  <div class="flex gap-3">
+  <div class="form-footer">
     <%= form.submit project.new_record? ? t(".create") : t(".save"), class: "btn btn-primary" %>
     <%= link_to t("common.cancel"), project.new_record? ? root_path : project_settings_path(project), class: "btn" %>
   </div>

@@ -40,7 +40,7 @@
     <%= render Ui::PanelComponent.new(class: 'self-start') do %>
       <div class="card-header"><h2 class="card-title"><%= t(".containers") %></h2></div>
       <%= turbo_frame_tag "containers", src: project_containers_path(@project, destination: @run.destination, run_id: @run.id), data: { controller: "poll-frame" } do %>
-        <p class="px-4 py-4 text-sm text-muted"><%= t("common.loading") %></p>
+        <%= render 'shared/loading' %>
       <% end %>
     <% end %>
   <% end %>

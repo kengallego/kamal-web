@@ -1,12 +1,32 @@
 <% content_for :title, t("common.settings") %>
-<%= render Ui::PageHeaderComponent.new(title: t("common.settings")) %>
+<%= render Ui::PageHeaderComponent.new(title: t("common.settings"), description: t("ui.settings_description")) %>
 
-<div class="max-w-3xl space-y-6">
+<div class="settings-layout max-w-5xl">
+  <nav class="settings-nav" aria-label="<%= t('ui.on_this_page') %>">
+    <p class="section-label mb-4 px-3"><%= t('ui.on_this_page') %></p>
+    <% [['appearance', t('ui.appearance')], ['status-board', t('.status_board')], ['alerts', t('.alerts')], ['access', t('.access_key')], ['backups', t('.backup')], ['version', t('.instance')]].each do |id, label| %>
+      <%= link_to label, "##{id}", class: 'nav-link' %>
+    <% end %>
+  </nav>
+  <div class="min-w-0 space-y-6">
   <%= form_errors(@setting) %>
-  <%= render Ui::PanelComponent.new(title: t('shared.preferences.language')) do %>
-    <div class="card-body"><%= render Ui::LanguageSwitcherComponent.new %></div>
+  <%= render Ui::PanelComponent.new(title: t('ui.appearance'), id: 'appearance') do %>
+    <div class="card-body space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <span class="text-sm text-body"><%= t('shared.preferences.language') %></span>
+        <%= render Ui::LanguageSwitcherComponent.new %>
+      </div>
+      <div class="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5">
+        <span class="text-sm text-body"><%= t('shared.preferences.theme') %></span>
+        <div class="flex flex-wrap gap-1 rounded-xl border border-line p-1" role="group" aria-label="<%= t('shared.preferences.theme') %>">
+          <% Preferences::THEMES.each do |theme| %>
+            <%= button_to t("shared.preferences.themes.#{theme}"), preferences_path, method: :patch, params: { theme: theme }, form: { data: { turbo: false } }, class: ['rounded-lg px-3 py-2 text-xs font-medium', current_theme == theme ? 'bg-accent-soft text-accent' : 'text-muted hover:bg-subtle'], 'aria-pressed': current_theme == theme %>
+          <% end %>
+        </div>
+      </div>
+    </div>
   <% end %>
-  <%= render Ui::PanelComponent.new do %>
+  <%= render Ui::PanelComponent.new(id: "status-board") do %>
     <div class="card-header">
       <div>
         <h2 class="card-title"><%= t(".status_board") %></h2>
@@ -14,16 +34,16 @@
       </div>
     </div>
     <div class="card-body space-y-4">
-      <%= form_with model: @setting, url: settings_path, method: :patch, class: "flex items-center gap-3" do |form| %>
+      <%= form_with model: @setting, url: settings_path, method: :patch, class: "flex flex-wrap items-center gap-3" do |form| %>
         <label class="flex items-center gap-2 text-sm"><%= form.check_box :status_board_enabled %> <%= t(".enabled") %></label>
         <%= form.submit t("common.save"), class: "btn btn-sm" %>
       <% end %>
 
       <% if @setting.status_board_enabled? %>
         <% url = status_board_url(@setting.status_board_token) %>
-        <div class="flex gap-2">
+        <div class="flex flex-wrap gap-2 [&>input]:min-w-0 [&>input]:flex-1 [&>input]:basis-48">
           <input type="text" readonly value="<%= url %>" class="input font-mono text-xs">
-          <button class="btn" data-controller="clipboard" data-clipboard-copied-value="<%= t("common.copied") %>" data-clipboard-text-value="<%= url %>" data-action="clipboard#copy"><%= t("common.copy") %></button>
+          <button class="btn" data-controller="clipboard" data-clipboard-error-value="<%= t('ui.copy_failed') %>" data-clipboard-copied-value="<%= t("common.copied") %>" data-clipboard-text-value="<%= url %>" data-action="clipboard#copy"><%= t("common.copy") %></button>
           <%= link_to t(".open"), url, target: "_blank", class: "btn" %>
         </div>
         <%= button_to t(".regenerate"), regenerate_status_board_token_settings_path, class: "btn btn-sm", form: { data: { turbo_confirm: t(".confirm_regenerate") } } %>
@@ -31,7 +51,7 @@
     </div>
   <% end %>
 
-  <%= render Ui::PanelComponent.new do %>
+  <%= render Ui::PanelComponent.new(id: "alerts") do %>
     <div class="card-header">
       <div>
         <h2 class="card-title"><%= t(".alerts") %></h2>
@@ -54,7 +74,7 @@
     </div>
   <% end %>
 
-  <%= render Ui::PanelComponent.new do %>
+  <%= render Ui::PanelComponent.new(id: "access") do %>
     <div class="card-header">
       <div>
         <h2 class="card-title"><%= t(".access_key") %></h2>
@@ -67,9 +87,9 @@
         [ t(".other_servers_html"), @setting.authorize_command ]
       ].each do |intro, command| %>
         <p class="text-muted"><%= intro %></p>
-        <div class="flex gap-2">
+        <div class="flex flex-wrap gap-2 [&>input]:min-w-0 [&>input]:flex-1 [&>input]:basis-48">
           <input type="text" readonly value="<%= command %>" class="input font-mono text-xs">
-          <button class="btn" data-controller="clipboard" data-clipboard-copied-value="<%= t("common.copied") %>" data-clipboard-text-value="<%= command %>" data-action="clipboard#copy"><%= t("common.copy") %></button>
+          <button class="btn" data-controller="clipboard" data-clipboard-error-value="<%= t('ui.copy_failed') %>" data-clipboard-copied-value="<%= t("common.copied") %>" data-clipboard-text-value="<%= command %>" data-action="clipboard#copy"><%= t("common.copy") %></button>
         </div>
       <% end %>
       <% if @setting.ignored_services.any? %>
@@ -81,7 +101,7 @@
     </div>
   <% end %>
 
-  <%= render Ui::PanelComponent.new do %>
+  <%= render Ui::PanelComponent.new(id: "backups") do %>
     <div class="card-header">
       <div>
         <h2 class="card-title"><%= t(".backup") %></h2>
@@ -134,4 +154,5 @@
     <% end %>
     <p>Kamal Web <%= KamalWeb::VERSION %> · Kamal <%= Gem.loaded_specs["kamal"]&.version %> · Rails <%= Rails.version %> · Ruby <%= RUBY_VERSION %></p>
   </div>
+</div>
 </div>

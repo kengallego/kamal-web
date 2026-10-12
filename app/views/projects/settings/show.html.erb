@@ -8,11 +8,11 @@
       <%= link_to t("common.edit"), edit_project_path(@project), class: "btn btn-sm" %>
     </div>
     <dl class="card-body grid gap-3 text-sm sm:grid-cols-2">
-      <div><dt class="label"><%= t(".source") %></dt><dd><%= @project.git? ? t(".source_git", url: @project.repository_url, branch: @project.branch) : @project.local? ? t(".source_local", path: @project.local_path) : t(".source_discovered", service: @project.discovered_service) %></dd></div>
+      <div><dt class="label"><%= t(".source") %></dt><dd class="break-words [overflow-wrap:anywhere]"><%= @project.git? ? t(".source_git", url: @project.repository_url, branch: @project.branch) : @project.local? ? t(".source_local", path: @project.local_path) : t(".source_discovered", service: @project.discovered_service) %></dd></div>
       <div><dt class="label"><%= t(".config_file") %></dt><dd class="font-mono"><%= @project.config_file %></dd></div>
-      <div><dt class="label"><%= t(".ssh_key") %></dt><dd><%= @project.ssh_private_key.present? ? t(".stored") : t(".not_set") %></dd></div>
-      <div><dt class="label"><%= t(".protected") %></dt><dd><%= @project.protected_destinations.map { |name| destination_label(name) }.to_sentence.presence || t(".off") %></dd></div>
-      <div><dt class="label"><%= t(".notifications") %></dt><dd><%= @project.notification_webhook_url.present? ? t("projects.form.formats.#{@project.notification_format}", default: @project.notification_format.capitalize) : t(".off") %></dd></div>
+      <div><dt class="label"><%= t(".ssh_key") %></dt><dd class="break-words [overflow-wrap:anywhere]"><%= @project.ssh_private_key.present? ? t(".stored") : t(".not_set") %></dd></div>
+      <div><dt class="label"><%= t(".protected") %></dt><dd class="break-words [overflow-wrap:anywhere]"><%= @project.protected_destinations.map { |name| destination_label(name) }.to_sentence.presence || t(".off") %></dd></div>
+      <div><dt class="label"><%= t(".notifications") %></dt><dd class="break-words [overflow-wrap:anywhere]"><%= @project.notification_webhook_url.present? ? t("projects.form.formats.#{@project.notification_format}", default: @project.notification_format.capitalize) : t(".off") %></dd></div>
     </dl>
   <% end %>
 
@@ -54,7 +54,7 @@
         <h2 class="card-title"><%= t(".files") %></h2>
         <p class="text-xs text-muted"><%= t(".files_hint_html") %></p>
       </div>
-      <div class="flex gap-2">
+      <div class="flex flex-wrap gap-2 [&>input]:min-w-0 [&>input]:flex-1 [&>input]:basis-48">
         <% unless @project.project_files.any? { |file| file.path == "config/master.key" } %>
           <%= link_to t(".add_master_key"), new_project_project_file_path(@project, path: "config/master.key"), class: "btn btn-sm" %>
         <% end %>
@@ -94,9 +94,9 @@
     </div>
     <div class="card-body space-y-2">
       <% hook_url = deploy_hook_url(@project.deploy_webhook_token) %>
-      <div class="flex gap-2">
+      <div class="flex flex-wrap gap-2 [&>input]:min-w-0 [&>input]:flex-1 [&>input]:basis-48">
         <input type="text" readonly value="<%= hook_url %>" class="input font-mono text-xs">
-        <button class="btn" data-controller="clipboard" data-clipboard-copied-value="<%= t("common.copied") %>" data-clipboard-text-value="<%= hook_url %>" data-action="clipboard#copy"><%= t("common.copy") %></button>
+        <button class="btn" data-controller="clipboard" data-clipboard-error-value="<%= t('ui.copy_failed') %>" data-clipboard-copied-value="<%= t("common.copied") %>" data-clipboard-text-value="<%= hook_url %>" data-action="clipboard#copy"><%= t("common.copy") %></button>
       </div>
       <p class="hint"><%= t(".webhook_example_html", example: tag.code(%(curl -X POST "#{hook_url}?destination=#{@project.destinations.compact.first || "production"}"), class: "break-all")) %></p>
     </div>
@@ -104,7 +104,7 @@
 
   <%= render Ui::PanelComponent.new(class: 'border-danger/30') do %>
     <div class="card-header"><h2 class="card-title text-danger"><%= t(".danger_zone") %></h2></div>
-    <div class="card-body flex items-center justify-between gap-4">
+    <div class="card-body flex flex-wrap items-center justify-between gap-4">
       <p class="text-sm text-muted"><%= t(".delete_hint") %></p>
       <%= button_to t(".delete_project"), project_path(@project), method: :delete, class: "btn btn-danger", form: { data: { turbo_confirm: t(".confirm_delete_project", project: @project.name) } } %>
     </div>

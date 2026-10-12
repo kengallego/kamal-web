@@ -1,5 +1,5 @@
 <%= turbo_stream_from StatusBoardsController::STREAM %>
-<div class="mb-6 flex items-center justify-between">
+<div class="mb-8 flex flex-wrap items-center justify-between gap-4">
   <h1 class="text-2xl font-semibold text-foreground"><%= t(".title") %></h1>
   <span class="flex items-center gap-2 text-sm text-muted"><span class="size-2 animate-pulse rounded-full bg-success"></span><%= t(".live", time: l(Time.current, format: "%H:%M:%S")) %></span>
 </div>

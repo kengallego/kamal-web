@@ -1,16 +1,14 @@
 <% content_for :title, t('common.dashboard') %>
 <%= render Ui::PageHeaderComponent.new(title: t('ui.dashboard_title'), description: t('ui.dashboard_description'), eyebrow: t('ui.workspace')) do %>
-  <%= button_to discovery_path, class: 'btn', title: t('.scan_title') do %><%= render Ui::IconComponent.new(name: :refresh, size: 15) %><%= t('common.scan_this_server') %><% end %>
+  <%= button_to discovery_path, class: 'btn btn-quiet', title: t('.scan_title') do %><%= render Ui::IconComponent.new(name: :refresh, size: 15) %><%= t('common.scan_this_server') %><% end %>
   <%= link_to new_project_path, class: 'btn btn-primary' do %><%= render Ui::IconComponent.new(name: :plus, size: 16) %><%= t('common.new_project') %><% end %>
 <% end %>
-
 <% if @alerts.any? %>
-  <div class="mb-9 overflow-hidden rounded-xl border border-danger/30 bg-danger/5">
-    <p class="border-b border-danger/15 px-4 py-2.5 text-sm font-medium text-danger"><%= t("alerts.heading", count: @alerts.size) %></p>
+  <div class="mb-9 overflow-hidden rounded-2xl border border-danger/20 bg-danger/5" role="status">
+    <p class="border-b border-danger/15 px-6 py-3 text-sm font-medium text-danger"><%= t("alerts.heading", count: @alerts.size) %></p>
     <%= render "alerts/list", alerts: @alerts, show_project: true %>
   </div>
 <% end %>
-
 <% if @projects.empty? %>
   <%= render Ui::PanelComponent.new do %>
     <%= render Ui::EmptyStateComponent.new(title: t('.empty_title'), description: t('.empty_html')) do %>
@@ -18,18 +16,23 @@
     <% end %>
   <% end %>
 <% else %>
-  <div class="mb-9 grid grid-cols-3 gap-3 sm:gap-4">
+  <div class="stat-strip">
     <%= render Ui::StatComponent.new(label: t('layouts.application.projects'), value: @projects.size, icon: :cube, caption: t('ui.projects_caption')) %>
     <%= render Ui::StatComponent.new(label: t('ui.servers'), value: @projects.flat_map(&:hosts).uniq.size, icon: :server, caption: t('ui.servers_caption')) %>
     <%= render Ui::StatComponent.new(label: t('ui.active_operations'), value: @projects.count { |project| project.active_operation }, icon: :activity, caption: t('ui.operations_caption')) %>
   </div>
-  <section aria-labelledby="projects-heading">
-    <div class="mb-4 flex items-center gap-2.5"><h2 id="projects-heading" class="text-sm font-semibold text-foreground"><%= t('layouts.application.projects') %></h2><%= render Ui::BadgeComponent.new(label: @projects.size) %></div>
-    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+  <section aria-labelledby="projects-heading" data-controller="filter">
+    <div class="mb-5 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-2.5"><h2 id="projects-heading" class="section-heading"><%= t('layouts.application.projects') %></h2><span class="text-xs text-faint" data-filter-target="count" aria-live="polite"><%= @projects.size %></span></div>
+      <input type="search" class="filter-input" placeholder="<%= t('ui.search_projects') %>" aria-label="<%= t('ui.search_projects') %>" data-filter-target="input" data-action="input->filter#filter">
+    </div>
+    <div class="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
       <% @projects.each do |project| %><%= render Ui::ProjectCardComponent.new(project: project, metrics: @latest_metrics[project.id]) %><% end %>
     </div>
+    <p class="rounded-2xl border border-dashed border-strong-line px-6 py-12 text-center text-muted" hidden data-filter-target="empty" role="status"><%= t('ui.no_results') %></p>
   </section>
-  <%= render Ui::PanelComponent.new(title: t('common.recent_activity'), class: 'mt-9') do %>
-    <%= render 'command_runs/table', runs: @recent_runs, show_project: true %>
-  <% end %>
+  <div class="mt-10">
+    <h2 class="section-heading mb-5"><%= t('common.recent_activity') %></h2>
+    <%= render Ui::PanelComponent.new do %><%= render 'command_runs/table', runs: @recent_runs, show_project: true %><% end %>
+  </div>
 <% end %>

@@ -1,9 +1,13 @@
 <% content_for :title, "#{t("common.commands")} · #{@project.name}" %>
 <%= render "projects/header", project: @project, destination: @destination %>
 
-<p class="mb-4 text-sm text-muted">
+<div data-controller="filter">
+<div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+<p class="text-sm text-muted">
   <%= t(".intro_html", destination: tag.span(destination_label(@destination), class: "text-body")) %>
 </p>
+<input type="search" class="filter-input" placeholder="<%= t('ui.search_commands') %>" aria-label="<%= t('ui.search_commands') %>" data-filter-target="input" data-action="input->filter#filter">
+</div>
 
 <% unavailable = [] %>
 <div class="space-y-8">
@@ -11,12 +15,12 @@
     <% blocked, commands = commands.partition { |command| !@project.allows_command?(command) } %>
     <% unavailable.concat(blocked) %>
     <% next if commands.empty? %>
-    <section>
+    <section data-filter-target="group">
       <h2 class="mb-3 text-sm font-semibold text-body"><%= CommandCatalog.group_label(group) %></h2>
       <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         <% commands.each do |command| %>
-          <%= form_with url: project_command_runs_path(@project), class: "card flex flex-col gap-3 p-4",
-            data: (command.mutating? ? command_confirm(@project, @destination, t(".confirm", command: command.label, destination: destination_label(@destination))) : {}) do |form| %>
+          <%= form_with url: project_command_runs_path(@project), class: "card flex flex-col gap-4 p-5",
+            data: (command.mutating? ? command_confirm(@project, @destination, t(".confirm", command: command.label, destination: destination_label(@destination))) : {}).merge(filter_target: 'item', filter_text: "#{command.label} #{command.key} #{command.description}") do |form| %>
             <%= hidden_field_tag :kind, command.key, id: nil %>
             <%= hidden_field_tag :destination, @destination, id: nil %>
 
@@ -33,39 +37,42 @@
             <% end %>
 
             <% command.fields.each do |field| %>
+              <% field_id = "command_#{command.key}_#{field.name}" %>
               <% if field.type == :boolean %>
                 <label class="flex items-center gap-2 text-sm text-body">
-                  <%= check_box_tag "options[#{field.name}]", "1", false, class: "accent-accent", id: nil %>
+                  <%= check_box_tag "options[#{field.name}]", "1", false, class: "accent-accent", id: field_id %>
                   <%= field.label %>
                 </label>
                 <% next %>
               <% end %>
               <div>
-                <label class="label"><%= field.label %></label>
+                <label class="label" for="<%= field_id %>"><%= field.label %></label>
                 <% case field.type %>
                 <% when :code %>
-                  <%= text_area_tag "options[#{field.name}]", nil, rows: 4, required: field.required, placeholder: field.placeholder, class: "input font-mono", id: nil %>
+                  <%= text_area_tag "options[#{field.name}]", nil, rows: 4, required: field.required, placeholder: field.placeholder, class: "input font-mono", id: field_id %>
                 <% when :number %>
-                  <%= number_field_tag "options[#{field.name}]", nil, min: 1, max: 5000, placeholder: field.placeholder, class: "input", id: nil %>
+                  <%= number_field_tag "options[#{field.name}]", nil, min: 1, max: 5000, placeholder: field.placeholder, class: "input", id: field_id %>
                 <% when :host %>
-                  <%= select_tag "options[#{field.name}]", options_for_select(@config.all_hosts), include_blank: t(".default_hosts"), class: "input", id: nil %>
+                  <%= select_tag "options[#{field.name}]", options_for_select(@config.all_hosts), include_blank: t(".default_hosts"), class: "input", id: field_id %>
                 <% when :accessory %>
                   <%= select_tag "options[#{field.name}]", options_for_select(@config.accessories.keys),
-                    include_blank: (field.required ? false : t(".all_accessories")), class: "input", id: nil %>
+                    include_blank: (field.required ? false : t(".all_accessories")), class: "input", id: field_id %>
                 <% else %>
-                  <%= text_field_tag "options[#{field.name}]", nil, required: field.required, placeholder: field.placeholder, class: "input", id: nil %>
+                  <%= text_field_tag "options[#{field.name}]", nil, required: field.required, placeholder: field.placeholder, class: "input", id: field_id %>
                 <% end %>
               </div>
             <% end %>
 
             <div class="mt-auto pt-1">
-                <%= form.submit t("common.run"), class: command.mutating? ? "btn btn-primary" : "btn" %>
+                <%= form.submit t("common.run"), class: "btn btn-sm" %>
             </div>
           <% end %>
         <% end %>
       </div>
     </section>
   <% end %>
+</div>
+<p class="rounded-2xl border border-dashed border-strong-line px-6 py-12 text-center text-muted" hidden data-filter-target="empty" role="status"><%= t('ui.no_results') %></p>
 </div>
 
 <% if unavailable.any? %>
