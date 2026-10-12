@@ -1,0 +1,13 @@
+<dialog data-controller="typed-confirm" class="m-auto w-[min(28rem,calc(100vw-2rem))] rounded-xl border border-line bg-surface p-0 text-foreground shadow-xl backdrop:bg-black/40">
+  <form method="dialog" class="space-y-4 p-5">
+    <p class="font-medium" data-typed-confirm-target="message"></p>
+    <p class="text-sm text-muted"><%= t(".protected_html", word: tag.code("", class: "font-semibold text-foreground", data: { typed_confirm_target: "word" })) %></p>
+    <input type="text" class="input font-mono" autocomplete="off" spellcheck="false" aria-label="<%= t(".label") %>"
+      data-typed-confirm-target="input" data-action="input->typed-confirm#check">
+    <%# The confirm button comes first so Enter only submits once it's enabled. %>
+    <div class="flex flex-row-reverse gap-2">
+      <button value="confirm" class="btn btn-danger" data-typed-confirm-target="confirm" disabled><%= t(".confirm") %></button>
+      <button value="cancel" class="btn" formnovalidate><%= t("common.cancel") %></button>
+    </div>
+  </form>
+</dialog>

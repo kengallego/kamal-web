@@ -1,0 +1,16 @@
+<%# locals: (alerts:, show_project: false) %>
+<ul class="divide-y divide-danger/15">
+  <% alerts.each do |alert| %>
+    <li class="flex flex-wrap items-baseline gap-x-3 gap-y-1 px-4 py-2.5 text-sm">
+      <span class="size-2 shrink-0 self-center rounded-full bg-danger"></span>
+      <% if show_project %>
+        <%= link_to alert.project.name, project_path(alert.project), class: "font-medium text-foreground hover:underline" %>
+      <% end %>
+      <span class="min-w-0 break-words text-danger"><%= alert.title %></span>
+      <% if alert.message.present? %>
+        <span class="min-w-0 break-words font-mono text-xs text-muted"><%= alert.message.truncate(160) %></span>
+      <% end %>
+      <span class="ml-auto shrink-0 text-xs text-muted"><%= t("alerts.since", time: time_ago(alert.opened_at)) %></span>
+    </li>
+  <% end %>
+</ul>

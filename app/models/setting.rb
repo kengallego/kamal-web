@@ -3,6 +3,9 @@ class Setting < ApplicationRecord
 
   encrypts :ssh_private_key
 
+  validates :alert_disk_percent, :alert_memory_percent, numericality: { only_integer: true, in: 50..100 }
+  validates :scheduled_backups_keep, numericality: { only_integer: true, in: 1..90 }
+
   # Written to the storage volume for bin/authorize-key, which the
   # `kamal authorize` alias in config/deploy.yml runs on the server.
   PUBLIC_KEY_FILE = "kamal-web.pub"

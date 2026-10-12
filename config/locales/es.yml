@@ -29,6 +29,10 @@ es:
       project_file:
         content: Contenido
         path: Ruta
+      setting:
+        alert_disk_percent: Alerta de disco
+        alert_memory_percent: Alerta de memoria
+        scheduled_backups_keep: Copias a conservar
     errors:
       models:
         command_run:
@@ -37,6 +41,7 @@ es:
               unknown: no está configurado en este proyecto
             kind:
               unsupported: no es un comando admitido
+          confirmation_required: '%{word} está protegido. Escribe %{word} para confirmar.'
           needs_repository: '%{command} necesita el repositorio del proyecto, porque la configuración detectada en el servidor no tiene env ni secrets. Conéctalo en los ajustes del proyecto.'
           operation_running: '%{command} ya está en curso en este proyecto. Espera a que termine o cancélalo.'
         console_session:
@@ -67,15 +72,38 @@ es:
               outside_project: debe ser una ruta relativa dentro del proyecto
     models:
       project: Proyecto
+  alerts:
+    days_left:
+      one: queda 1 día
+      other: quedan %{count} días
+    heading:
+      one: 1 alerta abierta
+      other: '%{count} alertas abiertas'
+    kinds:
+      app_down: La app no está en marcha en %{subject}
+      certificate: El certificado TLS de %{subject} caduca pronto
+      disk: Disco casi lleno en %{subject}
+      health_check: '%{subject} no responde'
+      host_unreachable: No se puede conectar por SSH a %{subject}
+      memory: Memoria casi llena en %{subject}
+      proxy_errors: Muchas respuestas 5xx en %{subject}
+    since: desde hace %{time}
   checks:
     app: App
     app_down: No hay ningún contenedor %{role} en marcha en %{host}. Despliega, o usa Iniciar app desde Comandos.
     app_running: En marcha en %{host}
+    certificate:
+      one: el certificado caduca en 1 día
+      other: el certificado caduca en %{count} días
     config: Configuración
     config_not_loaded: Aún sin cargar. Pulsa Sincronizar.
     config_read: '%{file} leído'
     config_read_at: '%{file} leído %{time}'
     config_sync_failed: 'La última sincronización falló: mira arriba.'
+    health: '%{url}'
+    health_ok: HTTP %{status} en %{ms} ms · %{uptime} disponible en 24 h
+    health_pending: Aún sin comprobar. Se comprueba cada minuto.
+    health_status: Respondió HTTP %{status}
     proxy_down: No está en marcha en %{hosts}. Ejecuta Arrancar proxy desde Comandos.
     repository: Repositorio
     repository_missing: Detectada en el servidor. Añade el repositorio git para desplegar y hacer rollback.
@@ -369,6 +397,20 @@ es:
     containers:
       containers:
         empty: Todavía no hay contenedores de esta app.
+    deploy_previews:
+      preview:
+        ahead_html:
+          one: 1 commit nuevo en %{branch} desde la versión activa %{version}
+          other: '%{count} commits nuevos en %{branch} desde la versión activa %{version}'
+        as_of: Según la última sincronización, %{time}. Al desplegar se descarga primero el código más reciente.
+        confirm_release: ¿Liberar el bloqueo de deploy? Asegúrate de que nadie esté desplegando.
+        current_html: La versión activa %{version} es el último commit.
+        locked: Los deploys están bloqueados
+        more: y %{count} más
+        no_details: Sin detalles
+        not_deployed: Aún no se ha desplegado.
+        release_lock: Liberar bloqueo
+        unknown_html: La versión activa %{version} no está en el historial reciente de %{branch}.
     edit:
       title: Editar %{project}
     environment_variables:
@@ -400,6 +442,8 @@ es:
       monitoring: Recoger métricas de los servidores cada minuto
       name: Nombre
       notifications: Notificaciones
+      protected_destinations: Destinos protegidos
+      protected_destinations_hint: Los comandos que cambian estos servidores piden escribir el nombre del destino (o del proyecto, para el predeterminado) antes de ejecutarse. No afecta al webhook de deploy.
       repository_url: URL del repositorio
       repository_url_placeholder: git@github.com:acme/app.git o https://github.com/acme/app.git
       save: Guardar proyecto
@@ -430,7 +474,6 @@ es:
         container: Contenedor
         cores: '%{load} / %{count} núcleos'
         image: Imagen
-        last_24h: Últimas 24 horas
         load: Carga
         logs: Logs
         memory: Memoria
@@ -438,8 +481,16 @@ es:
         no_samples: aún sin datos
         'off': La monitorización está desactivada en este proyecto. Actívala en sus ajustes.
         ports: Puertos
+        ranges:
+          24h: 24 h
+          30d: 30 días
+          7d: 7 días
+        ranges_long:
+          24h: Últimas 24 horas
+          30d: Últimos 30 días, medias por hora
+          7d: Últimos 7 días, medias por hora
         refresh: Actualizar ahora
-        sampled: Se mide cada minuto por SSH y se guarda 24 horas.
+        sampled: Se mide cada minuto por SSH. Se guarda 24 horas, y en medias por hora durante 30 días.
         updated: actualizado %{time}
     new:
       terminal_html: No hace falta añadir nada aquí. Ejecuta <code class="text-sky-100">kamal setup</code> o <code class="text-sky-100">kamal deploy</code> desde la carpeta de tu app como siempre, apuntando a este servidor, y Kamal Web añade la app solo en menos de 5 minutos, o al momento con %{scan}. Añade un proyecto aquí abajo solo si también quieres desplegar desde Kamal Web.
@@ -507,6 +558,7 @@ es:
         notifications: Notificaciones
         'off': Desactivadas
         path: Ruta
+        protected: Destinos protegidos
         regenerate: Regenerar
         replace: Sustituir
         source: Origen
@@ -535,6 +587,7 @@ es:
       domains: Dominios
       image: Imagen
       press_sync_html: Pulsa Sincronizar para leer %{file}.
+      protected: protegido
       redeploy: Redesplegar
       servers: Servidores
       service: Servicio
@@ -550,21 +603,30 @@ es:
     edit:
       access_key: Clave de acceso a los servidores
       access_key_hint: Se usa en todos los proyectos sin clave SSH propia, incluidas las apps detectadas en este servidor.
+      alert_disk: Disco usado
+      alert_memory: Memoria usada
+      alerts: Alertas
+      alerts_hint: La monitorización abre una alerta cuando algo falla y la cierra cuando se arregla. Ambas cosas se envían al webhook de notificaciones del proyecto y se muestran en el panel.
+      alerts_list: 'También avisa si no se puede conectar a un host por SSH, la app no está en marcha, un dominio no responde a su health check, un certificado TLS caduca en menos de 14 días o kamal-proxy da más de un 10 % de respuestas 5xx.'
       backup: Copia de seguridad
       backup_hint: 'Proyectos, variables y claves cifradas, ajustes e historial, y la clave que los descifra. Guarda el archivo en un sitio seguro: abre todos los secrets guardados aquí.'
       confirm_regenerate: La URL actual dejará de funcionar.
       confirm_restore: ¿Sustituir todo lo de esta instancia por la copia? Kamal Web se reinicia para restaurarla.
       detect_again: Volver a detectar
       download: Descargar copia
+      download_short: Descargar
       enabled: Activado
       ignored_html: 'No se vuelven a detectar porque las eliminaste: %{services}'
       instance: Instancia
+      keep: Conservar las últimas
       open: Abrir
       other_servers_html: 'En cualquier otro servidor, con el usuario con el que despliega Kamal (normalmente <code>root</code>):'
       regenerate: Regenerar URL
       release_notes: ' (novedades)'
       restore: Restaurar
       restore_hint_html: Restaurar sustituye los datos actuales. Lo sustituido se guarda en <code>storage/before-restore-*</code>, dentro del volumen.
+      scheduled_backups: Hacer una copia cada día a las 3:00
+      scheduled_backups_hint_html: Se guardan en %{path}, dentro del volumen de Kamal Web. Protege contra errores, pero no contra perder el servidor. Descarga una de vez en cuando para tener una copia en otro sitio.
       status_board: Status board
       status_board_hint: Una página de solo lectura para una TV o para tu equipo, con el estado de los deploys y la salud de los servidores. Se actualiza en tiempo real. Cualquiera con el enlace puede verla.
       this_server: 'Para el servidor donde corre Kamal Web, desde tu carpeta de Kamal Web:'
@@ -579,6 +641,10 @@ es:
         dark: Oscuro
         light: Claro
         system: Auto
+    typed_confirm:
+      confirm: Confirmar
+      label: Confirmación
+      protected_html: Este destino está protegido. Escribe %{word} para confirmar.
   status_boards:
     show:
       live: En directo · actualizado a las %{time}

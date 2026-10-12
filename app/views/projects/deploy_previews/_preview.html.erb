@@ -1,0 +1,48 @@
+<%= turbo_frame_tag "deploy_preview" do %>
+  <% if @error %>
+    <p class="px-5 py-3 text-sm text-danger"><%= @error %></p>
+  <% elsif @preview %>
+    <% if (lock = @preview.lock) %>
+      <div class="flex flex-wrap items-start justify-between gap-3 border-t border-line bg-warning/10 px-5 py-3 text-sm">
+        <div class="min-w-0">
+          <p class="font-medium text-warning"><%= t(".locked") %></p>
+          <pre class="mt-1 whitespace-pre-wrap font-mono text-xs text-warning/80"><%= lock.details.presence || t(".no_details") %></pre>
+        </div>
+        <%= button_to t(".release_lock"), project_command_runs_path(@project), params: { kind: "lock_release", destination: @destination },
+          class: "btn btn-sm", form: { data: { turbo_frame: "_top", turbo_confirm: t(".confirm_release") } } %>
+      </div>
+    <% end %>
+
+    <% if @project.git? %>
+      <% live = @preview.deployed_version %>
+      <% live_label = live && (live.match?(/\A\h{40}/) ? short_sha(live) : live.truncate(24)) %>
+      <div class="border-t border-line px-5 py-3 text-sm">
+        <% case @preview.state %>
+        <% when :none %>
+          <p class="text-muted"><%= t(".not_deployed") %></p>
+        <% when :current %>
+          <p class="text-muted"><%= t(".current_html", version: tag.code(live_label, class: "text-body")) %></p>
+        <% when :unknown %>
+          <p class="text-muted"><%= t(".unknown_html", version: tag.code(live_label, class: "text-body"), branch: tag.code(@project.branch)) %></p>
+        <% else %>
+          <p class="mb-2 text-muted"><%= t(".ahead_html", count: @preview.commits.size, version: tag.code(live_label, class: "text-body"), branch: tag.code(@project.branch)) %></p>
+          <ul class="space-y-1">
+            <% @preview.commits.first(10).each do |commit| %>
+              <li class="flex min-w-0 items-baseline gap-2">
+                <code class="shrink-0 text-xs text-muted"><%= short_sha(commit.sha) %></code>
+                <span class="truncate text-body" title="<%= commit.subject %>"><%= commit.subject %></span>
+                <span class="ml-auto hidden shrink-0 text-xs text-muted sm:inline"><%= commit.author %> · <%= time_ago(commit.time) %></span>
+              </li>
+            <% end %>
+          </ul>
+          <% if @preview.commits.size > 10 %>
+            <p class="mt-1 text-xs text-muted"><%= t(".more", count: @preview.commits.size - 10) %></p>
+          <% end %>
+        <% end %>
+        <% if @project.synced_at && @preview.state != :none %>
+          <p class="mt-2 text-xs text-muted"><%= t(".as_of", time: time_ago(@project.synced_at)) %></p>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

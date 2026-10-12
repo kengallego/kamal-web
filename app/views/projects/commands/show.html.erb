@@ -16,7 +16,7 @@
       <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         <% commands.each do |command| %>
           <%= form_with url: project_command_runs_path(@project), class: "card flex flex-col gap-3 p-4",
-            data: (command.mutating? ? { turbo_confirm: t(".confirm", command: command.label, destination: destination_label(@destination)) } : {}) do |form| %>
+            data: (command.mutating? ? command_confirm(@project, @destination, t(".confirm", command: command.label, destination: destination_label(@destination))) : {}) do |form| %>
             <%= hidden_field_tag :kind, command.key, id: nil %>
             <%= hidden_field_tag :destination, @destination, id: nil %>
 

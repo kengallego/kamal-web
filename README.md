@@ -9,21 +9,24 @@ You deploy it with Kamal, like your other apps, and it runs as one container nex
 - **Finds the Kamal apps already on the server.** On boot and every 5 minutes, Kamal Web looks at the containers on its own server (through the Docker socket) and adds every Kamal app it finds, with its destinations, roles, accessories and domains. No setup beyond `kamal authorize`.
 - **Projects from git or a mounted folder.** Kamal Web clones your repository (over SSH deploy keys or HTTPS tokens), pulls before every command and detects destinations such as `config/deploy.staging.yml` automatically.
 - **Deploy, redeploy, rollback.** Output streams live next to the app's containers on every host, so you see the new version start and the old one stop. Runs can be canceled, and only one server-changing command runs per project at a time.
+- **Know what you deploy.** Next to the Deploy button: the commits between the live version and the branch, and whether Kamal's deploy lock is held (with a button to release it). Destinations such as `production` can be protected, so changing them asks you to type their name first.
 - **Checks.** The overview tells you at a glance whether the config loads, SSH works, kamal-proxy and the app are running and every secret is set, and how to fix what isn't.
 - **Versions on the server.** The overview lists the versions Kamal still keeps on the server and rolls back to any of them in one click.
 - **Every everyday Kamal command:** app boot/start/stop/details/logs/exec, maintenance and live mode, accessories, proxy, deploy lock, prune, registry login, server bootstrap, setup and audit.
 - **Live logs.** Follow app, proxy or accessory logs as they're written, from any host or a single container (one click from the Monitoring tab). Following stops after 30 minutes or when you press Stop.
-- **Web console.** An interactive Rails console, database console or shell in the running app container, right in the browser (`kamal app exec --interactive --reuse`). Every session is recorded (who, where, when); what you type isn't.
+- **Web console.** An interactive Rails console, database console or shell in the running app container, right in the browser (`kamal app exec --interactive --reuse`). Every session is recorded (what, where, when); what you type isn't.
 - **Rails runner.** Evaluates Ruby inside the running app container.
-- **Monitoring.** CPU, memory, disk and load for every host, sampled each minute over SSH and kept for 24 hours, plus the running containers.
+- **Monitoring.** CPU, memory, disk and load for every host, sampled each minute over SSH and kept for 24 hours, plus hourly averages for 30 days and the running containers.
+- **Health checks.** Every domain is requested at its health check path (`/up` by default) each minute, from outside, like a visitor. The overview shows the response time, uptime over 24 hours and when the TLS certificate expires.
+- **Alerts.** Kamal Web opens an alert when a host is unreachable over SSH, its disk or memory is almost full, the app isn't running, a domain fails its health check, a certificate expires within 14 days or kamal-proxy returns more than 10% 5xx responses. Alerts show on the dashboard and are posted to the project's notification webhook when they open and when they resolve.
 - **Proxy view.** kamal-proxy routes and TLS state, plus the app's traffic over the last hour: requests per minute by status, median and p95 latency, and the latest requests.
 - **Secrets.** Encrypted environment variables (per destination) for `.kamal/secrets`, and secret files such as `config/master.key`. SSH keys are encrypted and only loaded into a temporary ssh-agent while a command runs.
 - **One password.** No accounts to manage: the password lives in your Kamal secrets.
-- **Notifications.** Slack, Discord or JSON webhooks when an operation finishes, plus browser notifications.
+- **Notifications.** Slack, Discord or JSON webhooks when an operation finishes or an alert opens or resolves, plus browser notifications.
 - **Deploy webhook.** Trigger deploys from CI or a GitHub/GitLab push.
 - **Status board.** A read-only page for a TV or for stakeholders, behind a secret URL. It updates live as deploys run and metrics arrive.
 - **English and Spanish, light and dark.** Follows the browser's language and theme, or pick them in the sidebar.
-- **Backups.** Download everything from Settings and restore it in one step.
+- **Backups.** Download everything from Settings and restore it in one step, or turn on a daily backup kept in the volume.
 - **Update notice.** The sidebar tells you when a new Kamal Web release is out.
 
 ## Install
@@ -115,7 +118,13 @@ Sign-in attempts are limited to 10 every 3 minutes per IP. Changing the password
 
 **Settings → Download backup** saves the database (projects, encrypted variables, settings, history) and the key that decrypts it in one `.tar.gz`. Anyone with the file can read every secret in it, so keep it safe.
 
+**Settings → Back up every day** (off by default) writes a backup to `storage/backups` in the volume at 3:00 and keeps the last 7, or as many as you choose. It protects against mistakes but not against losing the server, so download one now and then.
+
 **Settings → Restore** replaces the instance's data with a backup and restarts Kamal Web to apply it. The replaced files stay in the volume under `storage/before-restore-*`.
+
+### History
+
+Command runs and console sessions are deleted after 90 days, but the latest 50 runs of each project are always kept. Resolved alerts are kept for 30 days.
 
 ### Update check
 

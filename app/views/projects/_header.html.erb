@@ -14,6 +14,13 @@
     <%= button_to sync_project_path(project), class: 'btn', title: t('.sync_title') do %><%= render Ui::IconComponent.new(name: :refresh, size: 15) %><%= t('common.sync') %><% end %>
   <% end %>
 
+  <% if (alerts = project.alerts.active.latest_first.to_a).any? %>
+    <div class="mt-4 overflow-hidden rounded-lg border border-danger/30 bg-danger/5">
+      <p class="border-b border-danger/15 px-4 py-2 text-sm font-medium text-danger"><%= t("alerts.heading", count: alerts.size) %></p>
+      <%= render "alerts/list", alerts: alerts %>
+    </div>
+  <% end %>
+
   <% if project.sync_error.present? %>
     <div class="mt-4 rounded-lg border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
       <p class="font-medium"><%= t(".sync_failed") %></p>

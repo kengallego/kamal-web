@@ -1,5 +1,5 @@
 # An interactive shell opened from the browser. The record is the audit trail
-# (who opened what, where and when); the terminal itself streams over
+# (what was opened, where and when); the terminal itself streams over
 # ConsoleChannel and is never stored.
 class ConsoleSession < ApplicationRecord
   KINDS = {

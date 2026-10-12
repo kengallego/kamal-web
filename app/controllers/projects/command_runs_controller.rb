@@ -16,6 +16,7 @@ class Projects::CommandRunsController < Projects::BaseController
     run = @project.command_runs.new(
       kind: command.key,
       destination: params[:destination],
+      confirmation: params[:confirmation],
       options: params.fetch(:options, {}).permit(*command.fields.map(&:name)).to_h
     )
 

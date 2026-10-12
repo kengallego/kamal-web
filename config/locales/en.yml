@@ -30,6 +30,10 @@ en:
       project_file:
         content: Content
         path: Path
+      setting:
+        alert_disk_percent: Disk alert
+        alert_memory_percent: Memory alert
+        scheduled_backups_keep: Backups to keep
     errors:
       models:
         command_run:
@@ -38,6 +42,7 @@ en:
               unknown: is not configured in this project
             kind:
               unsupported: is not a supported command
+          confirmation_required: '%{word} is protected. Type %{word} to confirm.'
           needs_repository: '%{command} needs the project''s repository, because the config detected on the server has no env or secrets. Connect it in the project settings.'
           operation_running: '%{command} is already running for this project. Wait for it to finish or cancel it.'
         console_session:
@@ -68,15 +73,38 @@ en:
               outside_project: must be a relative path inside the project
     models:
       project: Project
+  alerts:
+    days_left:
+      one: 1 day left
+      other: '%{count} days left'
+    heading:
+      one: 1 open alert
+      other: '%{count} open alerts'
+    kinds:
+      app_down: The app isn't running on %{subject}
+      certificate: The TLS certificate for %{subject} expires soon
+      disk: Disk almost full on %{subject}
+      health_check: '%{subject} isn''t responding'
+      host_unreachable: '%{subject} is unreachable over SSH'
+      memory: Memory almost full on %{subject}
+      proxy_errors: Many 5xx responses on %{subject}
+    since: since %{time}
   checks:
     app: App
     app_down: No %{role} container running on %{host}. Deploy, or Start app from Commands.
     app_running: Running on %{host}
+    certificate:
+      one: certificate expires in 1 day
+      other: certificate expires in %{count} days
     config: Config
     config_not_loaded: Not loaded yet. Press Sync.
     config_read: '%{file} read'
     config_read_at: '%{file} read %{time}'
     config_sync_failed: 'The last sync failed: see above.'
+    health: '%{url}'
+    health_ok: HTTP %{status} in %{ms} ms · %{uptime} up in 24 h
+    health_pending: Not requested yet. It's requested every minute.
+    health_status: Answered HTTP %{status}
     proxy_down: Not running on %{hosts}. Run Boot proxy from Commands.
     repository: Repository
     repository_missing: Detected from the server. Add the git repository to deploy and roll back.
@@ -370,6 +398,20 @@ en:
     containers:
       containers:
         empty: No containers of this app yet.
+    deploy_previews:
+      preview:
+        ahead_html:
+          one: 1 new commit on %{branch} since the live version %{version}
+          other: '%{count} new commits on %{branch} since the live version %{version}'
+        as_of: As of the last sync, %{time}. Deploying pulls the latest code first.
+        confirm_release: Release the deploy lock? Make sure nobody is deploying.
+        current_html: The live version %{version} is the latest commit.
+        locked: Deploys are locked
+        more: and %{count} more
+        no_details: No details
+        not_deployed: Not deployed yet.
+        release_lock: Release lock
+        unknown_html: The live version %{version} isn't in the recent history of %{branch}.
     edit:
       title: Edit %{project}
     environment_variables:
@@ -401,6 +443,8 @@ en:
       monitoring: Collect server metrics every minute
       name: Name
       notifications: Notifications
+      protected_destinations: Protected destinations
+      protected_destinations_hint: Commands that change these servers ask you to type the destination's name (or the project's, for the default) before they run. The deploy webhook isn't affected.
       repository_url: Repository URL
       repository_url_placeholder: git@github.com:acme/app.git or https://github.com/acme/app.git
       save: Save project
@@ -431,7 +475,6 @@ en:
         container: Container
         cores: '%{load} / %{count} cores'
         image: Image
-        last_24h: Last 24 hours
         load: Load
         logs: Logs
         memory: Memory
@@ -439,8 +482,16 @@ en:
         no_samples: no samples yet
         'off': Background monitoring is off for this project. Turn it on in the project settings.
         ports: Ports
+        ranges:
+          24h: 24 h
+          30d: 30 days
+          7d: 7 days
+        ranges_long:
+          24h: Last 24 hours
+          30d: Last 30 days, hourly averages
+          7d: Last 7 days, hourly averages
         refresh: Refresh now
-        sampled: Sampled every minute over SSH, kept for 24 hours.
+        sampled: Sampled every minute over SSH. Kept for 24 hours, and as hourly averages for 30 days.
         updated: updated %{time}
     new:
       terminal_html: You don't need to add anything here. Run <code class="text-sky-100">kamal setup</code> or <code class="text-sky-100">kamal deploy</code> from your app's folder as usual, pointing at this server, and Kamal Web adds the app by itself within 5 minutes, or right away with %{scan}. Add a project below only if you want to deploy from Kamal Web too.
@@ -508,6 +559,7 @@ en:
         notifications: Notifications
         'off': 'Off'
         path: Path
+        protected: Protected destinations
         regenerate: Regenerate
         replace: Replace
         source: Source
@@ -536,6 +588,7 @@ en:
       domains: Domains
       image: Image
       press_sync_html: Press Sync to read %{file}.
+      protected: protected
       redeploy: Redeploy
       servers: Servers
       service: Service
@@ -551,21 +604,30 @@ en:
     edit:
       access_key: Server access key
       access_key_hint: Used for every project without its own SSH key, including the apps detected on this server.
+      alert_disk: Disk used
+      alert_memory: Memory used
+      alerts: Alerts
+      alerts_hint: Monitoring opens an alert when something goes wrong and resolves it when it's fixed. Both are posted to the project's notification webhook and shown on the dashboard.
+      alerts_list: 'Also alerted: a host unreachable over SSH, the app not running, a domain not answering its health check, a TLS certificate expiring within 14 days, and more than 10% 5xx responses in kamal-proxy.'
       backup: Backup
       backup_hint: 'Projects, encrypted variables and keys, settings and history, plus the key that decrypts them. Keep the file somewhere safe: it unlocks every secret stored here.'
       confirm_regenerate: The current URL will stop working.
       confirm_restore: Replace everything in this instance with the backup? Kamal Web restarts to restore it.
       detect_again: Detect again
       download: Download backup
+      download_short: Download
       enabled: Enabled
       ignored_html: 'Not detected again because you removed them: %{services}'
       instance: Instance
+      keep: Keep the last
       open: Open
       other_servers_html: 'On any other server, as the user Kamal deploys with (usually <code>root</code>):'
       regenerate: Regenerate URL
       release_notes: ' (release notes)'
       restore: Restore
       restore_hint_html: Restoring replaces the current data. What it replaces is kept in <code>storage/before-restore-*</code> in the volume.
+      scheduled_backups: Back up every day at 3:00
+      scheduled_backups_hint_html: Written to %{path} in Kamal Web's volume, which protects against mistakes but not against losing the server. Download one now and then to keep a copy elsewhere.
       status_board: Status board
       status_board_hint: A read-only page for a TV or for your team, with deploy status and server health. It updates live. Anyone with the link can see it.
       this_server: 'For the server running Kamal Web, from your Kamal Web checkout:'
@@ -580,6 +642,10 @@ en:
         dark: Dark
         light: Light
         system: Auto
+    typed_confirm:
+      confirm: Confirm
+      label: Confirmation
+      protected_html: This destination is protected. Type %{word} to confirm.
   status_boards:
     show:
       live: Live · updated %{time}

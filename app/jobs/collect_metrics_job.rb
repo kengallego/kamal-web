@@ -8,6 +8,7 @@ class CollectMetricsJob < ApplicationJob
       next if project.ssh_keys.empty?
 
       project.hosts.each { |host| ServerProbe.new(project, host).collect }
+      AlertMonitor.new(project).check_hosts
     end
   end
 end

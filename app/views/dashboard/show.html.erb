@@ -4,6 +4,13 @@
   <%= link_to new_project_path, class: 'btn btn-primary' do %><%= render Ui::IconComponent.new(name: :plus, size: 16) %><%= t('common.new_project') %><% end %>
 <% end %>
 
+<% if @alerts.any? %>
+  <div class="mb-9 overflow-hidden rounded-xl border border-danger/30 bg-danger/5">
+    <p class="border-b border-danger/15 px-4 py-2.5 text-sm font-medium text-danger"><%= t("alerts.heading", count: @alerts.size) %></p>
+    <%= render "alerts/list", alerts: @alerts, show_project: true %>
+  </div>
+<% end %>
+
 <% if @projects.empty? %>
   <%= render Ui::PanelComponent.new do %>
     <%= render Ui::EmptyStateComponent.new(title: t('.empty_title'), description: t('.empty_html')) do %>

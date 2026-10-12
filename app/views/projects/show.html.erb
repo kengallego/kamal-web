@@ -10,10 +10,16 @@
         </div>
         <div class="card-body flex flex-wrap items-end gap-3">
           <%= button_to t(".deploy"), project_command_runs_path(@project), params: { kind: "deploy", destination: @destination },
-            class: "btn btn-primary", form: { data: { turbo_confirm: t(".confirm_deploy", project: @project.name, destination: destination_label(@destination)) } } %>
+            class: "btn btn-primary", form: { data: command_confirm(@project, @destination, t(".confirm_deploy", project: @project.name, destination: destination_label(@destination))) } %>
           <%= button_to t(".redeploy"), project_command_runs_path(@project), params: { kind: "redeploy", destination: @destination },
-            class: "btn", form: { data: { turbo_confirm: t(".confirm_redeploy", project: @project.name, destination: destination_label(@destination)) } } %>
+            class: "btn", form: { data: command_confirm(@project, @destination, t(".confirm_redeploy", project: @project.name, destination: destination_label(@destination))) } %>
+          <% if @project.protected_destination?(@destination) %>
+            <span class="badge badge-warning self-center"><%= t(".protected") %></span>
+          <% end %>
         </div>
+        <%= turbo_frame_tag "deploy_preview", src: project_deploy_preview_path(@project, destination: @destination), loading: :lazy, class: "block" do %>
+          <p class="border-t border-line px-5 py-3 text-sm text-muted"><%= t("common.loading") %></p>
+        <% end %>
       <% end %>
     <% end %>
 

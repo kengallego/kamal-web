@@ -10,7 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_15_170001) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_16_090400) do
+  create_table "alerts", force: :cascade do |t|
+    t.integer "project_id", null: false
+    t.string "kind", null: false
+    t.string "subject", default: "", null: false
+    t.text "message"
+    t.datetime "opened_at", null: false
+    t.datetime "resolved_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id", "kind", "subject"], name: "index_alerts_open", unique: true, where: "resolved_at IS NULL"
+    t.index ["project_id"], name: "index_alerts_on_project_id"
+  end
+
   create_table "command_runs", force: :cascade do |t|
     t.integer "project_id", null: false
     t.string "destination"
@@ -55,6 +68,31 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_15_170001) do
     t.index ["project_id"], name: "index_environment_variables_on_project_id"
   end
 
+  create_table "health_checks", force: :cascade do |t|
+    t.integer "project_id", null: false
+    t.string "url", null: false
+    t.integer "status_code"
+    t.float "duration_ms"
+    t.text "error"
+    t.datetime "certificate_expires_at"
+    t.datetime "checked_at", null: false
+    t.index ["project_id", "url", "checked_at"], name: "index_health_checks_on_project_id_and_url_and_checked_at"
+    t.index ["project_id"], name: "index_health_checks_on_project_id"
+  end
+
+  create_table "hourly_metrics", force: :cascade do |t|
+    t.integer "project_id", null: false
+    t.string "host", null: false
+    t.datetime "hour", null: false
+    t.float "cpu_percent"
+    t.float "load_percent"
+    t.float "memory_percent"
+    t.float "disk_percent"
+    t.integer "samples", default: 0, null: false
+    t.index ["project_id", "host", "hour"], name: "index_hourly_metrics_on_project_id_and_host_and_hour", unique: true
+    t.index ["project_id"], name: "index_hourly_metrics_on_project_id"
+  end
+
   create_table "project_files", force: :cascade do |t|
     t.integer "project_id", null: false
     t.string "path", null: false
@@ -88,6 +126,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_15_170001) do
     t.string "discovered_service"
     t.text "discovered_files"
     t.json "discovered_versions", default: {}, null: false
+    t.json "protected_destinations", default: [], null: false
     t.index ["deploy_webhook_token"], name: "index_projects_on_deploy_webhook_token", unique: true
     t.index ["discovered_service"], name: "index_projects_on_discovered_service", unique: true, where: "discovered_service IS NOT NULL"
     t.index ["name"], name: "index_projects_on_name", unique: true
@@ -123,11 +162,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_15_170001) do
     t.string "latest_version"
     t.string "latest_version_url"
     t.datetime "update_checked_at"
+    t.integer "alert_disk_percent", default: 90, null: false
+    t.integer "alert_memory_percent", default: 90, null: false
+    t.boolean "scheduled_backups_enabled", default: false, null: false
+    t.integer "scheduled_backups_keep", default: 7, null: false
   end
 
+  add_foreign_key "alerts", "projects"
   add_foreign_key "command_runs", "projects"
   add_foreign_key "console_sessions", "projects"
   add_foreign_key "environment_variables", "projects"
+  add_foreign_key "health_checks", "projects"
+  add_foreign_key "hourly_metrics", "projects"
   add_foreign_key "project_files", "projects"
   add_foreign_key "server_metrics", "projects"
 end

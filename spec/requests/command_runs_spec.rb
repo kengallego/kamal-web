@@ -53,4 +53,31 @@ RSpec.describe "Command runs" do
     get project_containers_path(project, run_id: run.id)
     expect(response.body).to include("data-poll-final")
   end
+  it "asks for the destination's name on a protected destination" do
+    sign_in
+    project.update!(protected_destinations: [ "." ])
+
+    post project_command_runs_path(project), params: { kind: "deploy" }
+    expect(CommandRun.count).to eq(0)
+    expect(flash[:alert]).to include("Type #{project.name} to confirm")
+
+    get project_path(project)
+    expect(response.body).to include(%(data-confirmation-word="#{project.name}"))
+
+    post project_command_runs_path(project), params: { kind: "deploy", confirmation: project.name }
+    expect(CommandRun.last.kind).to eq("deploy")
+  end
+
+  it "previews a deploy" do
+    sign_in
+    preview = instance_double(DeployPreview, lock: DeployPreview::Lock.new(details: "Message: migrating"), deployed_version: "abcdef1234", state: :current, commits: [])
+    allow(DeployPreview).to receive(:new).and_return(double(call: preview))
+
+    get project_deploy_preview_path(project)
+    expect(response.body).to include("Message: migrating", "Release lock", "abcdef1")
+
+    allow(DeployPreview).to receive(:new).and_raise(RemoteShell::Error, "192.0.2.10: timeout")
+    get project_deploy_preview_path(project)
+    expect(response.body).to include("192.0.2.10: timeout")
+  end
 end

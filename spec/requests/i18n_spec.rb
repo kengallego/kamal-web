@@ -16,6 +16,11 @@ RSpec.describe "Translations" do
     allow_any_instance_of(ServerReleases).to receive(:call).and_return([])
     allow_any_instance_of(ServiceContainers).to receive(:call).and_return([ [], {} ])
     allow(ProxyInspector).to receive(:new).and_return(instance_double(ProxyInspector, routes: [], requests: []))
+    preview = instance_double(DeployPreview, lock: DeployPreview::Lock.new(details: ""), deployed_version: "abc", state: :ahead,
+      commits: [ DeployPreview::Commit.new(sha: "def", author: "Ken", time: 1.hour.ago, subject: "Fix") ])
+    allow(DeployPreview).to receive(:new).and_return(double(call: preview))
+    project.alerts.create!(kind: "certificate", subject: "demo.example.com", opened_at: 1.hour.ago)
+    project.health_checks.create!(url: "https://demo.example.com/up", checked_at: 1.minute.ago, status_code: 200, duration_ms: 12, certificate_expires_at: 40.days.from_now)
   end
 
   def pages
@@ -25,7 +30,8 @@ RSpec.describe "Translations" do
       project_console_session_path(project, project.console_sessions.first), project_monitoring_path(project),
       project_proxy_path(project), project_config_path(project), project_settings_path(project),
       new_project_environment_variable_path(project), new_project_project_file_path(project), edit_settings_path,
-      project_releases_path(project), project_containers_path(project, run_id: run.id),
+      project_releases_path(project), project_containers_path(project, run_id: run.id), project_deploy_preview_path(project),
+      project_monitoring_path(project, range: "30d"),
       status_board_path(Setting.instance.status_board_token) ]
   end
 
@@ -35,7 +41,7 @@ RSpec.describe "Translations" do
       patch preferences_path, params: { locale: locale }
 
       [ new_session_path, *pages ].each do |path|
-        get path, headers: { "Turbo-Frame" => (path.include?("/releases") ? "releases" : path.include?("/containers") ? "containers" : path.include?("/proxy") ? "proxy_data" : nil) }.compact
+        get path, headers: { "Turbo-Frame" => (path.include?("/releases") ? "releases" : path.include?("/deploy_preview") ? "deploy_preview" : path.include?("/containers") ? "containers" : path.include?("/proxy") ? "proxy_data" : nil) }.compact
         expect(response).to have_http_status(:ok), path
         expect(response.body).not_to include("translation_missing", "Translation missing"), "#{path}: #{response.body[/translation_missing[^>]*>[^<]*/]}"
       end

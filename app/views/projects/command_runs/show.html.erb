@@ -21,7 +21,7 @@
       <%= button_to t("common.cancel"), cancel_project_command_run_path(@project, @run), class: "btn btn-danger", form: { data: { turbo_confirm: t(".confirm_cancel") } } %>
     <% else %>
       <%= button_to t(".run_again"), project_command_runs_path(@project), params: { kind: @run.kind, destination: @run.destination }.merge(@run.options.transform_keys { |key| "options[#{key}]" }),
-        class: "btn", form: (@run.mutating? ? { data: { turbo_confirm: t(".confirm_again", command: @run.command.label) } } : {}) %>
+        class: "btn", form: (@run.mutating? ? { data: command_confirm(@project, @run.destination, t(".confirm_again", command: @run.command.label)) } : {}) %>
     <% end %>
   </div>
 </div>

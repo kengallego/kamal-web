@@ -5,8 +5,14 @@ class CommandRun < ApplicationRecord
   TRIGGERS = %w[ manual webhook ].freeze
   OUTPUT_LIMIT = 2.megabytes
   FOLLOW_LIMIT = 30.minutes
+  # Finished runs older than this are deleted, except each project's latest.
+  RETENTION = 90.days
+  KEEP_PER_PROJECT = 50
 
   belongs_to :project
+
+  # What was typed to confirm a command on a protected destination.
+  attribute :confirmation, :string
 
   normalizes :destination, with: ->(d) { d.presence }
 
@@ -17,6 +23,7 @@ class CommandRun < ApplicationRecord
   validate :destination_is_known, on: :create
   validate :one_operation_at_a_time, on: :create
   validate :project_allows_command, on: :create
+  validate :protected_destination_confirmed, on: :create
 
   scope :active, -> { where(status: %w[ queued running ]) }
   scope :finished, -> { where(status: %w[ succeeded failed canceled ]) }
@@ -116,6 +123,14 @@ class CommandRun < ApplicationRecord
     broadcast_append_to self, target: "run_output_#{id}", html: ERB::Util.html_escape(chunk)
   end
 
+  # Stored output makes runs the bulk of the database.
+  def self.prune!
+    Project.find_each do |project|
+      keep = project.command_runs.latest_first.limit(KEEP_PER_PROJECT).select(:id)
+      project.command_runs.finished.where(created_at: ...RETENTION.ago).where.not(id: keep).in_batches.delete_all
+    end
+  end
+
   def self.interrupt_stale!
     active.find_each { |run| run.fail!("Interrupted: Kamal Web restarted while this command was running.") }
   end
@@ -145,6 +160,14 @@ class CommandRun < ApplicationRecord
       if CommandCatalog.exists?(kind) && !project.allows_command?(command)
         errors.add(:base, :needs_repository, command: command.label)
       end
+    end
+
+    # Deploy webhooks are automated, so only commands from the browser ask.
+    def protected_destination_confirmed
+      return unless trigger == "manual" && CommandCatalog.exists?(kind) && mutating? && project.protected_destination?(destination)
+
+      word = project.confirmation_word(destination)
+      errors.add(:base, :confirmation_required, word: word) unless confirmation.to_s.strip == word
     end
 
     def one_operation_at_a_time

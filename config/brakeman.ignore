@@ -1,0 +1,15 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "File Access",
+      "warning_code": 16,
+      "fingerprint": "dd4bd56572fa3bf885b5f3e3555fe5d6bb05d396251e70f12a46a28b284bf42c",
+      "check_name": "SendFile",
+      "message": "Parameter value used in file name",
+      "file": "app/controllers/backups_controller.rb",
+      "line": 10,
+      "note": "The name is only used to pick a file from the listing of storage/backups (InstanceBackup.find_stored), never to build a path."
+    }
+  ],
+  "brakeman_version": "8.1.0"
+}

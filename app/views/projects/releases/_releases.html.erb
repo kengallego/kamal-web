@@ -21,7 +21,7 @@
           </div>
           <% if !release.current && can_roll_back %>
             <%= button_to t(".roll_back"), project_command_runs_path(@project), params: { kind: "rollback", destination: @destination, options: { version: release.version } },
-              class: "btn btn-sm", form: { data: { turbo_frame: "_top", turbo_confirm: t(".confirm", project: @project.name, version: release.version.first(12)) } } %>
+              class: "btn btn-sm", form: { data: { turbo_frame: "_top", **command_confirm(@project, @destination, t(".confirm", project: @project.name, version: release.version.first(12))) } } %>
           <% end %>
         </li>
       <% end %>

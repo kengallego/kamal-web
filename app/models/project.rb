@@ -11,6 +11,9 @@ class Project < ApplicationRecord
   has_many :command_runs, dependent: :destroy
   has_many :console_sessions, dependent: :delete_all
   has_many :server_metrics, dependent: :delete_all
+  has_many :hourly_metrics, dependent: :delete_all
+  has_many :health_checks, dependent: :delete_all
+  has_many :alerts, dependent: :delete_all
 
   has_secure_token :deploy_webhook_token, length: 36
 
@@ -112,6 +115,22 @@ class Project < ApplicationRecord
     hosts.filter_map { |host| server_metrics.where(host: host).order(collected_at: :desc).first }
   end
 
+  # Mutating commands on a protected destination need its name typed to run
+  # from the browser. The base config is stored as "".
+  def protected_destination?(destination)
+    protected_destinations.include?(destination.to_s)
+  end
+
+  # Form checkboxes send "." for the base config, since "" is what an empty
+  # selection sends.
+  def protected_destinations=(names)
+    super(Array(names).compact_blank.map { |name| name == "." ? "" : name.to_s }.uniq)
+  end
+
+  def confirmation_word(destination)
+    destination.presence || name
+  end
+
   def active_operation
     command_runs.active.find(&:mutating?)
   end
@@ -121,7 +140,6 @@ class Project < ApplicationRecord
     runs = runs.where(destination: destination) unless destination == :any
     runs.order(created_at: :desc).first
   end
-
 
   private
     # Only clones made by Kamal Web are removed; mounted folders are left alone.

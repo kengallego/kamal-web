@@ -17,6 +17,7 @@ Rails.application.routes.draw do
       resource :proxy, only: :show
       resource :config, only: :show
       resource :releases, only: :show
+      resource :deploy_preview, only: :show
       resource :containers, only: :show
       resources :environment_variables, except: %i[ index show ]
       resources :project_files, except: %i[ index show ]
@@ -30,7 +31,9 @@ Rails.application.routes.draw do
     post :reset_ignored_services
   end
   resource :discovery, only: :create
-  resource :backup, only: %i[ show create ]
+  resource :backup, only: %i[ show create ] do
+    get "stored/:name", action: :stored, as: :stored, format: false, constraints: { name: /[^\/]+/ }
+  end
 
   get "status/:token" => "status_boards#show", as: :status_board
   post "hooks/deploy/:token" => "deploy_hooks#create", as: :deploy_hook

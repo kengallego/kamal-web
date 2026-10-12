@@ -90,4 +90,25 @@ RSpec.describe CommandRun do
 
     expect { run.finish!(0) }.to have_enqueued_job(DeployNotificationJob)
   end
+  it "asks for the destination's name on a protected destination, except from the deploy webhook" do
+    project.update!(protected_destinations: [ ".", "staging" ])
+    expect(project.protected_destinations).to eq([ "", "staging" ])
+
+    expect(project.command_runs.build(kind: "deploy", destination: "staging")).not_to be_valid
+    expect(project.command_runs.build(kind: "deploy", destination: "staging", confirmation: "staging")).to be_valid
+    expect(project.command_runs.build(kind: "deploy", confirmation: "staging")).not_to be_valid
+    expect(project.command_runs.build(kind: "deploy", confirmation: project.name)).to be_valid
+    expect(project.command_runs.build(kind: "deploy", destination: "staging", trigger: "webhook")).to be_valid
+    expect(project.command_runs.build(kind: "app_logs", destination: "staging")).to be_valid
+  end
+
+  it "prunes old finished runs but keeps each project's latest" do
+    stub_const("CommandRun::KEEP_PER_PROJECT", 2)
+    runs = Array.new(4) { |index| project.command_runs.create!(kind: "app_details").tap { |run| run.update_columns(status: "succeeded", created_at: (100 + index).days.ago) } }
+    active = project.command_runs.create!(kind: "app_logs").tap { |run| run.update_columns(created_at: 200.days.ago) }
+    recent = project.command_runs.create!(kind: "app_details").tap { |run| run.update_columns(status: "failed") }
+
+    CommandRun.prune!
+    expect(project.command_runs.pluck(:id)).to contain_exactly(runs.first.id, active.id, recent.id)
+  end
 end

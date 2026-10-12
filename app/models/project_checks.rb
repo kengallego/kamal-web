@@ -18,7 +18,7 @@ class ProjectChecks
   end
 
   def all
-    [ config_check, *ssh_checks, proxy_check, app_check, secrets_check, repository_check ].compact
+    [ config_check, *ssh_checks, proxy_check, app_check, *health_checks, secrets_check, repository_check ].compact
   end
 
   def failures?
@@ -79,6 +79,38 @@ class ProjectChecks
       else
         Check.new(t("app"), :failed, t("app_down", role: @config.primary_role, host: host))
       end
+    end
+
+    # From CheckAppHealthJob, which requests each domain every minute.
+    def health_checks
+      return [] unless @config.present?
+
+      urls = @config.health_check_urls
+      latest = @project.health_checks.latest_per_url.where(url: urls).index_by(&:url)
+
+      urls.map do |url|
+        check = latest[url]
+        label = t("health", url: url.sub(%r{\Ahttps?://}, ""))
+        if check.nil?
+          Check.new(label, :unknown, @project.monitoring_enabled? ? t("health_pending") : t("ssh_monitoring_off"))
+        elsif check.up?
+          Check.new(label, :ok, [ t("health_ok", status: check.status_code, ms: check.duration_ms.round, uptime: uptime(url)), certificate(check) ].compact.join(" · "))
+        else
+          Check.new(label, :failed, check.error&.truncate(200) || t("health_status", status: check.status_code))
+        end
+      end
+    end
+
+    def uptime(url)
+      checks = @project.health_checks.recent.where(url: url)
+      total = checks.count
+      up = checks.where(error: nil, status_code: 200..399).count
+      total.zero? ? "–" : "#{(up * 100.0 / total).floor(1)}%"
+    end
+
+    def certificate(check)
+      days = check.certificate_days_left
+      t("certificate", count: days) if days
     end
 
     def secrets_check

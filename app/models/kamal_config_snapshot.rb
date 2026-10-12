@@ -34,6 +34,20 @@ class KamalConfigSnapshot
     data.fetch("proxy_hosts", [])
   end
 
+  # Snapshots taken before these were recorded assume Kamal's defaults.
+  def proxy_ssl?
+    data.fetch("proxy_ssl", true) != false
+  end
+
+  def healthcheck_path
+    data["healthcheck_path"].presence || "/up"
+  end
+
+  # What CheckAppHealthJob requests: each domain at the health check path.
+  def health_check_urls
+    proxy_hosts.reject { |host| host.include?("*") }.map { |host| "#{proxy_ssl? ? "https" : "http"}://#{host}#{healthcheck_path}" }
+  end
+
   def ssh
     data.fetch("ssh", {})
   end

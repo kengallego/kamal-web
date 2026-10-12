@@ -3,6 +3,26 @@ default: &default
     class: CollectMetricsJob
     queue: monitoring
     schedule: every minute
+  check_app_health:
+    class: CheckAppHealthJob
+    queue: monitoring
+    schedule: every minute
+  check_proxy_errors:
+    class: CheckProxyErrorsJob
+    queue: monitoring
+    schedule: every 5 minutes
+  roll_up_metrics:
+    class: RollUpMetricsJob
+    queue: monitoring
+    schedule: every hour at minute 2
+  prune_history:
+    class: PruneHistoryJob
+    queue: default
+    schedule: every day at 4am
+  scheduled_backup:
+    class: ScheduledBackupJob
+    queue: default
+    schedule: every day at 3am
   discover_kamal_apps:
     class: DiscoverKamalAppsJob
     queue: default

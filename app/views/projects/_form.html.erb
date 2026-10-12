@@ -68,6 +68,21 @@
       <label class="flex items-center gap-2 text-sm">
         <%= form.check_box :monitoring_enabled %> <%= t(".monitoring") %>
       </label>
+      <% if project.persisted? %>
+        <div>
+          <span class="label"><%= t(".protected_destinations") %></span>
+          <div class="flex flex-wrap gap-4 text-sm">
+            <%= hidden_field_tag "project[protected_destinations][]", "", id: nil %>
+            <% project.destinations.each do |destination| %>
+              <label class="flex items-center gap-2">
+                <%= check_box_tag "project[protected_destinations][]", destination || ".", project.protected_destination?(destination), id: nil %>
+                <%= destination_label(destination) %>
+              </label>
+            <% end %>
+          </div>
+          <p class="hint"><%= t(".protected_destinations_hint") %></p>
+        </div>
+      <% end %>
     </div>
   <% end %>
 

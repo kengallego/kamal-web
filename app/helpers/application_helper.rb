@@ -31,6 +31,24 @@ module ApplicationHelper
     seconds < 60 ? "#{seconds}s" : "#{seconds / 60}m #{seconds % 60}s"
   end
 
+  # Turbo confirmation for a command that changes servers. On a protected
+  # destination it asks for the destination's name to be typed instead.
+  def command_confirm(project, destination, message)
+    data = { turbo_confirm: message }
+    data[:confirmation_word] = project.confirmation_word(destination) if project.protected_destination?(destination)
+    data
+  end
+
+  # Averages a series down to at most `bars` values for a sparkline.
+  def bucketed(values, bars: 96)
+    return values if values.size <= bars
+
+    values.each_slice((values.size / bars.to_f).ceil).map do |slice|
+      known = slice.compact
+      known.sum / known.size if known.any?
+    end
+  end
+
   def nav_link(label, path, active: current_page?(path))
     render Ui::NavLinkComponent.new(label: label, path: path, active: active)
   end

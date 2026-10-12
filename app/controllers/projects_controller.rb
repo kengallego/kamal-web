@@ -69,7 +69,7 @@ class ProjectsController < ApplicationController
     def project_params
       params.expect(project: [ :name, :source_kind, :repository_url, :branch, :local_path, :config_file,
         :ssh_private_key, :git_ssh_private_key, :git_access_token, :notification_webhook_url,
-        :notification_format, :monitoring_enabled ])
+        :notification_format, :monitoring_enabled, protected_destinations: [] ])
     end
 
     def sync_after_save

@@ -11,6 +11,7 @@
       <div><dt class="label"><%= t(".source") %></dt><dd><%= @project.git? ? t(".source_git", url: @project.repository_url, branch: @project.branch) : @project.local? ? t(".source_local", path: @project.local_path) : t(".source_discovered", service: @project.discovered_service) %></dd></div>
       <div><dt class="label"><%= t(".config_file") %></dt><dd class="font-mono"><%= @project.config_file %></dd></div>
       <div><dt class="label"><%= t(".ssh_key") %></dt><dd><%= @project.ssh_private_key.present? ? t(".stored") : t(".not_set") %></dd></div>
+      <div><dt class="label"><%= t(".protected") %></dt><dd><%= @project.protected_destinations.map { |name| destination_label(name) }.to_sentence.presence || t(".off") %></dd></div>
       <div><dt class="label"><%= t(".notifications") %></dt><dd><%= @project.notification_webhook_url.present? ? t("projects.form.formats.#{@project.notification_format}", default: @project.notification_format.capitalize) : t(".off") %></dd></div>
     </dl>
   <% end %>

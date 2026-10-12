@@ -6,8 +6,12 @@ class SettingsController < ApplicationController
 
   def update
     @setting = Setting.instance
-    @setting.update!(params.expect(setting: [ :status_board_enabled ]))
-    redirect_to edit_settings_path, notice: t("flash.settings.saved")
+
+    if @setting.update(params.expect(setting: [ :status_board_enabled, :alert_disk_percent, :alert_memory_percent, :scheduled_backups_enabled, :scheduled_backups_keep ]))
+      redirect_to edit_settings_path, notice: t("flash.settings.saved")
+    else
+      render :edit, status: :unprocessable_entity
+    end
   end
 
   def regenerate_status_board_token

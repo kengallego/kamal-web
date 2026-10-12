@@ -15,6 +15,9 @@ module InstanceBackup
   ENTRIES = %w[ manifest.json database.sqlite3 secret_key_base ].freeze
   MAX_SIZE = 500.megabytes
   STAGED_PATH = Rails.root.join("storage", "restore.tar.gz")
+  # Scheduled backups, when turned on in Settings.
+  DIRECTORY = Rails.root.join("storage", "backups")
+  STORED_NAME = /\Akamal-web-backup-\d{8}-\d{6}\.tar\.gz\z/
 
   module_function
 
@@ -38,6 +41,28 @@ module InstanceBackup
       gzip.finish
     end
     io
+  end
+
+  # Writes a backup into the volume and deletes the oldest beyond keep.
+  def store!(keep:)
+    FileUtils.mkdir_p(DIRECTORY, mode: 0o700)
+    path = DIRECTORY.join(filename)
+    partial = DIRECTORY.join(".#{path.basename}.partial")
+    File.open(partial, "wb", 0o600) { |file| write(file) }
+    File.rename(partial, path)
+    stored.drop(keep).each(&:delete)
+    path
+  end
+
+  # Newest first.
+  def stored
+    return [] unless DIRECTORY.directory?
+
+    DIRECTORY.children.select { |path| path.file? && path.basename.to_s.match?(STORED_NAME) }.sort.reverse
+  end
+
+  def find_stored(name)
+    stored.find { |path| path.basename.to_s == name.to_s }
   end
 
   # Checks an uploaded archive and keeps it for the next boot.
