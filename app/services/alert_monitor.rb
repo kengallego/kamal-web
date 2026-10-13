@@ -29,9 +29,13 @@ class AlertMonitor
   end
 
   def check_health(checks)
+    unavailable, available = @project.destinations.partition { |destination| unavailable_on_purpose?(destination) }
+    suppressed_urls = unavailable.flat_map { |destination| @project.config_for(destination).health_check_urls } -
+      available.flat_map { |destination| @project.config_for(destination).health_check_urls }
+
     checks.each do |check|
       previous = @project.health_checks.where(url: check.url).where.not(id: check.id).order(checked_at: :desc).first
-      failing = if check.up? then false
+      failing = if check.up? || suppressed_urls.include?(check.url) then false
       elsif previous && !previous.up? then true
       end
       track "health_check", check.url, failing, check.error&.truncate(300) || "HTTP #{check.status_code}"
@@ -48,6 +52,11 @@ class AlertMonitor
       config = @project.config_for(destination)
       host = config.roles[config.primary_role]&.first
       next unless config.present? && config.proxy_hosts.any? && host
+
+      if unavailable_on_purpose?(destination)
+        track "proxy_errors", subject(host, destination), false, nil
+        next
+      end
 
       services = config.roles.keys.map { |role| [ config.service, role, destination.presence ].compact.join("-") }
       requests = ProxyInspector.new(@project, host).requests(window: PROXY_WINDOW, limit: 5_000)
@@ -74,31 +83,41 @@ class AlertMonitor
     end
 
     # The app's primary role should have a container on each of its hosts,
-    # unless it was stopped on purpose from Kamal Web.
+    # unless it was stopped or put into maintenance from Kamal Web.
     def check_apps
       @project.destinations.each do |destination|
         config = @project.config_for(destination)
         next unless config.present? && config.service.present?
 
         prefix = [ config.service, config.primary_role, destination.presence ].compact.join("-") + "-"
-        stopped = stopped_on_purpose?(destination)
+        unavailable = unavailable_on_purpose?(destination)
 
         Array(config.roles[config.primary_role]).each do |host|
+          if unavailable
+            track "app_down", subject(host, destination), false, nil
+            next
+          end
+
           samples = @project.server_metrics.where(host: host).order(collected_at: :desc).limit(2).to_a
           next if samples.size < 2 || samples.any?(&:error)
 
           running = samples.map { |sample| sample.containers.any? { |container| container["Names"].to_s.delete_prefix("/").start_with?(prefix) } }
           failing = if running.first then false
-          elsif running.none? && !stopped then true
+          elsif running.none? then true
           end
           track "app_down", subject(host, destination), failing, nil
         end
       end
     end
 
-    def stopped_on_purpose?(destination)
-      last = @project.command_runs.succeeded.where(destination: destination).where(kind: %w[ app_stop app_start app_boot deploy redeploy rollback setup ]).latest_first.first
-      last&.kind == "app_stop"
+    def unavailable_on_purpose?(destination)
+      runs = @project.command_runs.where(destination: destination)
+      return true if runs.where(status: "running", kind: %w[ app_stop app_maintenance ]).exists?
+
+      succeeded = runs.succeeded.order(created_at: :desc, id: :desc)
+      stopped = succeeded.where(kind: %w[ app_stop app_start app_boot deploy redeploy rollback setup ]).first
+      maintenance = succeeded.where(kind: %w[ app_maintenance app_live app_boot deploy redeploy rollback setup ]).first
+      stopped&.kind == "app_stop" || maintenance&.kind == "app_maintenance"
     end
 
     def subject(host, destination)
