@@ -29,6 +29,31 @@ RSpec.describe "Instance pages" do
     expect(response.body).to include("git pull &amp;&amp; kamal deploy")
   end
 
+  it "updates the instance from Settings" do
+    sign_in
+    Setting.instance.update!(latest_version: "99.0.0")
+    self_update = instance_double(SelfUpdate, problem: nil)
+    allow(SelfUpdate).to receive(:new).and_return(self_update)
+
+    get edit_settings_path
+    expect(response.body).to include("Update to 99.0.0 now", "Update automatically")
+
+    expect(self_update).to receive(:launch).with("v99.0.0").and_return(true)
+    post update_instance_settings_path
+    expect(flash[:notice]).to include("Updating to 99.0.0")
+
+    patch settings_path, params: { setting: { auto_update_enabled: "1" } }
+    expect(Setting.instance.auto_update_enabled?).to be(true)
+  end
+
+  it "explains why the instance can't update itself" do
+    sign_in
+    allow(SelfUpdate).to receive(:new).and_return(instance_double(SelfUpdate, problem: [ :custom_volumes, { paths: "/projects" } ]))
+
+    get edit_settings_path
+    expect(response.body).to include("This instance mounts /projects")
+  end
+
   it "refreshes open status boards when deploys or metrics change" do
     Setting.instance.update!(status_board_enabled: true)
     project = create(:project)

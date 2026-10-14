@@ -23,6 +23,11 @@ namespace :kamal_web do
     Rake::Task["kamal_web:discover"].invoke
   end
 
+  desc "Deploy a Kamal Web release over this instance. Run by SelfUpdate, in a helper container"
+  task :self_update, [ :tag ] => :environment do |_, args|
+    SelfUpdate.new.perform(args.fetch(:tag))
+  end
+
   desc "Detect the Kamal apps running on this server and add them as projects"
   task discover: :environment do
     result = KamalDiscovery.new.call

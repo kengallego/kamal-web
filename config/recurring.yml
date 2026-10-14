@@ -30,7 +30,7 @@ default: &default
   check_for_updates:
     class: CheckForUpdatesJob
     queue: default
-    schedule: every day at 6am
+    schedule: every hour at minute 17
 
 development:
   <<: *default

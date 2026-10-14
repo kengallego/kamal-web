@@ -75,6 +75,10 @@ RUN groupadd --system --gid 1000 rails && \
 COPY --chown=rails:rails --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --chown=rails:rails --from=build /rails /rails
 
+# Kamal only deploys images labeled with their service. Kamal adds it to the
+# images it builds; this covers the release images Kamal Web updates itself to.
+LABEL service="kamal-web"
+
 # Entrypoint prepares the database and creates the first admin.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 

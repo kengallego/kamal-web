@@ -49,7 +49,7 @@ English and Spanish. Light and dark themes. One shared password, with optional a
 - **Status board.** A read-only page for a TV or for stakeholders, behind a secret URL. It updates live as deploys run and metrics arrive.
 - **English and Spanish, light and dark.** Follows the browser's language and theme, or pick them in the sidebar.
 - **Backups.** Download everything from Settings and restore it in one step, or turn on a daily backup kept in the volume.
-- **Update notice.** The sidebar tells you when a new Kamal Web release is out.
+- **Update notice and automatic updates.** The sidebar tells you when a new Kamal Web release is out, and Kamal Web can deploy it over itself.
 
 </details>
 
@@ -92,6 +92,8 @@ kamal-proxy serves Kamal Web over HTTPS with a Let's Encrypt certificate, next t
 git pull
 kamal deploy
 ```
+
+Or let Kamal Web do it: with **Settings → Update automatically** on, it deploys each new release over itself, without downtime (see [Automatic updates](#automatic-updates)).
 
 To change the password, change `KAMAL_WEB_PASSWORD` in `.env` and run `kamal deploy`. That signs everybody out.
 
@@ -176,7 +178,13 @@ Command runs and console sessions are deleted after 90 days, but the latest 50 r
 
 ### Update check
 
-Once a day Kamal Web asks GitHub for its latest release and shows a notice when there's a newer one. Nothing else is sent. To turn it off, add `KAMAL_WEB_UPDATE_CHECK: false` under `env.clear` in `config/deploy.yml`.
+Every hour Kamal Web asks GitHub for its latest release and shows a notice when there's a newer one. Nothing else is sent. To turn it off, add `KAMAL_WEB_UPDATE_CHECK: false` under `env.clear` in `config/deploy.yml`.
+
+### Automatic updates
+
+**Settings → Update automatically** (off by default) deploys each new release as soon as the update check finds it, and **Update now** does it once. Kamal Web starts a short-lived helper container next to itself, which pulls the release's image from `ghcr.io/kengallego/kamal-web`, hands it to the registry Kamal runs on the server and runs `kamal deploy` against the server over SSH. kamal-proxy switches over when the new version is healthy, and the release shows up under Kamal's versions like any other deploy, so `kamal rollback` still works.
+
+It uses the release's `config/deploy.yml` and `.kamal`, with the settings Kamal Web was deployed with (password, TOTP secret, allowed IPs, host, SSH user) in place of `.env`. Changes you made to `config/deploy.yml` are not kept, so it stays off when Kamal Web mounts volumes other than its own. It needs `kamal authorize` to have been run. A failed update is shown in Settings with its output and isn't retried until the next release.
 
 ### Building images
 

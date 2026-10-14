@@ -19,6 +19,17 @@ class Setting < ApplicationRecord
     latest_version.present? && Gem::Version.correct?(latest_version) && Gem::Version.new(latest_version) > Gem::Version.new(KamalWeb::VERSION)
   end
 
+  # A failed update isn't tried again until there's a newer release, or it's
+  # started from Settings.
+  def auto_update_due?
+    auto_update_enabled? && update_available? && auto_update_version != latest_version
+  end
+
+  # A helper that died without saying so stops counting after a while.
+  def auto_update_running?
+    auto_update_status == "running" && auto_update_started_at&.after?(1.hour.ago)
+  end
+
   def status_board_viewer?(token)
     status_board_enabled? && token.is_a?(String) && ActiveSupport::SecurityUtils.secure_compare(status_board_token.to_s, token)
   end

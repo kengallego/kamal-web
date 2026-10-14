@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_16_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_16_130000) do
   create_table "alerts", force: :cascade do |t|
     t.integer "project_id", null: false
     t.string "kind", null: false
@@ -172,6 +172,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_16_120000) do
     t.integer "alert_memory_percent", default: 90, null: false
     t.boolean "scheduled_backups_enabled", default: false, null: false
     t.integer "scheduled_backups_keep", default: 7, null: false
+    t.boolean "auto_update_enabled", default: false, null: false
+    t.string "auto_update_version"
+    t.string "auto_update_status"
+    t.datetime "auto_update_started_at"
+    t.datetime "auto_update_finished_at"
+    t.text "auto_update_output"
   end
 
   add_foreign_key "alerts", "projects"

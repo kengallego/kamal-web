@@ -43,6 +43,8 @@ env:
     ASSUME_SSL: true
     FORCE_SSL: true
     KAMAL_WEB_URL: https://<%= host %>
+    # For Update automatically, which deploys from the server with these settings.
+    KAMAL_WEB_SSH_USER: <%= ssh_user %>
 
 volumes:
   # Databases, the key that encrypts secrets, clones and the SSH key. Back it up.

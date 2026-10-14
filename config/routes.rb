@@ -29,6 +29,7 @@ Rails.application.routes.draw do
   resource :settings, only: %i[ edit update ] do
     post :regenerate_status_board_token
     post :reset_ignored_services
+    post :update_instance
   end
   resource :discovery, only: :create
   resource :backup, only: %i[ show create ] do

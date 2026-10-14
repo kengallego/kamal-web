@@ -19,6 +19,22 @@ RSpec.describe CheckForUpdatesJob do
     expect(setting.update_checked_at).to be_present
   end
 
+  it "deploys a newer release once when updating automatically is on" do
+    response = Net::HTTPOK.new("1.1", "200", "OK")
+    allow(response).to receive(:body).and_return({ tag_name: "v9.0.0", html_url: "https://github.com/kengallego/kamal-web/releases/tag/v9.0.0" }.to_json)
+    stub_github(response)
+    self_update = instance_double(SelfUpdate)
+    allow(SelfUpdate).to receive(:new).and_return(self_update)
+    allow(self_update).to receive(:launch).with("v9.0.0") { Setting.instance.update!(auto_update_version: "9.0.0", auto_update_status: "failed") }
+
+    described_class.perform_now
+    expect(self_update).not_to have_received(:launch)
+
+    Setting.instance.update!(auto_update_enabled: true)
+    2.times { described_class.perform_now }
+    expect(self_update).to have_received(:launch).once
+  end
+
   it "treats a repository without releases as up to date" do
     stub_github(Net::HTTPNotFound.new("1.1", "404", "Not Found"))
 

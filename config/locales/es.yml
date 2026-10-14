@@ -331,6 +331,8 @@ es:
       detect_again: Las apps eliminadas se volverán a detectar en el próximo escaneo.
       saved: Ajustes guardados.
       status_board_regenerated: URL del status board regenerada.
+      update_not_started: No se pudo iniciar la actualización. Mira Instancia más abajo.
+      updating: Actualizando a %{version}. Kamal Web se reinicia al terminar.
     webhook_tokens:
       regenerated: URL del deploy webhook regenerada. Actualízala allí donde la uses.
   layouts:
@@ -610,10 +612,20 @@ es:
       alerts: Alertas
       alerts_hint: La monitorización abre una alerta cuando algo falla y la cierra cuando se arregla. Ambas cosas se envían al webhook de notificaciones del proyecto y se muestran en el panel.
       alerts_list: 'También avisa si no se puede conectar a un host por SSH, la app no está en marcha, un dominio no responde a su health check, un certificado TLS caduca en menos de 14 días o kamal-proxy da más de un 10 % de respuestas 5xx.'
+      auto_update: Actualizar automáticamente
+      auto_update_failed: La actualización a %{version} falló %{time}. Se volverá a intentar con la próxima versión.
+      auto_update_hint_html: Consulta GitHub cada hora y despliega las versiones nuevas en este servidor con <code>kamal deploy</code>, sin cortes. Usa el <code>config/deploy.yml</code> de la versión con los ajustes con los que se desplegó esta instancia, así que los cambios que hicieras en ese archivo no se mantienen.
+      auto_update_output: Salida
+      auto_update_problems:
+        custom_volumes: Esta instancia monta %{paths}, que el config/deploy.yml de la versión no incluye. Actualiza con kamal deploy desde tu copia.
+        not_deployed: Solo disponible cuando Kamal Web corre en el contenedor que desplegó Kamal, con el socket de Docker montado.
+      auto_update_running: Actualizando a %{version}, empezó %{time}. Kamal Web se reinicia al terminar.
+      auto_update_succeeded: Actualizado a %{version} %{time}.
       backup: Copia de seguridad
       backup_hint: 'Proyectos, variables y claves cifradas, ajustes e historial, y la clave que los descifra. Guarda el archivo en un sitio seguro: abre todos los secrets guardados aquí.'
       confirm_regenerate: La URL actual dejará de funcionar.
       confirm_restore: ¿Sustituir todo lo de esta instancia por la copia? Kamal Web se reinicia para restaurarla.
+      confirm_update_now: Kamal Web despliega la nueva versión sobre sí mismo y se reinicia.
       detect_again: Volver a detectar
       download: Descargar copia
       download_short: Descargar
@@ -635,6 +647,7 @@ es:
       up_to_date: Al día. Comprobado en GitHub %{time}.
       update_check_off_html: Comprobación de versiones desactivada (<code>KAMAL_WEB_UPDATE_CHECK=false</code>).
       update_how_html: Actualiza desde tu carpeta de Kamal Web con <code>git pull &amp;&amp; kamal deploy</code>.
+      update_now: Actualizar a %{version} ahora
   shared:
     preferences:
       language: Idioma

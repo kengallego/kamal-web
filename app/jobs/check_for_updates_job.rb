@@ -1,7 +1,8 @@
 require "net/http"
 
-# Asks GitHub once a day for the latest Kamal Web release, so the sidebar can
-# say when there's a newer one. Set KAMAL_WEB_UPDATE_CHECK=false to turn it off.
+# Asks GitHub every hour for the latest Kamal Web release, so the sidebar can
+# say when there's a newer one, and deploys it when Settings → Update
+# automatically is on. Set KAMAL_WEB_UPDATE_CHECK=false to turn it off.
 class CheckForUpdatesJob < ApplicationJob
   queue_as :default
 
@@ -13,7 +14,9 @@ class CheckForUpdatesJob < ApplicationJob
     return unless self.class.enabled?
 
     release = latest_release
-    Setting.instance.update!(latest_version: release&.dig("tag_name")&.delete_prefix("v"), latest_version_url: release&.dig("html_url"), update_checked_at: Time.current)
+    setting = Setting.instance
+    setting.update!(latest_version: release&.dig("tag_name")&.delete_prefix("v"), latest_version_url: release&.dig("html_url"), update_checked_at: Time.current)
+    SelfUpdate.new.launch(release["tag_name"]) if setting.auto_update_due?
   rescue Net::OpenTimeout, Net::ReadTimeout, SocketError, SystemCallError, OpenSSL::SSL::SSLError, JSON::ParserError => error
     Rails.logger.info "Update check failed: #{error.class}: #{error.message}"
   end

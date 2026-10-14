@@ -32,6 +32,12 @@ class LocalDocker
     nil
   end
 
+  # Starts a container in the background. +env+ holds the values of the
+  # variables passed with a bare `--env NAME`, which keeps them off the command line.
+  def start_container(*args, env: {})
+    run("run", "--detach", *args, env: env).strip
+  end
+
   def proxy_routes
     ProxyInspector.allocate.parse_routes(run("exec", "kamal-proxy", "kamal-proxy", "list"))
   rescue Error
@@ -54,9 +60,9 @@ class LocalDocker
   end
 
   private
-    def run(*args, binary: false)
+    def run(*args, binary: false, env: {})
       stdout, stderr, status = Timeout.timeout(TIMEOUT) do
-        Open3.capture3(ProcessEnvironment.build, "docker", *args, binmode: binary, unsetenv_others: true)
+        Open3.capture3(ProcessEnvironment.build(env), "docker", *args, binmode: binary, unsetenv_others: true)
       end
       raise Error, stderr.strip.presence || "docker #{args.first} failed" unless status.success?
 
