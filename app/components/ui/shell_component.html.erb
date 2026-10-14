@@ -6,17 +6,13 @@
         <span class="grid size-8 place-items-center rounded-xl bg-action text-canvas"><%= render Ui::IconComponent.new(name: :cube, size: 20) %></span>
         <span class="whitespace-nowrap text-[15px] font-semibold tracking-tight">Kamal Web</span>
       <% end %>
+      <%= render Ui::ThemeSwitcherComponent.new %>
     </div>
     <%= render Ui::NavigationComponent.new(projects: @projects, setting: @setting) %>
   </aside>
   <div class="min-w-0 flex-1">
-    <header class="sticky top-0 z-20 flex h-[68px] items-center justify-between gap-4 border-b border-line/70 bg-canvas/95 px-5 backdrop-blur-md sm:px-8 lg:px-10">
-      <div class="flex min-w-0 items-center gap-3 text-xs">
-        <%= link_to root_path, class: 'flex items-center gap-2 font-semibold text-foreground lg:hidden', aria: { label: 'Kamal Web' } do %><%= render Ui::IconComponent.new(name: :cube, size: 21) %><% end %>
-        <%= link_to t('ui.workspace'), root_path, class: 'hidden shrink-0 text-muted hover:text-foreground sm:inline' %>
-        <span class="hidden text-faint sm:inline"><%= render Ui::IconComponent.new(name: :chevron, size: 12) %></span>
-        <span class="truncate font-medium text-foreground"><%= helpers.content_for(:title).presence || t('common.dashboard') %></span>
-      </div>
+    <header class="sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b border-line/70 bg-canvas/95 px-5 backdrop-blur-md sm:px-8 lg:hidden">
+      <%= link_to root_path, class: 'flex items-center gap-2 text-sm font-semibold text-foreground' do %><%= render Ui::IconComponent.new(name: :cube, size: 21) %>Kamal Web<% end %>
       <div class="flex shrink-0 items-center gap-3">
         <%= render Ui::ThemeSwitcherComponent.new %>
         <details class="relative lg:hidden" data-workspace-target="menu">
@@ -27,7 +23,8 @@
         </details>
       </div>
     </header>
-    <main id="main-content" class="app-main mx-auto max-w-[1360px] px-5 py-8 sm:px-8 lg:px-12 lg:py-12" tabindex="-1">
+    <main id="main-content" class="app-main mx-auto max-w-[1360px] px-5 py-8 sm:px-8 lg:px-12" tabindex="-1">
+      <%= render 'shared/breadcrumbs' %>
       <%= render 'shared/flash' %>
       <%= content %>
     </main>

@@ -3,7 +3,7 @@
 
 <div class="mb-6">
   <% description = [project.source_description, short_sha(project.git_revision), (t('.synced', time: time_ago(project.synced_at)) if project.synced_at)].compact_blank.join(' · ') %>
-  <%= render Ui::PageHeaderComponent.new(title: project.name, description: description, eyebrow: t('common.project')) do %>
+  <%= render Ui::PageHeaderComponent.new(title: project.name, description: description) do %>
     <% unless destination == :none || project.destinations.size < 2 %>
       <div class="flex rounded-lg border border-line bg-surface p-1">
         <% project.destinations.each do |name| %>

@@ -20,7 +20,8 @@ module Ui
       globe: "M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0 M3 12h18 M12 3a18 18 0 0 1 0 18 18 18 0 0 1 0-18",
       code: "m8 7-5 5 5 5 M16 7l5 5-5 5 M14 4l-4 16",
       menu: "M4 6h16 M4 12h16 M4 18h16",
-      check: "m5 12 4 4L19 6"
+      check: "m5 12 4 4L19 6",
+      info: "M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0 M12 11v6 M12 7h.01"
     }.freeze
 
     def initialize(name:, size: 18, **attributes)

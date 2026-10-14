@@ -1,3 +1,4 @@
+<% content_for :title, "#{t('.title', name: @variable.key_was)} · #{@project.name}" %>
 <%= render "projects/header", project: @project %>
 <h2 class="mb-4 text-lg font-semibold"><%= t(".title", name: @variable.key_was) %></h2>
 <%= render "form", variable: @variable %>

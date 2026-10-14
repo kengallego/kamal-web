@@ -476,6 +476,8 @@ en:
         cores: '%{load} / %{count} cores'
         image: Image
         load: Load
+        load_help: About server load
+        load_hint: "Processes running or waiting for CPU or disk (1-minute average). 100% means one process per core; it can go higher."
         logs: Logs
         memory: Memory
         no_hosts: No hosts found in the Kamal config.
@@ -658,6 +660,7 @@ en:
     succeeded: succeeded
 
   ui:
+    breadcrumbs: "Breadcrumbs"
     project_navigation: "Project navigation"
     navigation: "Main navigation"
     skip_navigation: "Skip to content"

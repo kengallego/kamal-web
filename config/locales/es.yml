@@ -475,6 +475,8 @@ es:
         cores: '%{load} / %{count} núcleos'
         image: Imagen
         load: Carga
+        load_help: Sobre la carga del servidor
+        load_hint: "Procesos activos o esperando CPU o disco (media de 1 min). 100% equivale a un proceso por núcleo; puede superarlo."
         logs: Logs
         memory: Memoria
         no_hosts: No hay hosts en la configuración de Kamal.
@@ -657,6 +659,7 @@ es:
     succeeded: completado
 
   ui:
+    breadcrumbs: "Ruta de navegación"
     project_navigation: "Navegación del proyecto"
     navigation: "Navegación principal"
     skip_navigation: "Ir al contenido"

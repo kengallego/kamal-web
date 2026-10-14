@@ -1,5 +1,5 @@
 <% content_for :title, t('common.dashboard') %>
-<%= render Ui::PageHeaderComponent.new(title: t('ui.dashboard_title'), description: t('ui.dashboard_description'), eyebrow: t('ui.workspace')) do %>
+<%= render Ui::PageHeaderComponent.new(title: t('common.dashboard')) do %>
   <%= button_to discovery_path, class: 'btn btn-quiet', title: t('.scan_title') do %><%= render Ui::IconComponent.new(name: :refresh, size: 15) %><%= t('common.scan_this_server') %><% end %>
   <%= link_to new_project_path, class: 'btn btn-primary' do %><%= render Ui::IconComponent.new(name: :plus, size: 16) %><%= t('common.new_project') %><% end %>
 <% end %>
@@ -17,9 +17,9 @@
   <% end %>
 <% else %>
   <div class="stat-strip">
-    <%= render Ui::StatComponent.new(label: t('layouts.application.projects'), value: @projects.size, icon: :cube, caption: t('ui.projects_caption')) %>
-    <%= render Ui::StatComponent.new(label: t('ui.servers'), value: @projects.flat_map(&:hosts).uniq.size, icon: :server, caption: t('ui.servers_caption')) %>
-    <%= render Ui::StatComponent.new(label: t('ui.active_operations'), value: @projects.count { |project| project.active_operation }, icon: :activity, caption: t('ui.operations_caption')) %>
+    <%= render Ui::StatComponent.new(label: t('layouts.application.projects'), value: @projects.size, icon: :cube) %>
+    <%= render Ui::StatComponent.new(label: t('ui.servers'), value: @projects.flat_map(&:hosts).uniq.size, icon: :server) %>
+    <%= render Ui::StatComponent.new(label: t('ui.active_operations'), value: @projects.count { |project| project.active_operation }, icon: :activity) %>
   </div>
   <section aria-labelledby="projects-heading" data-controller="filter">
     <div class="mb-5 flex flex-wrap items-center justify-between gap-4">

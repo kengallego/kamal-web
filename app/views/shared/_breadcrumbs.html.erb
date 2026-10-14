@@ -1,0 +1,16 @@
+<% if (trail = navigation_breadcrumbs).any? %>
+  <nav aria-label="<%= t('ui.breadcrumbs') %>" class="mb-6 text-xs">
+    <ol class="flex flex-wrap items-center gap-x-2 gap-y-1">
+      <% trail.each_with_index do |(label, path), index| %>
+        <li class="flex min-w-0 items-center gap-2">
+          <% if index.positive? %><span class="text-faint" aria-hidden="true">/</span><% end %>
+          <% if path %>
+            <%= link_to label, path, class: 'break-words text-muted hover:text-foreground hover:underline' %>
+          <% else %>
+            <span class="break-words text-body" aria-current="page"><%= label %></span>
+          <% end %>
+        </li>
+      <% end %>
+    </ol>
+  </nav>
+<% end %>

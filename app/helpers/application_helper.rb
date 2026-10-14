@@ -53,6 +53,31 @@ module ApplicationHelper
     render Ui::NavLinkComponent.new(label: label, path: path, active: active)
   end
 
+  def navigation_breadcrumbs
+    return [] if current_page?(root_path)
+
+    trail = [ [ t("common.dashboard"), root_path ] ]
+    title = content_for(:title).to_s
+    if @project&.persisted?
+      trail << [ @project.name, project_path(@project) ]
+      title = title.delete_suffix(" · #{@project.name}")
+      if @run
+        trail << [ t("common.activity"), project_command_runs_path(@project) ]
+      elsif @session
+        trail << [ t("common.console"), project_console_sessions_path(@project) ]
+      elsif controller_name.in?(%w[ environment_variables project_files ])
+        trail << [ t("common.settings"), project_settings_path(@project) ]
+      elsif controller_path == "projects" && action_name == "edit"
+        title = t("common.edit")
+      end
+      trail << [ title, nil ] if title.present? && title != @project.name
+    else
+      trail << [ title, nil ] if title.present?
+    end
+    trail.last[1] = nil
+    trail
+  end
+
   def form_errors(record)
     return if record.errors.none?
 

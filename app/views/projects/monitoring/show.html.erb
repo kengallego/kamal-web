@@ -48,7 +48,18 @@
           ].each do |label, percent, detail, series| %>
             <div class="rounded-lg border border-line p-3">
               <div class="flex items-baseline justify-between">
-                <span class="label mb-0"><%= label %></span>
+                <div class="label mb-0 flex items-center gap-1.5">
+                  <span><%= label %></span>
+                  <% if label == t(".load") %>
+                    <% tooltip_id = "load-help-#{host.parameterize}" %>
+                    <span class="group relative inline-flex">
+                      <button type="button" class="inline-flex size-4 cursor-help items-center justify-center rounded-full text-faint hover:text-body" aria-label="<%= t('.load_help') %>" aria-describedby="<%= tooltip_id %>">
+                        <%= render Ui::IconComponent.new(name: :info, size: 14) %>
+                      </button>
+                      <span id="<%= tooltip_id %>" role="tooltip" class="pointer-events-none invisible absolute left-0 top-full z-30 mt-2 w-56 rounded-lg border border-line bg-surface px-3 py-2 text-xs font-normal leading-relaxed text-body shadow-sm group-hover:visible group-focus-within:visible"><%= t('.load_hint') %></span>
+                    </span>
+                  <% end %>
+                </div>
                 <span class="text-lg font-semibold text-foreground"><%= percent ? "#{percent.round}%" : "–" %></span>
               </div>
               <p class="mb-2 text-xs text-muted"><%= detail %></p>
