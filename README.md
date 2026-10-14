@@ -1,10 +1,32 @@
 # Kamal Web
 
-A self-hosted web dashboard for [Kamal](https://kamal-deploy.org). Point it at the repositories you deploy with Kamal and you can deploy, roll back, read logs, inspect kamal-proxy and watch server health from the browser, together with your team.
+**Your Kamal apps. One clear view.**
 
-You deploy it with Kamal, like your other apps, and it runs as one container next to them. It has no external dependencies and nothing to pay for.
+A self-hosted dashboard for the apps you deploy with [Kamal](https://kamal-deploy.org). Ship a release, roll back, follow logs and check your servers from your browser. Your existing repositories and Kamal configs, with a place to see it all.
+
+**[Install →](#install)** · [Take a closer look](#a-closer-look) · [Configuration](#configuration) · [Security](#security-model)
+
+[![Kamal Web: a dashboard showing three projects, production and staging deployments, and server resource usage](docs/images/hero.webp)](docs/images/dashboard.webp)
+
+<sub>Real interface, fictional projects and sample metrics. Click the cover for a larger dashboard view.</sub>
+
+Runs as **one container on your own server**, alongside your apps. SQLite included. No hosted account or subscription. [MIT licensed](LICENSE).
 
 ## Features
+
+| What you want to do | What Kamal Web gives you |
+| --- | --- |
+| **See what is running** | A project dashboard with destinations, recent deploys and server resource usage. Automatically discovers Kamal apps on its own server. |
+| **Ship with context** | Deploy, redeploy and roll back, with pending commits, deploy locks, protected destinations and streaming output. |
+| **Find out what happened** | Live app, proxy and accessory logs, command history, plus an interactive Rails console, database console or shell. |
+| **Keep an eye on your servers** | CPU, memory, disk, containers, HTTP health checks, TLS expiry and alerts, with up to 30 days of metric history. |
+| **Keep configuration together** | Git repositories, destination-specific encrypted secrets, secret files and SSH keys. |
+| **Keep your team in the loop** | Slack, Discord or JSON webhooks, deploy hooks for CI and a live, read-only status board. |
+
+English and Spanish. Light and dark themes. One shared password, with optional authenticator codes and IP restrictions.
+
+<details>
+<summary><strong>Explore all features</strong></summary>
 
 - **Finds the Kamal apps already on the server.** On boot and every 5 minutes, Kamal Web looks at the containers on its own server (through the Docker socket) and adds every Kamal app it finds, with its destinations, roles, accessories and domains. No setup beyond `kamal authorize`.
 - **Projects from git or a mounted folder.** Kamal Web clones your repository (over SSH deploy keys or HTTPS tokens), pulls before every command and detects destinations such as `config/deploy.staging.yml` automatically.
@@ -29,23 +51,29 @@ You deploy it with Kamal, like your other apps, and it runs as one container nex
 - **Backups.** Download everything from Settings and restore it in one step, or turn on a daily backup kept in the volume.
 - **Update notice.** The sidebar tells you when a new Kamal Web release is out.
 
+</details>
+
 ## Install
 
-Kamal Web is a Kamal app itself: you deploy it with Kamal from your machine, to one of your servers, next to the apps it manages. You need Kamal and Docker on your machine. A domain is optional.
+**You need:** [Kamal](https://kamal-deploy.org/docs/installation/) and Docker on your machine, plus a server you can reach over SSH. A domain and a registry account are optional.
+
+Kamal Web is a Kamal app itself: you deploy it from your machine to one of your servers, next to the apps it manages.
+
+**1. Clone the project.**
 
 ```sh
 git clone https://github.com/kengallego/kamal-web.git && cd kamal-web
 cp .env.example .env
 ```
 
-Fill in `.env` with the server's IP and a password of at least 12 characters:
+**2. Set your server and password** in `.env` (at least 12 characters):
 
 ```sh
 KAMAL_WEB_SERVER=203.0.113.10
 KAMAL_WEB_PASSWORD=a long password
 ```
 
-Then deploy and let Kamal Web SSH into the server:
+**3. Deploy and authorize access** to the server:
 
 ```sh
 kamal setup
@@ -75,6 +103,8 @@ For apps on other servers, **Settings** has a command to run on each of them.
 
 Detected apps get logs, the web console, monitoring, the proxy view and every read-only command straight away. Their config comes from the `config/deploy*.yml` inside the deployed image when there is one, or is rebuilt from the containers and kamal-proxy routes. That config has none of the app's env or secrets, so deploys and anything that recreates containers stay disabled until you add the app's git repository in the project settings. Starting, stopping and maintenance mode work.
 
+You can keep deploying with `kamal deploy` from your machine or from CI, such as a GitHub Actions job on pushes to `main`. Kamal Web shows each new version under releases either way. Add the repository only if you want Kamal Web itself to run deploys, from its Deploy button or the deploy webhook.
+
 New apps are picked up within 5 minutes, or right away with **Scan this server** on the dashboard. A detected project you delete isn't added again (Settings lets you undo that). Kamal Web never lists itself.
 
 Kamal Web reaches its own server at the container's default gateway. If SSH listens elsewhere, set `KAMAL_WEB_HOST_ADDRESS` under `env.clear` in `config/deploy.yml`.
@@ -85,6 +115,24 @@ Kamal Web reaches its own server at the container's default gateway. If SSH list
 2. **SSH private key.** This is the key Kamal uses to reach your servers. Without a passphrase. Leave it empty to use Kamal Web's own key, which `kamal authorize` and Settings let in.
 3. **Settings → Environment variables.** Add whatever your `.kamal/secrets` reads, such as `KAMAL_REGISTRY_PASSWORD` or `RAILS_MASTER_KEY`. Use secret files for `config/master.key`.
 4. Press **Sync**, then **Deploy**.
+
+## A closer look
+
+### Know how your servers are doing
+
+CPU, load, memory and disk in one view, with running containers and a shortcut to their logs. Switch between 24 hours, 7 days and 30 days to see how usage changes. HTTP health checks and alerts help you catch problems beyond resource usage.
+
+![Monitoring in dark mode, showing CPU, load, memory, disk history and three running containers](docs/images/monitoring.webp)
+
+### Go from a container to its logs
+
+Read command output in the browser and follow app, proxy or accessory logs as they arrive. Open a Rails console, database console or shell when you need to dig further.
+
+![App log output in dark mode, with a production destination, command status and timestamped request logs](docs/images/logs.webp)
+
+<sub>Screenshots use fictional projects, documentation-only IP addresses and sample data. The log view shows a completed example run.</sub>
+
+**[Ready to try it? Install Kamal Web →](#install)**
 
 ## Configuration
 

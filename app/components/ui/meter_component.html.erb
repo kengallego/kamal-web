@@ -1,1 +1,4 @@
-<div class="meter" aria-hidden="true"><span class="<%= @color %>" style="width: <%= @percent %>%"></span></div>
+<div class="meter" aria-hidden="true">
+  <% if @total_percent %><span class="meter-total" style="width: <%= @total_percent %>%"></span><% end %>
+  <% if @percent %><span class="meter-app" style="width: <%= @percent %>%"></span><% end %>
+</div>

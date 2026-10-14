@@ -19,6 +19,14 @@ class ServerMetric < ApplicationRecord
     percent(load_1, cpu_count) if load_1
   end
 
+  def app_memory_percent
+    percent(app_memory_used, memory_total)
+  end
+
+  def app_disk_percent
+    percent(app_disk_used, disk_total)
+  end
+
   private
     def percent(used, total)
       (used.to_f / total * 100).round(1) if used && total.to_f.positive?

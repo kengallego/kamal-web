@@ -72,7 +72,15 @@
                   <% if metric&.error %>
                     <span class="badge badge-danger" title="<%= metric.error %>"><%= t("common.unreachable") %></span>
                   <% elsif metric %>
-                    <span class="text-xs text-muted"><%= t("common.cpu") %> <%= metric.cpu_percent&.round || "–" %>% · <%= t("common.ram") %> <%= metric.memory_percent&.round || "–" %>%</span>
+                  <span class="flex gap-3 text-xs text-muted">
+                    <% { t("common.cpu") => :cpu, t("common.ram") => :memory }.each do |label, resource| %>
+                      <% app_usage = metric.public_send("app_#{resource}_percent"); machine_usage = metric.public_send("#{resource}_percent") %>
+                      <span class="w-20" title="<%= t('ui.resource_usage', app: app_usage ? "#{app_usage.round}%" : '–', total: machine_usage ? "#{machine_usage.round}%" : '–') %>">
+                        <span class="mb-1 flex items-start justify-between"><span><%= label %></span><span class="flex flex-col items-end tabular-nums"><span class="text-success"><%= app_usage ? "#{app_usage.round}%" : "–" %></span><span class="mt-0.5 text-[10px] text-success/50"><%= machine_usage ? "#{machine_usage.round}%" : "–" %></span></span></span>
+                        <%= render Ui::MeterComponent.new(percent: app_usage, total_percent: machine_usage) %>
+                      </span>
+                    <% end %>
+                  </span>
                   <% end %>
                 </div>
               <% end %>

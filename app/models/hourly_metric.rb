@@ -16,7 +16,10 @@ class HourlyMetric < ApplicationRecord
         cpu_percent: average(metrics.map(&:cpu_percent)),
         load_percent: average(metrics.map(&:load_percent)),
         memory_percent: average(metrics.map(&:memory_percent)),
-        disk_percent: metrics.filter_map(&:disk_percent).max
+        disk_percent: metrics.filter_map(&:disk_percent).max,
+        app_cpu_percent: average(metrics.map(&:app_cpu_percent)),
+        app_memory_percent: average(metrics.map(&:app_memory_percent)),
+        app_disk_percent: metrics.filter_map(&:app_disk_percent).max
       }
     end
     upsert_all(rows, unique_by: %i[ project_id host hour ]) if rows.any?

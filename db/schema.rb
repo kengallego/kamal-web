@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_16_090400) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_16_120000) do
   create_table "alerts", force: :cascade do |t|
     t.integer "project_id", null: false
     t.string "kind", null: false
@@ -89,6 +89,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_16_090400) do
     t.float "memory_percent"
     t.float "disk_percent"
     t.integer "samples", default: 0, null: false
+    t.float "app_cpu_percent"
+    t.float "app_memory_percent"
+    t.float "app_disk_percent"
     t.index ["project_id", "host", "hour"], name: "index_hourly_metrics_on_project_id_and_host_and_hour", unique: true
     t.index ["project_id"], name: "index_hourly_metrics_on_project_id"
   end
@@ -147,6 +150,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_16_090400) do
     t.json "containers", default: [], null: false
     t.text "error"
     t.datetime "collected_at", null: false
+    t.float "app_cpu_percent"
+    t.bigint "app_memory_used"
+    t.bigint "app_disk_used"
     t.index ["project_id", "host", "collected_at"], name: "index_server_metrics_on_project_id_and_host_and_collected_at"
     t.index ["project_id"], name: "index_server_metrics_on_project_id"
   end

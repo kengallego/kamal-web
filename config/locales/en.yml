@@ -464,7 +464,7 @@ en:
       authorize: 'Authorize Kamal Web''s key by running this from your Kamal Web checkout:'
       checked_every_minute_html: Checked every minute. %{monitoring} can check again right away.
       checking_ssh: ' · checking SSH access…'
-      connect_repository_html: To deploy from Kamal Web too, %{link}.
+      connect_repository_html: Deploys you run with <code>kamal deploy</code> show up here. To run them from Kamal Web or a webhook, %{link}.
       detected: Detected on this server
       ssh_failed: Kamal Web can't connect to %{hosts} over SSH
       sync_failed: Last sync failed
@@ -496,7 +496,7 @@ en:
         sampled: Sampled every minute over SSH. Kept for 24 hours, and as hourly averages for 30 days.
         updated: updated %{time}
     new:
-      terminal_html: You don't need to add anything here. Run <code class="text-sky-100">kamal setup</code> or <code class="text-sky-100">kamal deploy</code> from your app's folder as usual, pointing at this server, and Kamal Web adds the app by itself within 5 minutes, or right away with %{scan}. Add a project below only if you want to deploy from Kamal Web too.
+      terminal_html: You don't need to add anything here. Run <code class="font-medium text-info">kamal setup</code> or <code class="font-medium text-info">kamal deploy</code> from your app's folder as usual, pointing at this server, and Kamal Web adds the app by itself within 5 minutes, or right away with %{scan}. Add a project below only if you want to deploy from Kamal Web too.
       terminal_title: Prefer deploying from your terminal?
     project_files:
       edit:
@@ -661,6 +661,7 @@ en:
 
   ui:
     breadcrumbs: "Breadcrumbs"
+    resource_usage: "App: %{app} · Machine: %{total}"
     project_navigation: "Project navigation"
     navigation: "Main navigation"
     skip_navigation: "Skip to content"

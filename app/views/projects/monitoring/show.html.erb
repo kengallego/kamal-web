@@ -41,13 +41,13 @@
       <% elsif latest %>
         <div class="card-body grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <% [
-            [ t("common.cpu"), latest.cpu_percent, "#{latest.cpu_percent&.round || "–"}%", history.map(&:cpu_percent) ],
-            [ t(".load"), latest.load_percent, t(".cores", load: latest.load_1&.round(2), count: latest.cpu_count), history.map(&:load_percent) ],
-            [ t(".memory"), latest.memory_percent, "#{number_to_human_size(latest.memory_used)} / #{number_to_human_size(latest.memory_total)}", history.map(&:memory_percent) ],
-            [ t("common.disk"), latest.disk_percent, "#{number_to_human_size(latest.disk_used)} / #{number_to_human_size(latest.disk_total)}", history.map(&:disk_percent) ]
-          ].each do |label, percent, detail, series| %>
+            [ t("common.cpu"), latest.app_cpu_percent, latest.cpu_percent, nil, history.map(&:app_cpu_percent), history.map(&:cpu_percent) ],
+            [ t(".load"), latest.load_percent, nil, t(".cores", load: latest.load_1&.round(2), count: latest.cpu_count), history.map(&:load_percent), [], true ],
+            [ t(".memory"), latest.app_memory_percent, latest.memory_percent, latest.app_memory_used && "#{number_to_human_size(latest.app_memory_used)} / #{number_to_human_size(latest.memory_total)}", history.map(&:app_memory_percent), history.map(&:memory_percent) ],
+            [ t("common.disk"), latest.app_disk_percent, latest.disk_percent, latest.app_disk_used && "#{number_to_human_size(latest.app_disk_used)} / #{number_to_human_size(latest.disk_total)}", history.map(&:app_disk_percent), history.map(&:disk_percent) ]
+          ].each do |label, percent, total, detail, series, total_series, machine_only| %>
             <div class="rounded-lg border border-line p-3">
-              <div class="flex items-baseline justify-between">
+              <div class="flex items-start justify-between">
                 <div class="label mb-0 flex items-center gap-1.5">
                   <span><%= label %></span>
                   <% if label == t(".load") %>
@@ -60,14 +60,20 @@
                     </span>
                   <% end %>
                 </div>
-                <span class="text-lg font-semibold text-foreground"><%= percent ? "#{percent.round}%" : "–" %></span>
+                <span class="flex min-h-12 flex-col items-end tabular-nums">
+                  <% unless machine_only %><span class="text-lg font-semibold text-success"><%= percent ? "#{percent.round}%" : "–" %></span><% end %>
+                  <span class="<%= machine_only ? 'text-lg font-semibold' : 'mt-0.5 text-[11px]' %> text-success/50"><%= (machine_only ? percent : total)&.then { |value| "#{value.round}%" } || "–" %></span>
+                </span>
               </div>
-              <p class="mb-2 text-xs text-muted"><%= detail %></p>
-              <%= meter(percent) %>
-              <div class="mt-3 flex h-10 items-end gap-px" title="<%= t(".ranges_long.#{@range}") %>">
-                <% bucketed(series).each do |value| %>
-                  <% value = value.to_f.clamp(0, 100) %>
-                  <span class="flex-1 rounded-sm <%= value >= 90 ? "bg-danger/70" : value >= 70 ? "bg-warning/70" : "bg-success/50" %>" style="height: <%= [ value, 3 ].max %>%"></span>
+              <p class="mb-2 min-h-4 text-xs text-muted"><%= detail %></p>
+              <%= render Ui::MeterComponent.new(percent: (percent unless machine_only), total_percent: machine_only ? percent : total) %>
+              <div class="mt-3 flex h-10 items-end gap-px" title="<%= t(".ranges_long.#{@range}") %>" aria-hidden="true">
+                <% bucketed(series).zip(bucketed(total_series)).each do |value, total_value| %>
+                  <% value, total_value = nil, value if machine_only %>
+                  <span class="relative h-full flex-1">
+                    <% if total_value %><span class="absolute inset-x-0 bottom-0 rounded-sm bg-success/25" style="height: <%= total_value.clamp(0, 100) %>%"></span><% end %>
+                    <% if value %><span class="absolute inset-x-0 bottom-0 rounded-sm bg-success" style="height: <%= value.clamp(0, 100) %>%"></span><% end %>
+                  </span>
                 <% end %>
               </div>
             </div>

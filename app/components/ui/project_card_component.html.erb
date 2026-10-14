@@ -27,8 +27,15 @@
   </div>
   <% if @metrics.present? %>
     <div class="grid grid-cols-3 gap-5 border-t border-line/70 px-6 py-4">
-      <% {t('common.cpu') => @metrics.filter_map(&:cpu_percent).max, t('common.ram') => @metrics.filter_map(&:memory_percent).max, t('common.disk') => @metrics.filter_map(&:disk_percent).max}.each do |label, value| %>
-        <div><div class="mb-2 flex justify-between text-[10px] text-muted"><span><%= label %></span><span class="tabular-nums"><%= value ? "#{value.round}%" : '–' %></span></div><%= render Ui::MeterComponent.new(percent: value) %></div>
+    <% {t('common.cpu') => :cpu, t('common.ram') => :memory, t('common.disk') => :disk}.each do |label, resource| %>
+      <% value, total = resource_usage(resource) %>
+      <div title="<%= t('ui.resource_usage', app: value ? "#{value.round}%" : '–', total: total ? "#{total.round}%" : '–') %>">
+        <div class="mb-2 flex items-start justify-between text-[10px] text-muted">
+          <span><%= label %></span>
+          <span class="flex flex-col items-end tabular-nums"><span class="font-medium text-success"><%= value ? "#{value.round}%" : '–' %></span><span class="mt-0.5 text-[9px] text-success/50"><%= total ? "#{total.round}%" : '–' %></span></span>
+        </div>
+        <%= render Ui::MeterComponent.new(percent: value, total_percent: total) %>
+      </div>
       <% end %>
     </div>
   <% end %>

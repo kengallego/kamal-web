@@ -1,8 +1,8 @@
 module Ui
   class MeterComponent < ViewComponent::Base
-    def initialize(percent:)
-      @percent = percent.to_f.clamp(0, 100)
-      @color = @percent >= 90 ? "bg-danger" : @percent >= 70 ? "bg-warning" : "bg-success"
+    def initialize(percent:, total_percent: nil)
+      @percent = percent&.clamp(0, 100)
+      @total_percent = total_percent&.clamp(0, 100)
     end
   end
 end

@@ -463,7 +463,7 @@ es:
       authorize: 'Autoriza la clave de Kamal Web ejecutando esto en tu carpeta de Kamal Web:'
       checked_every_minute_html: Se comprueba cada minuto. Desde %{monitoring} puedes comprobarlo al momento.
       checking_ssh: ' · comprobando el acceso SSH…'
-      connect_repository_html: Para desplegar también desde Kamal Web, %{link}.
+      connect_repository_html: Los deploys que hagas con <code>kamal deploy</code> aparecen aquí. Para lanzarlos desde Kamal Web o con un webhook, %{link}.
       detected: Detectada en este servidor
       ssh_failed: Kamal Web no puede conectarse por SSH a %{hosts}
       sync_failed: La última sincronización falló
@@ -495,7 +495,7 @@ es:
         sampled: Se mide cada minuto por SSH. Se guarda 24 horas, y en medias por hora durante 30 días.
         updated: actualizado %{time}
     new:
-      terminal_html: No hace falta añadir nada aquí. Ejecuta <code class="text-sky-100">kamal setup</code> o <code class="text-sky-100">kamal deploy</code> desde la carpeta de tu app como siempre, apuntando a este servidor, y Kamal Web añade la app solo en menos de 5 minutos, o al momento con %{scan}. Añade un proyecto aquí abajo solo si también quieres desplegar desde Kamal Web.
+      terminal_html: No hace falta añadir nada aquí. Ejecuta <code class="font-medium text-info">kamal setup</code> o <code class="font-medium text-info">kamal deploy</code> desde la carpeta de tu app como siempre, apuntando a este servidor, y Kamal Web añade la app solo en menos de 5 minutos, o al momento con %{scan}. Añade un proyecto aquí abajo solo si también quieres desplegar desde Kamal Web.
       terminal_title: ¿Prefieres desplegar desde tu terminal?
     project_files:
       edit:
@@ -660,6 +660,7 @@ es:
 
   ui:
     breadcrumbs: "Ruta de navegación"
+    resource_usage: "App: %{app} · Máquina: %{total}"
     project_navigation: "Navegación del proyecto"
     navigation: "Navegación principal"
     skip_navigation: "Ir al contenido"
