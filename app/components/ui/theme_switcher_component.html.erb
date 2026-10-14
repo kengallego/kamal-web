@@ -2,7 +2,7 @@
   <summary class="icon-button list-none [&::-webkit-details-marker]:hidden" aria-label="<%= t('shared.preferences.theme') %>" title="<%= t('shared.preferences.theme') %>">
     <%= render Ui::IconComponent.new(name: ICONS.fetch(helpers.current_theme), size: 17) %>
   </summary>
-  <div class="absolute top-full <%= @alignment %> z-30 mt-2 w-36 rounded-xl border border-line bg-surface p-1.5 shadow-lg" role="group" aria-label="<%= t('shared.preferences.theme') %>">
+  <div class="absolute <%= @position %> <%= @alignment %> z-30 w-36 rounded-xl border border-line bg-surface p-1.5 shadow-lg" role="group" aria-label="<%= t('shared.preferences.theme') %>">
     <% Preferences::THEMES.each do |theme| %>
       <%= button_to preferences_path, method: :patch, params: { theme: theme }, form: { data: { turbo: false } },
         class: ['flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs', helpers.current_theme == theme ? 'bg-accent-soft text-accent' : 'text-muted hover:bg-subtle hover:text-foreground'],

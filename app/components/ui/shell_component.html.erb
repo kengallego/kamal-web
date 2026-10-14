@@ -6,7 +6,6 @@
         <span class="grid size-8 place-items-center rounded-xl bg-action text-canvas"><%= render Ui::IconComponent.new(name: :cube, size: 20) %></span>
         <span class="whitespace-nowrap text-[15px] font-semibold tracking-tight">Kamal Web</span>
       <% end %>
-      <%= render Ui::ThemeSwitcherComponent.new %>
     </div>
     <%= render Ui::NavigationComponent.new(projects: @projects, setting: @setting) %>
   </aside>
@@ -14,7 +13,6 @@
     <header class="sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b border-line/70 bg-canvas/95 px-5 backdrop-blur-md sm:px-8 lg:hidden">
       <%= link_to root_path, class: 'flex items-center gap-2 text-sm font-semibold text-foreground' do %><%= render Ui::IconComponent.new(name: :cube, size: 21) %>Kamal Web<% end %>
       <div class="flex shrink-0 items-center gap-3">
-        <%= render Ui::ThemeSwitcherComponent.new %>
         <details class="relative lg:hidden" data-workspace-target="menu">
           <summary class="icon-button list-none [&::-webkit-details-marker]:hidden" aria-label="<%= t('layouts.application.menu') %>"><%= render Ui::IconComponent.new(name: :menu, size: 20) %></summary>
           <div class="absolute right-0 z-30 mt-3 flex max-h-[80dvh] w-72 max-w-[calc(100vw-2.5rem)] flex-col overflow-y-auto rounded-2xl border border-line bg-canvas p-4 shadow-xl">
