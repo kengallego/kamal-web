@@ -38,7 +38,7 @@ module KamalWeb
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
-    config.i18n.available_locales = %i[ en es ]
+    config.i18n.available_locales = %i[ en es de fr pt-BR it ja zh-CN ]
     config.i18n.default_locale = :en
     config.i18n.fallbacks = [ :en ]
 

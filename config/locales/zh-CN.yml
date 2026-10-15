@@ -1,0 +1,738 @@
+zh-CN:
+  access_password:
+    invalid_ips: KAMAL_WEB_ALLOWED_IPS 中有无效条目：%{entries}。
+    invalid_totp: KAMAL_WEB_TOTP_SECRET 不是有效的密钥。请用 bin/totp-secret 生成一个。
+    ip_not_allowed: 无法从 %{ip} 访问 Kamal Web。
+    missing: 未设置 KAMAL_WEB_PASSWORD。请将其添加到 .env 并运行 kamal deploy。
+    too_short: KAMAL_WEB_PASSWORD 至少需要 %{count} 个字符。请在 .env 中修改并运行 kamal deploy。
+  activerecord:
+    attributes:
+      command_run:
+        destination: 部署目标
+        kind: 命令
+      console_session:
+        destination: 部署目标
+        host: 主机
+      environment_variable:
+        key: 名称
+        value: 值
+      project:
+        branch: 分支
+        config_file: Kamal 配置文件
+        git_ssh_private_key: 仓库部署密钥
+        local_path: 文件夹
+        name: 名称
+        notification_webhook_url: Webhook URL
+        repository_url: 仓库 URL
+        ssh_private_key: SSH 私钥
+      project_file:
+        content: 内容
+        path: 路径
+      server:
+        host: 主机
+        name: 名称
+        notes: 备注
+        ssh_port: SSH 端口
+        ssh_user: SSH 用户
+      setting:
+        alert_disk_percent: 磁盘告警
+        alert_memory_percent: 内存告警
+        scheduled_backups_keep: 保留的备份数
+    errors:
+      models:
+        command_run:
+          attributes:
+            destination:
+              unknown: 未在此项目中配置
+            kind:
+              unsupported: 不是受支持的命令
+          confirmation_required: '%{word} 受保护。请输入 %{word} 以确认。'
+          needs_repository: '%{command} 需要项目的仓库，因为在服务器上检测到的配置没有环境变量或密钥。请在项目设置中连接仓库。'
+          operation_running: '%{command} 已在此项目中运行。请等待其完成或取消。'
+        console_session:
+          attributes:
+            destination:
+              unknown: 未在此项目中配置
+            host:
+              unknown: 不在此部署目标的配置中
+        environment_variable:
+          attributes:
+            key:
+              invalid_name: 必须是有效的环境变量名
+        project:
+          attributes:
+            config_file:
+              not_relative: 必须是相对于项目根目录的路径
+            git_ssh_private_key:
+              not_private_key: 看起来不是私钥
+            local_path:
+              outside_root: 必须位于 %{root} 内（请将项目挂载到那里）
+            repository_url:
+              invalid_git_url: 必须是 https 或 ssh 的 git URL
+            ssh_private_key:
+              not_private_key: 看起来不是私钥
+        project_file:
+          attributes:
+            path:
+              outside_project: 必须是项目内的相对路径
+        server:
+          attributes:
+            host:
+              in_use: 在有项目部署到此服务器时无法更改
+    models:
+      project: 项目
+  alerts:
+    days_left:
+      other: 剩余 %{count} 天
+    heading:
+      other: '%{count} 个未解决的告警'
+    kinds:
+      app_down: 应用未在 %{subject} 上运行
+      certificate: '%{subject} 的 TLS 证书即将过期'
+      disk: '%{subject} 的磁盘快满了'
+      health_check: '%{subject} 没有响应'
+      host_unreachable: 无法通过 SSH 连接 %{subject}
+      memory: '%{subject} 的内存快满了'
+      proxy_errors: '%{subject} 上出现大量 5xx 响应'
+    since: 自 %{time}
+  checks:
+    app: 应用
+    app_down: '%{host} 上没有运行中的 %{role} 容器。请部署，或在“命令”中运行“启动应用”。'
+    app_running: 正在 %{host} 上运行
+    certificate:
+      other: 证书将在 %{count} 天后过期
+    config: 配置
+    config_not_loaded: 尚未加载。请点击“同步”。
+    config_read: 已读取 %{file}
+    config_read_at: '%{time}读取了 %{file}'
+    config_sync_failed: 上次同步失败：见上文。
+    health: '%{url}'
+    health_ok: HTTP %{status}，耗时 %{ms} ms · 24 小时可用率 %{uptime}
+    health_pending: 尚未请求。每分钟请求一次。
+    health_status: 返回 HTTP %{status}
+    proxy_down: 未在 %{hosts} 上运行。请在“命令”中运行“启动代理”。
+    repository: 仓库
+    repository_missing: 从服务器检测到。添加 git 仓库后才能部署和回滚。
+    running: 运行中
+    secrets: 密钥
+    secrets_missing:
+      other: 未设置 %{names}。请在“设置 → 环境变量”中添加。
+    secrets_none: 没有 .kamal/secrets 文件
+    secrets_ok: .kamal/secrets 读取的变量都已设置
+    ssh: SSH 到 %{host}
+    ssh_monitoring_off: 监控已关闭，因此不检查此项。
+    ssh_ok: '%{time}连接成功'
+    ssh_pending: 尚未检查。每分钟检查一次。
+  command_fields:
+    code:
+      label: Ruby 代码
+      placeholder: puts User.count
+    command:
+      label: 命令
+      placeholder: bin/rails db:migrate:status
+    container_id:
+      label: 容器
+      placeholder: 当前应用容器
+    follow:
+      label: 实时跟踪
+    grep:
+      label: 过滤
+      placeholder: 文本或正则表达式
+    host:
+      label: 主机
+    lines:
+      label: 行数
+      placeholder: '200'
+    message:
+      label: 消息
+      placeholder: 锁定部署的原因
+    name:
+      label: 附属服务
+    version:
+      label: 版本
+      placeholder: 之前某次部署的 git SHA
+  command_groups:
+    accessory: 附属服务
+    app: 应用
+    deploy: 部署
+    inspect: 检查
+    lock: 部署锁
+    maintenance: 维护
+    proxy: 代理
+  command_runs:
+    triggers:
+      manual: 仪表盘
+      webhook: 部署 Webhook
+  commands:
+    accessory_boot:
+      label: 启动附属服务（新建）
+    accessory_details:
+      label: 附属服务详情
+    accessory_logs:
+      label: 附属服务日志
+    accessory_reboot:
+      label: 重建附属服务
+    accessory_restart:
+      label: 重启附属服务
+    accessory_start:
+      label: 启动附属服务
+    accessory_stop:
+      label: 停止附属服务
+    app_boot:
+      label: 启动应用（新建）
+    app_containers:
+      label: 应用容器
+    app_details:
+      label: 应用详情
+    app_exec:
+      description: 在主主机上用当前镜像新建一个容器来运行
+      label: 运行命令
+    app_images:
+      label: 应用镜像
+    app_live:
+      label: 上线模式
+    app_logs:
+      description: 实时跟踪会持续最多 30 分钟显示一台主机（默认为主主机）的新日志
+      label: 应用日志
+    app_maintenance:
+      label: 维护模式
+    app_start:
+      label: 启动应用
+    app_stop:
+      label: 停止应用
+    app_version:
+      label: 运行中的版本
+    audit:
+      label: 审计日志
+    deploy:
+      description: 构建、推送并启动新版本
+      label: 部署
+    details:
+      label: 所有容器
+    lock_acquire:
+      label: 加锁
+    lock_release:
+      label: 解锁
+    lock_status:
+      label: 锁状态
+    proxy_boot:
+      label: 启动代理
+    proxy_details:
+      label: 代理详情
+    proxy_logs:
+      label: 代理日志
+    proxy_reboot:
+      label: 重建代理
+    prune_all:
+      label: 清理镜像和容器
+    rails_runner:
+      description: 在运行中的应用容器里用 bin/rails runner 执行 Ruby
+      label: Rails runner
+    redeploy:
+      description: 部署时不初始化服务器、代理，也不登录镜像仓库
+      label: 重新部署
+    registry_login:
+      label: 登录镜像仓库
+    rollback:
+      label: 回滚
+    server_bootstrap:
+      description: 在缺少 curl 和 Docker 的服务器上安装它们
+      label: 初始化服务器
+    setup:
+      description: 初始化服务器、启动附属服务并部署
+      label: 初始设置
+    version:
+      label: Kamal 版本
+  common:
+    activity: 活动
+    ago: '%{time}前'
+    cancel: 取消
+    command: 命令
+    commands: 命令
+    config: 配置
+    console: 控制台
+    copied: 已复制
+    copy: 复制
+    cpu: CPU
+    dashboard: 仪表盘
+    default_destination: 默认
+    delete: 删除
+    destination: 部署目标
+    disk: 磁盘
+    duration: 耗时
+    edit: 编辑
+    from: 来源
+    host: 主机
+    loading: 加载中…
+    monitoring: 监控
+    never_deployed: 从未部署
+    new_project: 新建项目
+    no_runs: 还没有运行过命令。
+    overview: 概览
+    project: 项目
+    proxy: 代理
+    ram: 内存
+    recent_activity: 最近活动
+    revision: 修订版本
+    run: 运行
+    save: 保存
+    scan_this_server: 扫描此服务器
+    servers: 服务器
+    settings: 设置
+    status: 状态
+    sync: 同步
+    unreachable: 无法连接
+    updated_at: '%{time}更新'
+    when: 时间
+  console_kinds:
+    dbconsole: 数据库控制台
+    rails: Rails 控制台
+    shell: Shell
+  dashboard:
+    show:
+      add_first: 添加你的第一个项目
+      empty_html: 项目指向一个包含 Kamal <code>config/deploy.yml</code> 的仓库（或挂载的文件夹）。Kamal Web 会为它运行 Kamal，并显示你的服务器上正在发生什么。已在此服务器上运行的 Kamal 应用会被自动检测并添加。
+      empty_title: 还没有项目
+      operation_running: '%{command} 运行中'
+      scan_title: 查找此服务器上运行的 Kamal 应用并添加
+      sync_error: 同步错误
+  flash:
+    backups:
+      accepted: 已接受 %{date} 的备份。Kamal Web 正在重启以恢复它，请在几秒后重新登录。
+      choose_file: 请选择一个备份文件。
+      invalid:
+        no_database: 备份中没有数据库。
+        no_key: 备份中没有密钥。
+        not_archive: 该文件不是 .tar.gz 压缩包。
+        not_backup: 这不是 Kamal Web 的备份。
+        too_large: 备份大于 500 MB。
+    command_runs:
+      canceled: 命令已取消。
+      unknown: 未知命令。
+    deleted: 已删除 %{name}。
+    discoveries:
+      added:
+        other: 在此服务器上找到 %{count} 个 Kamal 应用，已添加 %{names}。
+      all_added:
+        other: 在此服务器上找到 %{count} 个 Kamal 应用，均已添加。
+      none: 此服务器上没有运行中的 Kamal 应用。
+    monitoring:
+      no_key: 请为项目添加 SSH 密钥以收集指标。
+      refreshed: 指标已刷新。
+    projects:
+      created: 项目已创建。
+      deleted: 项目已删除。
+      first_sync_failed: '%{message} 首次同步失败，详情见下文。'
+      sync_failed: 同步失败：%{error}
+      synced: 项目已同步。
+      updated: 项目已更新。
+    saved: 已保存 %{name}。
+    servers:
+      check_failed: 连接失败：%{error}
+      check_succeeded: Kamal Web 可以通过 SSH 连接。
+      in_use: 此服务器在某个项目的 Kamal 配置中。请先从 deploy.yml 中移除并同步，再删除它。
+    sessions:
+      rate_limited: 请稍后再试。
+      wrong_password: 密码错误。
+      wrong_password_or_code: 密码或验证码错误。
+    settings:
+      detect_again: 已移除的应用将在下次扫描时被重新检测。
+      saved: 设置已保存。
+      status_board_regenerated: 状态面板 URL 已重新生成。
+      update_not_started: 更新未能开始。请查看下方的“实例”。
+      updating: 正在更新到 %{version}。完成后 Kamal Web 会重启。
+    webhook_tokens:
+      regenerated: 部署 Webhook URL 已重新生成。请在所有使用它的地方更新。
+  layouts:
+    application:
+      menu: 菜单
+      projects: 项目
+      sign_out: 退出登录
+      update_available: Kamal Web %{version} 已发布
+  projects:
+    activity:
+      running: '%{command} 在 %{destination} 上%{status}'
+      view_output: 查看输出 →
+    command_runs:
+      index:
+        all: 全部
+      show:
+        confirm_again: 再次运行 %{command}？
+        confirm_cancel: 停止此命令？Kamal 可能会留下部署锁。
+        containers: 容器
+        exit_code: 退出码 %{code}
+        from: 来自 %{source}
+        run_again: 再次运行
+        still_streaming: ' 离开此页面前，新的输出会持续显示。'
+        stop_following: 停止跟踪
+        truncated: 输出在 %{size} 处被截断。
+    commands:
+      show:
+        add_repository: 添加 git 仓库
+        all_accessories: 所有附属服务
+        changes_servers: 会更改服务器
+        confirm: 在 %{destination} 上运行%{command}？
+        default_hosts: 默认主机
+        intro_html: 命令在 %{destination} 上运行。每个项目同一时间只能运行一个会更改服务器的命令。
+        more_commands: 有应用代码后可用的更多命令（%{count}）
+        unavailable_html: Kamal Web 是通过运行中的容器找到这个应用的，因此可以管理正在运行的内容，但没有构建和部署所需的代码和密钥。%{link}即可启用：
+    configs:
+      show:
+        intro_html: 由 %{file} 合并而成的 %{destination} 配置，已渲染 ERB。不显示密钥的值。
+        intro_with_override_html: 由 %{file} 及其覆盖文件 %{override} 合并而成的 %{destination} 配置，已渲染 ERB。不显示密钥的值。
+        not_loaded: 配置尚未加载。请点击“同步”。
+    console_sessions:
+      index:
+        empty: 还没有控制台会话。
+        hint_html: 在 %{destination} 上运行中的应用容器内执行 %{command}。无操作 %{idle}或离开页面后会话将关闭。
+        never_opened: 从未打开
+        open: 打开控制台
+        open_badge: 已打开
+        open_title: 打开控制台
+        primary: 主
+        primary_host: 主主机
+        primary_host_named: 主主机（%{host}）
+        recent: 最近的会话
+      show:
+        connecting: 连接中…
+        hint: 离开此页面会关闭会话。你输入的内容不会被保存。
+        messages:
+          connected: 已连接
+          disconnected: 已断开
+          ended: 会话已结束（退出码 %{code}）
+          ended_short: 会话已结束
+          rejected: 此会话已无法打开。请新建一个。
+        new_session: 新建会话
+        primary_host: 主主机
+    containers:
+      containers:
+        empty: 此应用还没有容器。
+    deploy_previews:
+      preview:
+        ahead_html:
+          other: 自线上版本 %{version} 以来，%{branch} 上有 %{count} 个新提交
+        as_of: 基于上次同步（%{time}）。部署时会先拉取最新代码。
+        confirm_release: 解除部署锁？请确认没有人正在部署。
+        current_html: 线上版本 %{version} 就是最新提交。
+        locked: 部署已被锁定
+        more: 以及另外 %{count} 个
+        no_details: 无详情
+        not_deployed: 尚未部署。
+        release_lock: 解锁
+        unknown_html: 线上版本 %{version} 不在 %{branch} 的近期历史中。
+    edit:
+      title: 编辑 %{project}
+    environment_variables:
+      edit:
+        title: 编辑 %{name}
+      form:
+        all_destinations: 所有部署目标
+        keep_value: 留空以保留当前值
+        name: 名称
+        value: 值
+      new:
+        title: 新建变量
+    form:
+      branch: 分支
+      config_file: Kamal 配置文件
+      config_file_hint_html: 会自动检测 <code>config/deploy.staging.yml</code> 这类部署目标文件。
+      create: 创建项目
+      deploy_key: 仓库部署密钥
+      deploy_key_placeholder: 可选。仅当仓库需要与服务器不同的密钥时填写。
+      folder: 文件夹
+      folder_hint_html: 请将项目挂载到容器的 %{path}。
+      format: 格式
+      formats:
+        generic: 通用
+      key_stored: 已保存。粘贴新密钥即可替换。
+      kind_discovered: 在此服务器上检测到
+      kind_git: Git 仓库
+      kind_local: 挂载的文件夹
+      monitoring: 每分钟收集服务器指标
+      name: 名称
+      notifications: 通知
+      protected_destinations: 受保护的部署目标
+      protected_destinations_hint: 会更改这些服务器的命令，在运行前需要输入部署目标的名称（默认目标则输入项目名称）。部署 Webhook 不受影响。
+      repository_url: 仓库 URL
+      repository_url_placeholder: git@github.com:acme/app.git 或 https://github.com/acme/app.git
+      save: 保存项目
+      server_access: 服务器访问
+      source: 来源
+      ssh_key: SSH 私钥
+      ssh_key_hint: 供 Kamal 和监控使用。加密存储，只会加载到临时的 ssh-agent 中。不支持带密码短语的密钥。
+      ssh_key_placeholder: 可选。留空则使用“设置”中的 Kamal Web 密钥。
+      token: HTTPS 访问令牌
+      token_placeholder: 用于私有 https 仓库
+      token_stored: •••••• 已保存，留空以保留
+      webhook_hint: 在部署、回滚或其他服务器变更完成时调用。
+      webhook_url: Webhook URL
+      where: 代码位置
+    header:
+      add_repository: 添加它的 git 仓库
+      authorize: 在你的 Kamal Web 代码目录中运行以下命令，授权 Kamal Web 的密钥：
+      checked_every_minute_html: 每分钟检查一次。可在%{monitoring}中立即重新检查。
+      checking_ssh: ' · 正在检查 SSH 访问…'
+      connect_repository_html: 你用 <code>kamal deploy</code> 运行的部署会显示在这里。要从 Kamal Web 或 Webhook 运行部署，请%{link}。
+      detected: 在此服务器上检测到
+      ssh_failed: Kamal Web 无法通过 SSH 连接 %{hosts}
+      sync_failed: 上次同步失败
+      sync_title: 拉取最新代码并重新读取 deploy.yml
+      synced: '%{time}已同步'
+    monitoring:
+      show:
+        container: 容器
+        cores: '%{load} / %{count} 核'
+        image: 镜像
+        load: 负载
+        load_help: 关于服务器负载
+        load_hint: 正在运行或等待 CPU、磁盘的进程数（1 分钟平均值）。100% 表示每个核心一个进程，数值可能更高。
+        logs: 日志
+        memory: 内存
+        no_hosts: Kamal 配置中没有找到主机。
+        no_samples: 还没有采样
+        'off': 此项目的后台监控已关闭。请在项目设置中开启。
+        ports: 端口
+        ranges:
+          24h: 24 小时
+          30d: 30 天
+          7d: 7 天
+        ranges_long:
+          24h: 最近 24 小时
+          30d: 最近 30 天，每小时平均值
+          7d: 最近 7 天，每小时平均值
+        refresh: 立即刷新
+        sampled: 每分钟通过 SSH 采样一次。保留 24 小时，每小时平均值保留 30 天。
+        updated: '%{time}更新'
+    new:
+      terminal_html: 这里无需添加任何内容。像平常一样在应用文件夹中针对此服务器运行 <code class="font-medium text-info">kamal setup</code> 或 <code class="font-medium text-info">kamal deploy</code>，Kamal Web 会在 5 分钟内自动添加该应用，也可以用%{scan}立即添加。只有当你也想从 Kamal Web 部署时，才需要在下方添加项目。
+      terminal_title: 更喜欢在终端里部署？
+    project_files:
+      edit:
+        title: 替换 %{path}
+      form:
+        content: 内容
+        keep_content: 留空以保留当前内容
+        path: 路径
+        path_hint: 相对于项目根目录。
+      new:
+        title: 新建密钥文件
+    proxies:
+      data:
+        chart_label: 最近一小时每分钟的请求数
+        errors_5xx: 错误（5xx）
+        latest_300: 此应用，最近 300 条
+        median: 中位数
+        method: 方法
+        no_requests: 最近一小时没有对此应用的请求。
+        no_routes: kamal-proxy 没有报告任何路由。它在 %{host} 上运行吗？
+        path: 路径
+        peak: 峰值 %{count}/分钟
+        recent_requests: 最近的请求
+        requests_1h: 请求（1 小时）
+        routes: 路由
+        service: 服务
+        state: 状态
+        target: 目标
+        time: 时间
+        traffic: 流量
+      show:
+        all: 全部
+        connecting: 正在连接 %{host}…
+        no_hosts: Kamal 配置中没有找到应用主机。
+    releases:
+      releases:
+        confirm: 将 %{project} 回滚到 %{version}？
+        deployed: '%{time}部署'
+        empty: 服务器上还没有此应用的容器。
+        live: 线上
+        needs_repository: 回滚会用应用当前的环境变量和密钥启动旧版本，因此需要应用的仓库。
+        roll_back: 回滚
+    settings:
+      show:
+        add_file: 添加文件
+        add_master_key: 添加 master.key
+        add_variable: 添加变量
+        all: 全部
+        config_file: 配置文件
+        confirm_delete: 删除 %{name}？
+        confirm_delete_project: 删除 %{project}？此操作无法撤销。
+        confirm_regenerate: 当前 URL 将失效。是否继续？
+        danger_zone: 危险操作
+        delete_hint: 删除项目及其历史、变量、文件和本地克隆。不会更改你的服务器。
+        delete_project: 删除项目
+        files: 密钥文件
+        files_hint_html: 每次运行命令前写入项目，用于不在 git 中的文件，例如 <code>config/master.key</code>。
+        name: 名称
+        no_files: 还没有文件。
+        no_variables: 还没有变量。
+        not_set: 未设置
+        notifications: 通知
+        'off': 关闭
+        path: 路径
+        protected: 受保护的部署目标
+        regenerate: 重新生成
+        replace: 替换
+        source: 来源
+        source_discovered: 在此服务器上检测到（%{service}）
+        source_git: Git：%{url}（%{branch}）
+        source_local: 文件夹：%{path}
+        ssh_key: SSH 密钥
+        stored: 已保存
+        updated: 更新时间
+        value: 值
+        variables: 环境变量
+        variables_hint_html: 可供 Kamal、其钩子和 <code>.kamal/secrets</code> 使用，例如 <code>KAMAL_REGISTRY_PASSWORD</code>。值会被加密。
+        webhook: 部署 Webhook
+        webhook_example_html: 添加 <code>?destination=staging</code> 可部署到指定目标。示例：%{example}
+        webhook_hint_html: 从 CI 或 GitHub/GitLab 的推送 Webhook 向此 URL 发送 POST 请求即可部署。推送到 %{branch} 以外分支的请求会被忽略。
+    show:
+      accessories: 附属服务
+      all_activity: 全部活动
+      checks: 检查
+      click_to_copy: 点击复制
+      config_not_loaded: 配置未加载
+      confirm_deploy: 将 %{project} 部署到 %{destination}？
+      confirm_redeploy: 将 %{project} 重新部署到 %{destination}？
+      deploy: 部署
+      deploy_to_html: 部署到 %{destination}
+      domains: 域名
+      image: 镜像
+      press_sync_html: 点击“同步”以读取 %{file}。
+      protected: 受保护
+      redeploy: 重新部署
+      servers: 服务器
+      service: 服务
+      versions: 服务器上的版本
+      versions_hint: Kamal 保留最近 5 个
+  servers:
+    connection:
+      ok: 已连接
+      unknown: 未检查
+    form:
+      host_in_use: 来自某个项目的 deploy.yml。请在那里修改。
+      name_placeholder: 生产环境 Web
+      ssh_hint_html: SSH 用户和端口留空时，使用此服务器上项目的 deploy.yml 中的设置（若没有则为 <code>root</code>，端口 22）。
+    index:
+      add: 添加服务器
+      description: 你的项目 Kamal 配置中的所有主机，以及你手动添加的主机。
+      empty_description: 项目 deploy.yml 中的服务器会自动显示在这里。手动添加服务器可在部署前检查 SSH 访问。
+      empty_title: 还没有服务器
+      no_projects: 还没有项目
+    new:
+      description: Kamal Web 会检查能否用其访问密钥通过 SSH 连接。要部署到这里，请将主机添加到某个项目的 deploy.yml。
+      title: 添加服务器
+    show:
+      authorize_command: 授权 Kamal Web 密钥的命令
+      authorize_html: 在服务器上以 %{user} 身份运行以下命令授权 Kamal Web 的密钥，然后再检查一次。
+      check: 检查连接
+      confirm_delete: 删除 %{name}？不会更改服务器本身。
+      connection: 连接
+      last_check: 上次检查
+      never_checked: 从未
+      no_projects: 还没有项目部署到这里。将此主机添加到某个项目的 deploy.yml 即可部署到这里。
+      notes: 备注
+      projects_hint_html: 依据各个 deploy.yml 中的 <code>servers</code> 和 <code>accessories</code>。用量为应用所占的部分。
+      resources: 机器资源
+      ssh: SSH
+      system: 系统
+  sessions:
+    new:
+      code: 身份验证器应用中的验证码
+      hint_html: 密码是部署 Kamal Web 时所用 <code class="text-zinc-400">.env</code> 文件中的 <code class="text-zinc-400">KAMAL_WEB_PASSWORD</code>。
+      password: 密码
+      title: 登录
+  settings:
+    edit:
+      access_key: 服务器访问密钥
+      access_key_hint: 用于所有没有自己 SSH 密钥的项目，包括在此服务器上检测到的应用。
+      alert_disk: 磁盘使用率
+      alert_memory: 内存使用率
+      alerts: 告警
+      alerts_hint: 出现问题时监控会开启告警，修复后自动解除。两者都会发送到项目的通知 Webhook，并显示在仪表盘上。
+      alerts_list: 以下情况也会告警：主机无法通过 SSH 连接、应用未运行、域名不响应健康检查、TLS 证书将在 14 天内过期，以及 kamal-proxy 中 5xx 响应超过 10%。
+      auto_update: 自动更新
+      auto_update_failed: '%{time}更新到 %{version} 失败。将在下一个版本发布时重试。'
+      auto_update_hint_html: 每小时检查一次 GitHub，并用 <code>kamal deploy</code> 将新版本无停机部署到此服务器。使用该版本的 <code>config/deploy.yml</code> 以及部署此实例时的设置，因此你对该文件的修改不会保留。
+      auto_update_output: 输出
+      auto_update_problems:
+        custom_volumes: 此实例挂载了 %{paths}，而该版本的 config/deploy.yml 没有。请改为在你的代码目录中用 kamal deploy 更新。
+        not_deployed: 仅当 Kamal Web 运行在 Kamal 部署的容器中且挂载了 Docker socket 时可用。
+      auto_update_running: 正在更新到 %{version}，开始于%{time}。完成后 Kamal Web 会重启。
+      auto_update_succeeded: '%{time}已更新到 %{version}。'
+      backup: 备份
+      backup_hint: 包含项目、加密的变量和密钥、设置和历史，以及用于解密它们的密钥。请妥善保管此文件：它能解开这里存储的所有密钥。
+      confirm_regenerate: 当前 URL 将失效。
+      confirm_restore: 用备份替换此实例中的所有内容？Kamal Web 会重启以完成恢复。
+      confirm_update_now: Kamal Web 会将新版本部署覆盖自身并重启。
+      detect_again: 重新检测
+      download: 下载备份
+      download_short: 下载
+      enabled: 已启用
+      ignored_html: 因你已移除而不再检测：%{services}
+      instance: 实例
+      keep: 保留最近
+      open: 打开
+      other_servers_html: 在其他任何服务器上，以 Kamal 部署所用的用户（通常是 <code>root</code>）运行：
+      regenerate: 重新生成 URL
+      release_notes: ' （发布说明）'
+      restore: 恢复
+      restore_hint_html: 恢复会替换当前数据。被替换的内容会保留在卷中的 <code>storage/before-restore-*</code>。
+      scheduled_backups: 每天 3:00 备份
+      scheduled_backups_hint_html: 写入 Kamal Web 卷中的 %{path}，可防止误操作，但无法应对服务器丢失。请不时下载一份保存在其他地方。
+      status_board: 状态面板
+      status_board_hint: 一个只读页面，适合投到电视或分享给团队，显示部署状态和服务器健康状况。实时更新。任何拥有链接的人都能查看。
+      this_server: 对于运行 Kamal Web 的服务器，在你的 Kamal Web 代码目录中运行：
+      up_to_date: 已是最新。%{time}检查过 GitHub。
+      update_check_off_html: 更新检查已关闭（<code>KAMAL_WEB_UPDATE_CHECK=false</code>）。
+      update_how_html: 在你的 Kamal Web 代码目录中运行 <code>git pull &amp;&amp; kamal deploy</code> 进行更新。
+      update_now: 立即更新到 %{version}
+  shared:
+    preferences:
+      language: 语言
+      theme: 主题
+      themes:
+        dark: 深色
+        light: 浅色
+        system: 自动
+    typed_confirm:
+      confirm: 确认
+      label: 确认
+      protected_html: 此部署目标受保护。请输入 %{word} 以确认。
+  status_boards:
+    show:
+      live: 实时 · %{time}更新
+      title: 部署状态
+  statuses:
+    canceled: 已取消
+    failed: 失败
+    queued: 排队中
+    running: 运行中
+    succeeded: 成功
+
+  ui:
+    breadcrumbs: "面包屑导航"
+    resource_usage: "应用：%{app} · 机器：%{total}"
+    project_navigation: "项目导航"
+    navigation: "主导航"
+    skip_navigation: "跳到内容"
+    workspace: "工作区"
+    infrastructure: "基础设施控制台"
+    no_projects: "你的项目会显示在这里"
+    dashboard_title: "一切井然有序。"
+    dashboard_description: "你的应用、服务器和最近活动，一目了然。"
+    servers: "服务器"
+    active_operations: "进行中的操作"
+    projects_caption: "已连接的应用"
+    servers_caption: "所有项目合计"
+    operations_caption: "正在运行"
+    dismiss: "关闭消息"
+    search_projects: "查找项目…"
+    search_commands: "查找命令…"
+    no_results: "没有匹配结果。换个关键词试试。"
+    awaiting_deploy: "已准备好首次部署"
+    optional: "可选"
+    on_this_page: "本页内容"
+    appearance: "外观"
+    settings_description: "按你的方式工作的工作区。"
+    login_description: "让一切保持运行的安静角落。"
+    copy_failed: "无法复制。请重试。"

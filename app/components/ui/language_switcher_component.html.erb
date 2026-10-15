@@ -1,7 +1,18 @@
-<div class="inline-flex gap-1 rounded-lg border border-line p-1" role="group" aria-label="<%= t('shared.preferences.language') %>">
-  <% I18n.available_locales.each do |locale| %>
-    <%= button_to LABELS.fetch(locale), preferences_path, method: :patch, params: { locale: locale },
-      class: ['rounded-md px-3 py-1.5 text-sm font-medium', I18n.locale == locale ? 'bg-accent-soft text-accent' : 'text-muted hover:bg-subtle hover:text-foreground'],
-      form: { data: { turbo: false } }, 'aria-pressed': I18n.locale == locale, lang: locale %>
-  <% end %>
-</div>
+<details class="relative shrink-0" data-controller="workspace" data-action="keydown.esc@window->workspace#close click@window->workspace#dismiss" data-workspace-target="menu">
+  <summary class="input flex min-w-48 cursor-pointer list-none items-center gap-2.5 [&::-webkit-details-marker]:hidden" aria-label="<%= t('shared.preferences.language') %>" lang="<%= I18n.locale %>">
+    <%= flag(I18n.locale) %>
+    <span class="text-sm"><%= LABELS.fetch(I18n.locale) %></span>
+    <span class="ml-auto rotate-90 text-faint"><%= render Ui::IconComponent.new(name: :chevron, size: 14) %></span>
+  </summary>
+  <div class="absolute right-0 top-full z-30 mt-2 w-full min-w-48 rounded-xl border border-line bg-surface p-1.5 shadow-lg" role="group" aria-label="<%= t('shared.preferences.language') %>">
+    <% I18n.available_locales.each do |locale| %>
+      <%= button_to preferences_path, method: :patch, params: { locale: locale }, form: { data: { turbo: false } },
+        class: ['flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm', I18n.locale == locale ? 'bg-accent-soft text-accent' : 'text-muted hover:bg-subtle hover:text-foreground'],
+        'aria-pressed': I18n.locale == locale, lang: locale do %>
+        <%= flag(locale) %>
+        <%= LABELS.fetch(locale) %>
+        <% if I18n.locale == locale %><span class="ml-auto"><%= render Ui::IconComponent.new(name: :check, size: 13) %></span><% end %>
+      <% end %>
+    <% end %>
+  </div>
+</details>

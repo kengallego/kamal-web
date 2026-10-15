@@ -1,5 +1,5 @@
 # English is the source language: texts are written here first and translated
-# in es.yml. Keys follow Rails' lazy lookup (views/<controller>/<view>).
+# in the other locale files. Keys follow Rails' lazy lookup (views/<controller>/<view>).
 en:
   access_password:
     invalid_ips: 'KAMAL_WEB_ALLOWED_IPS has invalid entries: %{entries}.'

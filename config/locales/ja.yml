@@ -1,0 +1,738 @@
+ja:
+  access_password:
+    invalid_ips: 'KAMAL_WEB_ALLOWED_IPS に無効な値があります: %{entries}'
+    invalid_totp: KAMAL_WEB_TOTP_SECRET は有効なシークレットではありません。bin/totp-secret で生成してください。
+    ip_not_allowed: '%{ip} からは Kamal Web にアクセスできません。'
+    missing: KAMAL_WEB_PASSWORD が設定されていません。.env に追加して kamal deploy を実行してください。
+    too_short: KAMAL_WEB_PASSWORD は %{count} 文字以上にしてください。.env で変更して kamal deploy を実行してください。
+  activerecord:
+    attributes:
+      command_run:
+        destination: デプロイ先
+        kind: コマンド
+      console_session:
+        destination: デプロイ先
+        host: ホスト
+      environment_variable:
+        key: 名前
+        value: 値
+      project:
+        branch: ブランチ
+        config_file: Kamal 設定ファイル
+        git_ssh_private_key: リポジトリのデプロイキー
+        local_path: フォルダ
+        name: 名前
+        notification_webhook_url: Webhook URL
+        repository_url: リポジトリ URL
+        ssh_private_key: SSH 秘密鍵
+      project_file:
+        content: 内容
+        path: パス
+      server:
+        host: ホスト
+        name: 名前
+        notes: メモ
+        ssh_port: SSH ポート
+        ssh_user: SSH ユーザー
+      setting:
+        alert_disk_percent: ディスクのアラート
+        alert_memory_percent: メモリのアラート
+        scheduled_backups_keep: 保持するバックアップ数
+    errors:
+      models:
+        command_run:
+          attributes:
+            destination:
+              unknown: はこのプロジェクトに設定されていません
+            kind:
+              unsupported: はサポートされていないコマンドです
+          confirmation_required: '%{word} は保護されています。確認のため %{word} と入力してください。'
+          needs_repository: サーバーで検出した設定には環境変数もシークレットもないため、%{command} にはプロジェクトのリポジトリが必要です。プロジェクト設定で接続してください。
+          operation_running: このプロジェクトでは %{command} がすでに実行中です。完了を待つか、キャンセルしてください。
+        console_session:
+          attributes:
+            destination:
+              unknown: はこのプロジェクトに設定されていません
+            host:
+              unknown: はこのデプロイ先の設定にありません
+        environment_variable:
+          attributes:
+            key:
+              invalid_name: は有効な環境変数名にしてください
+        project:
+          attributes:
+            config_file:
+              not_relative: はプロジェクトのルートからの相対パスにしてください
+            git_ssh_private_key:
+              not_private_key: は秘密鍵ではないようです
+            local_path:
+              outside_root: は %{root} 内にしてください（プロジェクトをそこにマウントしてください）
+            repository_url:
+              invalid_git_url: は https または ssh の git URL にしてください
+            ssh_private_key:
+              not_private_key: は秘密鍵ではないようです
+        project_file:
+          attributes:
+            path:
+              outside_project: はプロジェクト内の相対パスにしてください
+        server:
+          attributes:
+            host:
+              in_use: はプロジェクトがデプロイしている間は変更できません
+    models:
+      project: プロジェクト
+  alerts:
+    days_left:
+      other: 残り %{count} 日
+    heading:
+      other: 未解決のアラート %{count} 件
+    kinds:
+      app_down: '%{subject} でアプリが動いていません'
+      certificate: '%{subject} の TLS 証明書がまもなく期限切れになります'
+      disk: '%{subject} のディスクがほぼ満杯です'
+      health_check: '%{subject} が応答していません'
+      host_unreachable: '%{subject} に SSH で接続できません'
+      memory: '%{subject} のメモリがほぼ満杯です'
+      proxy_errors: '%{subject} で 5xx レスポンスが多発しています'
+    since: '%{time}から'
+  checks:
+    app: アプリ
+    app_down: '%{host} で %{role} コンテナが動いていません。デプロイするか、コマンドから「アプリを起動」を実行してください。'
+    app_running: '%{host} で稼働中'
+    certificate:
+      other: 証明書の有効期限まで %{count} 日
+    config: 設定
+    config_not_loaded: まだ読み込まれていません。「同期」を押してください。
+    config_read: '%{file} を読み込み済み'
+    config_read_at: '%{file} を%{time}に読み込み'
+    config_sync_failed: 前回の同期に失敗しました。上記を確認してください。
+    health: '%{url}'
+    health_ok: HTTP %{status}（%{ms} ms）· 24 時間の稼働率 %{uptime}
+    health_pending: まだ確認していません。1 分ごとに確認します。
+    health_status: HTTP %{status} を返しました
+    proxy_down: '%{hosts} で動いていません。コマンドから「プロキシを起動」を実行してください。'
+    repository: リポジトリ
+    repository_missing: サーバーから検出しました。デプロイとロールバックには git リポジトリを追加してください。
+    running: 稼働中
+    secrets: シークレット
+    secrets_missing:
+      other: '%{names} が設定されていません。設定 → 環境変数 で追加してください。'
+    secrets_none: .kamal/secrets ファイルがありません
+    secrets_ok: .kamal/secrets が読み込む変数はすべて設定されています
+    ssh: '%{host} への SSH'
+    ssh_monitoring_off: 監視がオフのため確認していません。
+    ssh_ok: '%{time}に接続'
+    ssh_pending: まだ確認していません。1 分ごとに確認します。
+  command_fields:
+    code:
+      label: Ruby コード
+      placeholder: puts User.count
+    command:
+      label: コマンド
+      placeholder: bin/rails db:migrate:status
+    container_id:
+      label: コンテナ
+      placeholder: 現在のアプリコンテナ
+    follow:
+      label: ライブで追跡
+    grep:
+      label: フィルター
+      placeholder: テキストまたは正規表現
+    host:
+      label: ホスト
+    lines:
+      label: 行数
+      placeholder: '200'
+    message:
+      label: メッセージ
+      placeholder: デプロイをロックしている理由
+    name:
+      label: アクセサリ
+    version:
+      label: バージョン
+      placeholder: 過去のデプロイの git SHA
+  command_groups:
+    accessory: アクセサリ
+    app: アプリ
+    deploy: デプロイ
+    inspect: 調査
+    lock: デプロイロック
+    maintenance: メンテナンス
+    proxy: プロキシ
+  command_runs:
+    triggers:
+      manual: ダッシュボード
+      webhook: デプロイ Webhook
+  commands:
+    accessory_boot:
+      label: アクセサリを起動（新規）
+    accessory_details:
+      label: アクセサリの詳細
+    accessory_logs:
+      label: アクセサリのログ
+    accessory_reboot:
+      label: アクセサリを再作成
+    accessory_restart:
+      label: アクセサリを再起動
+    accessory_start:
+      label: アクセサリを開始
+    accessory_stop:
+      label: アクセサリを停止
+    app_boot:
+      label: アプリを起動（新規）
+    app_containers:
+      label: アプリのコンテナ
+    app_details:
+      label: アプリの詳細
+    app_exec:
+      description: プライマリホストで現在のイメージから新しいコンテナを作って実行します
+      label: コマンドを実行
+    app_images:
+      label: アプリのイメージ
+    app_live:
+      label: ライブモード
+    app_logs:
+      description: 追跡すると、1 台のホスト（指定しなければプライマリ）の新しい行を最大 30 分間表示し続けます
+      label: アプリのログ
+    app_maintenance:
+      label: メンテナンスモード
+    app_start:
+      label: アプリを起動
+    app_stop:
+      label: アプリを停止
+    app_version:
+      label: 稼働中のバージョン
+    audit:
+      label: 監査ログ
+    deploy:
+      description: 新しいバージョンをビルド、プッシュして起動します
+      label: デプロイ
+    details:
+      label: すべてのコンテナ
+    lock_acquire:
+      label: ロックを取得
+    lock_release:
+      label: ロックを解除
+    lock_status:
+      label: ロックの状態
+    proxy_boot:
+      label: プロキシを起動
+    proxy_details:
+      label: プロキシの詳細
+    proxy_logs:
+      label: プロキシのログ
+    proxy_reboot:
+      label: プロキシを再作成
+    prune_all:
+      label: イメージとコンテナを削除
+    rails_runner:
+      description: 稼働中のアプリコンテナ内で bin/rails runner により Ruby を評価します
+      label: Rails runner
+    redeploy:
+      description: サーバーの準備、プロキシ、レジストリへのログインなしでデプロイします
+      label: 再デプロイ
+    registry_login:
+      label: レジストリにログイン
+    rollback:
+      label: ロールバック
+    server_bootstrap:
+      description: curl と Docker がないサーバーにインストールします
+      label: サーバーを準備
+    setup:
+      description: サーバーを準備し、アクセサリを起動してデプロイします
+      label: セットアップ
+    version:
+      label: Kamal のバージョン
+  common:
+    activity: アクティビティ
+    ago: '%{time}前'
+    cancel: キャンセル
+    command: コマンド
+    commands: コマンド
+    config: 設定
+    console: コンソール
+    copied: コピーしました
+    copy: コピー
+    cpu: CPU
+    dashboard: ダッシュボード
+    default_destination: デフォルト
+    delete: 削除
+    destination: デプロイ先
+    disk: ディスク
+    duration: 所要時間
+    edit: 編集
+    from: 実行元
+    host: ホスト
+    loading: 読み込み中…
+    monitoring: 監視
+    never_deployed: 未デプロイ
+    new_project: 新しいプロジェクト
+    no_runs: まだコマンドは実行されていません。
+    overview: 概要
+    project: プロジェクト
+    proxy: プロキシ
+    ram: RAM
+    recent_activity: 最近のアクティビティ
+    revision: リビジョン
+    run: 実行
+    save: 保存
+    scan_this_server: このサーバーをスキャン
+    servers: サーバー
+    settings: 設定
+    status: 状態
+    sync: 同期
+    unreachable: 接続不可
+    updated_at: '%{time}に更新'
+    when: 日時
+  console_kinds:
+    dbconsole: データベースコンソール
+    rails: Rails コンソール
+    shell: シェル
+  dashboard:
+    show:
+      add_first: 最初のプロジェクトを追加
+      empty_html: プロジェクトは Kamal の <code>config/deploy.yml</code> があるリポジトリ（またはマウントしたフォルダ）を指します。Kamal Web はそのために Kamal を実行し、サーバーで何が起きているかを表示します。このサーバーですでに動いている Kamal アプリは自動で検出、追加されます。
+      empty_title: まだプロジェクトがありません
+      operation_running: '%{command} を実行中'
+      scan_title: このサーバーで動いている Kamal アプリを探して追加します
+      sync_error: 同期エラー
+  flash:
+    backups:
+      accepted: '%{date} のバックアップを受け付けました。復元のため Kamal Web を再起動しています。数秒後にもう一度ログインしてください。'
+      choose_file: バックアップファイルを選んでください。
+      invalid:
+        no_database: バックアップにデータベースがありません。
+        no_key: バックアップに秘密鍵がありません。
+        not_archive: ファイルが .tar.gz アーカイブではありません。
+        not_backup: Kamal Web のバックアップではありません。
+        too_large: バックアップが 500 MB を超えています。
+    command_runs:
+      canceled: コマンドをキャンセルしました。
+      unknown: 不明なコマンドです。
+    deleted: '%{name} を削除しました。'
+    discoveries:
+      added:
+        other: このサーバーで Kamal アプリが %{count} 件見つかり、%{names} を追加しました。
+      all_added:
+        other: このサーバーで Kamal アプリが %{count} 件見つかりました。すべて追加済みです。
+      none: このサーバーで動いている Kamal アプリはありません。
+    monitoring:
+      no_key: メトリクスを収集するには、プロジェクトに SSH キーを追加してください。
+      refreshed: メトリクスを更新しました。
+    projects:
+      created: プロジェクトを作成しました。
+      deleted: プロジェクトを削除しました。
+      first_sync_failed: '%{message} 初回の同期に失敗しました。詳細は下記を確認してください。'
+      sync_failed: '同期に失敗しました: %{error}'
+      synced: プロジェクトを同期しました。
+      updated: プロジェクトを更新しました。
+    saved: '%{name} を保存しました。'
+    servers:
+      check_failed: '接続に失敗しました: %{error}'
+      check_succeeded: Kamal Web は SSH で接続できます。
+      in_use: このサーバーはプロジェクトの Kamal 設定に含まれています。削除する前に deploy.yml から外して同期してください。
+    sessions:
+      rate_limited: しばらくしてからもう一度お試しください。
+      wrong_password: パスワードが違います。
+      wrong_password_or_code: パスワードまたはコードが違います。
+    settings:
+      detect_again: 削除したアプリは次回のスキャンで再び検出されます。
+      saved: 設定を保存しました。
+      status_board_regenerated: ステータスボードの URL を再生成しました。
+      update_not_started: 更新を開始できませんでした。下の「インスタンス」を確認してください。
+      updating: '%{version} に更新しています。完了すると Kamal Web が再起動します。'
+    webhook_tokens:
+      regenerated: デプロイ Webhook の URL を再生成しました。使用している箇所をすべて更新してください。
+  layouts:
+    application:
+      menu: メニュー
+      projects: プロジェクト
+      sign_out: ログアウト
+      update_available: Kamal Web %{version} が利用可能です
+  projects:
+    activity:
+      running: '%{destination} で %{command} %{status}'
+      view_output: 出力を見る →
+    command_runs:
+      index:
+        all: すべて
+      show:
+        confirm_again: '%{command} をもう一度実行しますか？'
+        confirm_cancel: このコマンドを停止しますか？Kamal がデプロイロックを残すことがあります。
+        containers: コンテナ
+        exit_code: 終了コード %{code}
+        from: '%{source} から'
+        run_again: もう一度実行
+        still_streaming: ' このページを離れるまで、新しい行が表示され続けます。'
+        stop_following: 追跡を停止
+        truncated: 出力は %{size} で切り捨てられました。
+    commands:
+      show:
+        add_repository: git リポジトリを追加
+        all_accessories: すべてのアクセサリ
+        changes_servers: サーバーを変更
+        confirm: '%{destination} で %{command} を実行しますか？'
+        default_hosts: デフォルトのホスト
+        intro_html: コマンドは %{destination} に対して実行されます。サーバーを変更するコマンドは、プロジェクトごとに同時に 1 つだけ実行できます。
+        more_commands: アプリのコードがあれば使えるコマンド（%{count}）
+        unavailable_html: Kamal Web はこのアプリを稼働中のコンテナから見つけたため、動いているものは管理できますが、ビルドやデプロイに必要なコードとシークレットがありません。%{link}と、次が使えるようになります。
+    configs:
+      show:
+        intro_html: '%{file} から作った %{destination} の統合設定です（ERB は展開済み）。シークレットの値は表示しません。'
+        intro_with_override_html: '%{file} とその上書き %{override} から作った %{destination} の統合設定です（ERB は展開済み）。シークレットの値は表示しません。'
+        not_loaded: 設定はまだ読み込まれていません。「同期」を押してください。
+    console_sessions:
+      index:
+        empty: まだコンソールセッションはありません。
+        hint_html: '%{destination} の稼働中のアプリコンテナ内で %{command} を実行します。%{idle}操作がないか、ページを離れるとセッションは終了します。'
+        never_opened: 未接続
+        open: コンソールを開く
+        open_badge: 接続中
+        open_title: コンソールを開く
+        primary: プライマリ
+        primary_host: プライマリホスト
+        primary_host_named: プライマリホスト（%{host}）
+        recent: 最近のセッション
+      show:
+        connecting: 接続中…
+        hint: このページを離れるとセッションは終了します。入力内容は保存されません。
+        messages:
+          connected: 接続しました
+          disconnected: 切断されました
+          ended: セッションが終了しました（終了コード %{code}）
+          ended_short: セッション終了
+          rejected: このセッションはもう開けません。新しいセッションを開始してください。
+        new_session: 新しいセッション
+        primary_host: プライマリホスト
+    containers:
+      containers:
+        empty: このアプリのコンテナはまだありません。
+    deploy_previews:
+      preview:
+        ahead_html:
+          other: 稼働中のバージョン %{version} 以降、%{branch} に新しいコミットが %{count} 件あります
+        as_of: 前回の同期（%{time}）時点の情報です。デプロイ時はまず最新のコードを取得します。
+        confirm_release: デプロイロックを解除しますか？誰もデプロイしていないことを確認してください。
+        current_html: 稼働中のバージョン %{version} が最新のコミットです。
+        locked: デプロイはロックされています
+        more: ほか %{count} 件
+        no_details: 詳細なし
+        not_deployed: まだデプロイされていません。
+        release_lock: ロックを解除
+        unknown_html: 稼働中のバージョン %{version} は %{branch} の最近の履歴にありません。
+    edit:
+      title: '%{project} を編集'
+    environment_variables:
+      edit:
+        title: '%{name} を編集'
+      form:
+        all_destinations: すべてのデプロイ先
+        keep_value: 空のままにすると現在の値を保持します
+        name: 名前
+        value: 値
+      new:
+        title: 新しい変数
+    form:
+      branch: ブランチ
+      config_file: Kamal 設定ファイル
+      config_file_hint_html: <code>config/deploy.staging.yml</code> のようなデプロイ先ファイルは自動で検出されます。
+      create: プロジェクトを作成
+      deploy_key: リポジトリのデプロイキー
+      deploy_key_placeholder: 任意。リポジトリにサーバーとは別のキーが必要な場合のみ。
+      folder: フォルダ
+      folder_hint_html: プロジェクトをコンテナの %{path} にマウントしてください。
+      format: 形式
+      formats:
+        generic: 汎用
+      key_stored: 保存済み。置き換えるには新しいキーを貼り付けてください。
+      kind_discovered: このサーバーで検出
+      kind_git: Git リポジトリ
+      kind_local: マウントしたフォルダ
+      monitoring: サーバーのメトリクスを 1 分ごとに収集
+      name: 名前
+      notifications: 通知
+      protected_destinations: 保護されたデプロイ先
+      protected_destinations_hint: これらのサーバーを変更するコマンドは、実行前にデプロイ先の名前（デフォルトの場合はプロジェクト名）の入力を求めます。デプロイ Webhook には影響しません。
+      repository_url: リポジトリ URL
+      repository_url_placeholder: git@github.com:acme/app.git または https://github.com/acme/app.git
+      save: プロジェクトを保存
+      server_access: サーバーへのアクセス
+      source: ソース
+      ssh_key: SSH 秘密鍵
+      ssh_key_hint: Kamal と監視で使います。暗号化して保存し、一時的な ssh-agent にのみ読み込みます。パスフレーズ付きの鍵には対応していません。
+      ssh_key_placeholder: 任意。空のままにすると、設定にある Kamal Web の鍵を使います。
+      token: HTTPS アクセストークン
+      token_placeholder: 非公開の https リポジトリ用
+      token_stored: •••••• 保存済み。空のままにすると保持します
+      webhook_hint: デプロイ、ロールバック、その他のサーバー変更が終わったときに呼び出されます。
+      webhook_url: Webhook URL
+      where: コードの場所
+    header:
+      add_repository: git リポジトリを追加する
+      authorize: 'Kamal Web のチェックアウトで次を実行して、Kamal Web の鍵を許可してください:'
+      checked_every_minute_html: 1 分ごとに確認します。%{monitoring} からすぐに再確認できます。
+      checking_ssh: ' · SSH アクセスを確認中…'
+      connect_repository_html: <code>kamal deploy</code> で実行したデプロイはここに表示されます。Kamal Web や Webhook から実行するには、%{link}必要があります。
+      detected: このサーバーで検出
+      ssh_failed: Kamal Web は %{hosts} に SSH で接続できません
+      sync_failed: 前回の同期に失敗しました
+      sync_title: 最新のコードを取得して deploy.yml を読み直します
+      synced: '%{time}に同期'
+    monitoring:
+      show:
+        container: コンテナ
+        cores: '%{load} / %{count} コア'
+        image: イメージ
+        load: 負荷
+        load_help: サーバー負荷について
+        load_hint: 実行中、または CPU やディスクを待っているプロセス数（1 分平均）。100% はコアあたり 1 プロセスで、それ以上になることもあります。
+        logs: ログ
+        memory: メモリ
+        no_hosts: Kamal 設定にホストが見つかりません。
+        no_samples: まだ計測値がありません
+        'off': このプロジェクトのバックグラウンド監視はオフです。プロジェクト設定でオンにしてください。
+        ports: ポート
+        ranges:
+          24h: 24 時間
+          30d: 30 日
+          7d: 7 日
+        ranges_long:
+          24h: 過去 24 時間
+          30d: 過去 30 日、1 時間ごとの平均
+          7d: 過去 7 日、1 時間ごとの平均
+        refresh: 今すぐ更新
+        sampled: SSH で 1 分ごとに計測します。24 時間保持し、1 時間ごとの平均は 30 日間保持します。
+        updated: '%{time}に更新'
+    new:
+      terminal_html: ここで何かを追加する必要はありません。いつもどおりアプリのフォルダでこのサーバー向けに <code class="font-medium text-info">kamal setup</code> か <code class="font-medium text-info">kamal deploy</code> を実行すれば、Kamal Web が 5 分以内に自動でアプリを追加します。%{scan}ですぐに追加することもできます。Kamal Web からもデプロイしたい場合のみ、下でプロジェクトを追加してください。
+      terminal_title: ターミナルからデプロイしたいですか？
+    project_files:
+      edit:
+        title: '%{path} を置き換え'
+      form:
+        content: 内容
+        keep_content: 空のままにすると現在の内容を保持します
+        path: パス
+        path_hint: プロジェクトのルートからの相対パス。
+      new:
+        title: 新しいシークレットファイル
+    proxies:
+      data:
+        chart_label: 過去 1 時間の 1 分あたりのリクエスト数
+        errors_5xx: エラー（5xx）
+        latest_300: このアプリ、直近 300 件
+        median: 中央値
+        method: メソッド
+        no_requests: 過去 1 時間、このアプリへのリクエストはありません。
+        no_routes: kamal-proxy からルートが報告されていません。%{host} で動いていますか？
+        path: パス
+        peak: ピーク %{count}/分
+        recent_requests: 最近のリクエスト
+        requests_1h: リクエスト（1 時間）
+        routes: ルート
+        service: サービス
+        state: 状態
+        target: ターゲット
+        time: 時刻
+        traffic: トラフィック
+      show:
+        all: すべて
+        connecting: '%{host} に接続中…'
+        no_hosts: Kamal 設定にアプリのホストが見つかりません。
+    releases:
+      releases:
+        confirm: '%{project} を %{version} にロールバックしますか？'
+        deployed: '%{time}にデプロイ'
+        empty: このアプリのコンテナはまだサーバーにありません。
+        live: 稼働中
+        needs_repository: ロールバックは古いバージョンを現在の環境変数とシークレットで起動するため、アプリのリポジトリが必要です。
+        roll_back: ロールバック
+    settings:
+      show:
+        add_file: ファイルを追加
+        add_master_key: master.key を追加
+        add_variable: 変数を追加
+        all: すべて
+        config_file: 設定ファイル
+        confirm_delete: '%{name} を削除しますか？'
+        confirm_delete_project: '%{project} を削除しますか？元に戻せません。'
+        confirm_regenerate: 現在の URL は使えなくなります。続けますか？
+        danger_zone: 危険な操作
+        delete_hint: プロジェクトとその履歴、変数、ファイル、ローカルのクローンを削除します。サーバーには何も変更を加えません。
+        delete_project: プロジェクトを削除
+        files: シークレットファイル
+        files_hint_html: コマンドを実行するたびにプロジェクトへ書き込みます。<code>config/master.key</code> のように git にないファイル用です。
+        name: 名前
+        no_files: まだファイルはありません。
+        no_variables: まだ変数はありません。
+        not_set: 未設定
+        notifications: 通知
+        'off': オフ
+        path: パス
+        protected: 保護されたデプロイ先
+        regenerate: 再生成
+        replace: 置き換え
+        source: ソース
+        source_discovered: このサーバーで検出（%{service}）
+        source_git: 'Git: %{url}（%{branch}）'
+        source_local: 'フォルダ: %{path}'
+        ssh_key: SSH キー
+        stored: 保存済み
+        updated: 更新日時
+        value: 値
+        variables: 環境変数
+        variables_hint_html: Kamal、そのフック、<code>.kamal/secrets</code> から利用できます（例：<code>KAMAL_REGISTRY_PASSWORD</code>）。値は暗号化されます。
+        webhook: デプロイ Webhook
+        webhook_example_html: '特定のデプロイ先にデプロイするには <code>?destination=staging</code> を付けます。例: %{example}'
+        webhook_hint_html: CI や GitHub/GitLab のプッシュ Webhook からこの URL に POST するとデプロイします。%{branch} 以外のブランチへのプッシュは無視されます。
+    show:
+      accessories: アクセサリ
+      all_activity: すべてのアクティビティ
+      checks: チェック
+      click_to_copy: クリックしてコピー
+      config_not_loaded: 設定が読み込まれていません
+      confirm_deploy: '%{project} を %{destination} にデプロイしますか？'
+      confirm_redeploy: '%{project} を %{destination} に再デプロイしますか？'
+      deploy: デプロイ
+      deploy_to_html: '%{destination} にデプロイ'
+      domains: ドメイン
+      image: イメージ
+      press_sync_html: '%{file} を読み込むには「同期」を押してください。'
+      protected: 保護
+      redeploy: 再デプロイ
+      servers: サーバー
+      service: サービス
+      versions: サーバー上のバージョン
+      versions_hint: Kamal は直近 5 件を保持します
+  servers:
+    connection:
+      ok: 接続済み
+      unknown: 未確認
+    form:
+      host_in_use: プロジェクトの deploy.yml から来ています。そちらで変更してください。
+      name_placeholder: 本番 Web
+      ssh_hint_html: SSH ユーザーとポートを空にすると、このサーバー上のプロジェクトの deploy.yml の値（なければ <code>root</code>、ポート 22）を使います。
+    index:
+      add: サーバーを追加
+      description: プロジェクトの Kamal 設定にあるすべてのホストと、手動で追加したホストです。
+      empty_description: プロジェクトの deploy.yml にあるサーバーは自動でここに表示されます。デプロイ前に SSH アクセスを確認したい場合は手動で追加してください。
+      empty_title: まだサーバーがありません
+      no_projects: まだプロジェクトがありません
+    new:
+      description: Kamal Web はアクセスキーで SSH 接続できるかを確認します。ここにデプロイするには、プロジェクトの deploy.yml にホストを追加してください。
+      title: サーバーを追加
+    show:
+      authorize_command: Kamal Web の鍵を許可するコマンド
+      authorize_html: サーバー上で %{user} として次を実行して Kamal Web の鍵を許可し、もう一度確認してください。
+      check: 接続を確認
+      confirm_delete: '%{name} を削除しますか？サーバー自体には何も変更を加えません。'
+      connection: 接続
+      last_check: 最終確認
+      never_checked: 未確認
+      no_projects: ここにデプロイしているプロジェクトはまだありません。デプロイするには、プロジェクトの deploy.yml にこのホストを追加してください。
+      notes: メモ
+      projects_hint_html: 各 deploy.yml の <code>servers</code> と <code>accessories</code> に基づきます。使用量はアプリの分です。
+      resources: マシンのリソース
+      ssh: SSH
+      system: システム
+  sessions:
+    new:
+      code: 認証アプリのコード
+      hint_html: パスワードは、Kamal Web のデプロイに使った <code class="text-zinc-400">.env</code> ファイルの <code class="text-zinc-400">KAMAL_WEB_PASSWORD</code> です。
+      password: パスワード
+      title: ログイン
+  settings:
+    edit:
+      access_key: サーバーアクセスキー
+      access_key_hint: 独自の SSH キーを持たないすべてのプロジェクトで使います。このサーバーで検出したアプリも含みます。
+      alert_disk: ディスク使用率
+      alert_memory: メモリ使用率
+      alerts: アラート
+      alerts_hint: 問題が起きると監視がアラートを開き、解決すると閉じます。どちらもプロジェクトの通知 Webhook に送られ、ダッシュボードに表示されます。
+      alerts_list: 'ほかにも次の場合に通知します: SSH で接続できないホスト、動いていないアプリ、ヘルスチェックに応答しないドメイン、14 日以内に期限切れになる TLS 証明書、kamal-proxy での 5xx レスポンスが 10% 超。'
+      auto_update: 自動で更新
+      auto_update_failed: '%{version} への更新が%{time}に失敗しました。次のリリースで再試行します。'
+      auto_update_hint_html: 1 時間ごとに GitHub を確認し、新しいリリースをこのサーバーに <code>kamal deploy</code> でダウンタイムなしでデプロイします。このインスタンスのデプロイ時の設定でリリースの <code>config/deploy.yml</code> を使うため、そのファイルへの独自の変更は保持されません。
+      auto_update_output: 出力
+      auto_update_problems:
+        custom_volumes: このインスタンスは %{paths} をマウントしていますが、リリースの config/deploy.yml はマウントしません。チェックアウトから kamal deploy で更新してください。
+        not_deployed: Kamal がデプロイしたコンテナ内で Kamal Web が動き、Docker ソケットがマウントされている場合にのみ使えます。
+      auto_update_running: '%{version} に更新中（%{time}に開始）。完了すると Kamal Web が再起動します。'
+      auto_update_succeeded: '%{time}に %{version} に更新しました。'
+      backup: バックアップ
+      backup_hint: プロジェクト、暗号化された変数と鍵、設定、履歴と、それらを復号する鍵を含みます。このファイルはここに保存されたすべてのシークレットを開けるため、安全な場所に保管してください。
+      confirm_regenerate: 現在の URL は使えなくなります。
+      confirm_restore: このインスタンスの内容をすべてバックアップで置き換えますか？復元のため Kamal Web が再起動します。
+      confirm_update_now: Kamal Web は新しいリリースを自身に上書きデプロイして再起動します。
+      detect_again: 再検出する
+      download: バックアップをダウンロード
+      download_short: ダウンロード
+      enabled: 有効
+      ignored_html: '削除したため再検出しないアプリ: %{services}'
+      instance: インスタンス
+      keep: 保持する件数
+      open: 開く
+      other_servers_html: 'その他のサーバーでは、Kamal がデプロイに使うユーザー（通常は <code>root</code>）で:'
+      regenerate: URL を再生成
+      release_notes: ' （リリースノート）'
+      restore: 復元
+      restore_hint_html: 復元すると現在のデータが置き換わります。置き換えられたデータはボリューム内の <code>storage/before-restore-*</code> に残ります。
+      scheduled_backups: 毎日 3:00 にバックアップ
+      scheduled_backups_hint_html: Kamal Web のボリューム内の %{path} に書き込みます。操作ミスには備えられますが、サーバーを失った場合には役立ちません。ときどきダウンロードして別の場所にも保管してください。
+      status_board: ステータスボード
+      status_board_hint: テレビやチーム向けの読み取り専用ページで、デプロイ状況とサーバーの状態を表示します。リアルタイムで更新され、リンクを知っている人なら誰でも閲覧できます。
+      this_server: 'Kamal Web が動いているサーバーでは、Kamal Web のチェックアウトから:'
+      up_to_date: 最新です。%{time}に GitHub を確認しました。
+      update_check_off_html: 更新の確認はオフです（<code>KAMAL_WEB_UPDATE_CHECK=false</code>）。
+      update_how_html: Kamal Web のチェックアウトで <code>git pull &amp;&amp; kamal deploy</code> を実行して更新してください。
+      update_now: 今すぐ %{version} に更新
+  shared:
+    preferences:
+      language: 言語
+      theme: テーマ
+      themes:
+        dark: ダーク
+        light: ライト
+        system: 自動
+    typed_confirm:
+      confirm: 確認
+      label: 確認
+      protected_html: このデプロイ先は保護されています。確認のため %{word} と入力してください。
+  status_boards:
+    show:
+      live: ライブ · %{time}に更新
+      title: デプロイ状況
+  statuses:
+    canceled: キャンセル
+    failed: 失敗
+    queued: 待機中
+    running: 実行中
+    succeeded: 成功
+
+  ui:
+    breadcrumbs: "パンくずリスト"
+    resource_usage: "アプリ: %{app} · マシン: %{total}"
+    project_navigation: "プロジェクトのナビゲーション"
+    navigation: "メインナビゲーション"
+    skip_navigation: "コンテンツへスキップ"
+    workspace: "ワークスペース"
+    infrastructure: "インフラコンソール"
+    no_projects: "ここにプロジェクトが表示されます"
+    dashboard_title: "すべてをあるべき場所に。"
+    dashboard_description: "アプリケーション、サーバー、最近のアクティビティをひと目で。"
+    servers: "サーバー"
+    active_operations: "実行中の操作"
+    projects_caption: "接続中のアプリケーション"
+    servers_caption: "全プロジェクト合計"
+    operations_caption: "現在実行中"
+    dismiss: "メッセージを閉じる"
+    search_projects: "プロジェクトを検索…"
+    search_commands: "コマンドを検索…"
+    no_results: "一致する結果がありません。別の語句で検索してください。"
+    awaiting_deploy: "初回デプロイの準備ができています"
+    optional: "任意"
+    on_this_page: "このページの内容"
+    appearance: "外観"
+    settings_description: "あなたのやり方に合わせたワークスペース。"
+    login_description: "すべてを動かし続けるための、静かな場所。"
+    copy_failed: "コピーできませんでした。もう一度お試しください。"

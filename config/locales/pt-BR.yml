@@ -1,0 +1,745 @@
+pt-BR:
+  access_password:
+    invalid_ips: 'KAMAL_WEB_ALLOWED_IPS tem entradas inválidas: %{entries}.'
+    invalid_totp: KAMAL_WEB_TOTP_SECRET não é um segredo válido. Gere um com bin/totp-secret.
+    ip_not_allowed: O Kamal Web não pode ser acessado a partir de %{ip}.
+    missing: KAMAL_WEB_PASSWORD não está definida. Adicione-a ao .env e execute kamal deploy.
+    too_short: KAMAL_WEB_PASSWORD precisa ter pelo menos %{count} caracteres. Altere-a no .env e execute kamal deploy.
+  activerecord:
+    attributes:
+      command_run:
+        destination: Destino
+        kind: Comando
+      console_session:
+        destination: Destino
+        host: Host
+      environment_variable:
+        key: Nome
+        value: Valor
+      project:
+        branch: Branch
+        config_file: Arquivo de configuração do Kamal
+        git_ssh_private_key: Chave de deploy do repositório
+        local_path: Pasta
+        name: Nome
+        notification_webhook_url: URL do webhook
+        repository_url: URL do repositório
+        ssh_private_key: Chave privada SSH
+      project_file:
+        content: Conteúdo
+        path: Caminho
+      server:
+        host: Host
+        name: Nome
+        notes: Notas
+        ssh_port: Porta SSH
+        ssh_user: Usuário SSH
+      setting:
+        alert_disk_percent: Alerta de disco
+        alert_memory_percent: Alerta de memória
+        scheduled_backups_keep: Backups a manter
+    errors:
+      models:
+        command_run:
+          attributes:
+            destination:
+              unknown: não está configurado neste projeto
+            kind:
+              unsupported: não é um comando suportado
+          confirmation_required: '%{word} está protegido. Digite %{word} para confirmar.'
+          needs_repository: '%{command} precisa do repositório do projeto, porque a configuração detectada no servidor não tem variáveis de ambiente nem segredos. Conecte-o nas configurações do projeto.'
+          operation_running: '%{command} já está em execução neste projeto. Espere terminar ou cancele.'
+        console_session:
+          attributes:
+            destination:
+              unknown: não está configurado neste projeto
+            host:
+              unknown: não está na configuração deste destino
+        environment_variable:
+          attributes:
+            key:
+              invalid_name: precisa ser um nome de variável de ambiente válido
+        project:
+          attributes:
+            config_file:
+              not_relative: precisa ser relativo à raiz do projeto
+            git_ssh_private_key:
+              not_private_key: não parece uma chave privada
+            local_path:
+              outside_root: precisa estar dentro de %{root} (monte seus projetos lá)
+            repository_url:
+              invalid_git_url: precisa ser uma URL git https ou ssh
+            ssh_private_key:
+              not_private_key: não parece uma chave privada
+        project_file:
+          attributes:
+            path:
+              outside_project: precisa ser um caminho relativo dentro do projeto
+        server:
+          attributes:
+            host:
+              in_use: não pode mudar enquanto um projeto faz deploy nele
+    models:
+      project: Projeto
+  alerts:
+    days_left:
+      one: falta 1 dia
+      other: faltam %{count} dias
+    heading:
+      one: 1 alerta aberto
+      other: '%{count} alertas abertos'
+    kinds:
+      app_down: O app não está rodando em %{subject}
+      certificate: O certificado TLS de %{subject} vence em breve
+      disk: Disco quase cheio em %{subject}
+      health_check: '%{subject} não está respondendo'
+      host_unreachable: '%{subject} está inacessível via SSH'
+      memory: Memória quase cheia em %{subject}
+      proxy_errors: Muitas respostas 5xx em %{subject}
+    since: desde %{time}
+  checks:
+    app: App
+    app_down: Nenhum contêiner %{role} rodando em %{host}. Faça deploy ou use Iniciar app em Comandos.
+    app_running: Rodando em %{host}
+    certificate:
+      one: certificado vence em 1 dia
+      other: certificado vence em %{count} dias
+    config: Configuração
+    config_not_loaded: Ainda não carregada. Clique em Sincronizar.
+    config_read: '%{file} lido'
+    config_read_at: '%{file} lido %{time}'
+    config_sync_failed: 'A última sincronização falhou: veja acima.'
+    health: '%{url}'
+    health_ok: HTTP %{status} em %{ms} ms · %{uptime} no ar em 24 h
+    health_pending: Ainda não consultado. É consultado a cada minuto.
+    health_status: Respondeu HTTP %{status}
+    proxy_down: Não está rodando em %{hosts}. Execute Iniciar proxy em Comandos.
+    repository: Repositório
+    repository_missing: Detectado a partir do servidor. Adicione o repositório git para fazer deploy e rollback.
+    running: Rodando
+    secrets: Segredos
+    secrets_missing:
+      one: '%{names} não está definida. Adicione-a em Configurações → Variáveis de ambiente.'
+      other: '%{names} não estão definidas. Adicione-as em Configurações → Variáveis de ambiente.'
+    secrets_none: Sem arquivo .kamal/secrets
+    secrets_ok: Todas as variáveis que .kamal/secrets lê estão definidas
+    ssh: SSH para %{host}
+    ssh_monitoring_off: O monitoramento está desligado, então isto não é verificado.
+    ssh_ok: Alcançado %{time}
+    ssh_pending: Ainda não verificado. É verificado a cada minuto.
+  command_fields:
+    code:
+      label: Código Ruby
+      placeholder: puts User.count
+    command:
+      label: Comando
+      placeholder: bin/rails db:migrate:status
+    container_id:
+      label: Contêiner
+      placeholder: contêiner atual do app
+    follow:
+      label: Acompanhar ao vivo
+    grep:
+      label: Filtro
+      placeholder: texto ou regex
+    host:
+      label: Host
+    lines:
+      label: Linhas
+      placeholder: '200'
+    message:
+      label: Mensagem
+      placeholder: Por que os deploys estão bloqueados
+    name:
+      label: Acessório
+    version:
+      label: Versão
+      placeholder: sha git de um deploy anterior
+  command_groups:
+    accessory: Acessórios
+    app: App
+    deploy: Deploy
+    inspect: Inspecionar
+    lock: Trava de deploy
+    maintenance: Manutenção
+    proxy: Proxy
+  command_runs:
+    triggers:
+      manual: Painel
+      webhook: Webhook de deploy
+  commands:
+    accessory_boot:
+      label: Subir acessório
+    accessory_details:
+      label: Detalhes do acessório
+    accessory_logs:
+      label: Logs do acessório
+    accessory_reboot:
+      label: Recriar acessório
+    accessory_restart:
+      label: Reiniciar acessório
+    accessory_start:
+      label: Iniciar acessório
+    accessory_stop:
+      label: Parar acessório
+    app_boot:
+      label: Subir app
+    app_containers:
+      label: Contêineres do app
+    app_details:
+      label: Detalhes do app
+    app_exec:
+      description: Roda em um novo contêiner a partir da imagem atual no host principal
+      label: Executar comando
+    app_images:
+      label: Imagens do app
+    app_live:
+      label: Modo ao vivo
+    app_logs:
+      description: Acompanhar transmite novas linhas de um host (o principal, a menos que você escolha outro) por até 30 minutos
+      label: Logs do app
+    app_maintenance:
+      label: Modo de manutenção
+    app_start:
+      label: Iniciar app
+    app_stop:
+      label: Parar app
+    app_version:
+      label: Versão em execução
+    audit:
+      label: Log de auditoria
+    deploy:
+      description: Construir, enviar e subir uma nova versão
+      label: Deploy
+    details:
+      label: Todos os contêineres
+    lock_acquire:
+      label: Ativar trava
+    lock_release:
+      label: Liberar trava
+    lock_status:
+      label: Estado da trava
+    proxy_boot:
+      label: Iniciar proxy
+    proxy_details:
+      label: Detalhes do proxy
+    proxy_logs:
+      label: Logs do proxy
+    proxy_reboot:
+      label: Recriar proxy
+    prune_all:
+      label: Limpar imagens e contêineres
+    rails_runner:
+      description: Avalia Ruby com bin/rails runner dentro do contêiner do app em execução
+      label: Rails runner
+    redeploy:
+      description: Deploy sem preparar servidores, proxy nem login no registry
+      label: Redeploy
+    registry_login:
+      label: Login no registry
+    rollback:
+      label: Rollback
+    server_bootstrap:
+      description: Instala curl e Docker nos servidores que não os têm
+      label: Preparar servidores
+    setup:
+      description: Preparar servidores, subir acessórios e fazer deploy
+      label: Setup
+    version:
+      label: Versão do Kamal
+  common:
+    activity: Atividade
+    ago: há %{time}
+    cancel: Cancelar
+    command: Comando
+    commands: Comandos
+    config: Configuração
+    console: Console
+    copied: Copiado
+    copy: Copiar
+    cpu: CPU
+    dashboard: Painel
+    default_destination: padrão
+    delete: Excluir
+    destination: Destino
+    disk: Disco
+    duration: Duração
+    edit: Editar
+    from: De
+    host: Host
+    loading: Carregando…
+    monitoring: Monitoramento
+    never_deployed: nunca implantado
+    new_project: Novo projeto
+    no_runs: Nenhum comando foi executado ainda.
+    overview: Visão geral
+    project: Projeto
+    proxy: Proxy
+    ram: RAM
+    recent_activity: Atividade recente
+    revision: Revisão
+    run: Executar
+    save: Salvar
+    scan_this_server: Escanear este servidor
+    servers: Servidores
+    settings: Configurações
+    status: Status
+    sync: Sincronizar
+    unreachable: inacessível
+    updated_at: Atualizado %{time}
+    when: Quando
+  console_kinds:
+    dbconsole: Console do banco de dados
+    rails: Console Rails
+    shell: Shell
+  dashboard:
+    show:
+      add_first: Adicione seu primeiro projeto
+      empty_html: Um projeto aponta para um repositório (ou uma pasta montada) com um <code>config/deploy.yml</code> do Kamal. O Kamal Web executa o Kamal para ele e mostra o que está acontecendo nos seus servidores. Apps Kamal que já rodam neste servidor são detectados e adicionados automaticamente.
+      empty_title: Nenhum projeto ainda
+      operation_running: '%{command} em execução'
+      scan_title: Encontrar apps Kamal rodando neste servidor e adicioná-los
+      sync_error: erro de sincronização
+  flash:
+    backups:
+      accepted: Backup de %{date} aceito. O Kamal Web está reiniciando para restaurá-lo; entre novamente em alguns segundos.
+      choose_file: Escolha um arquivo de backup.
+      invalid:
+        no_database: O backup não tem banco de dados.
+        no_key: O backup não tem chave secreta.
+        not_archive: O arquivo não é um .tar.gz.
+        not_backup: Isto não é um backup do Kamal Web.
+        too_large: O backup tem mais de 500 MB.
+    command_runs:
+      canceled: Comando cancelado.
+      unknown: Comando desconhecido.
+    deleted: '%{name} excluído.'
+    discoveries:
+      added:
+        one: 1 app Kamal encontrado neste servidor, %{names} adicionado.
+        other: '%{count} apps Kamal encontrados neste servidor, %{names} adicionados.'
+      all_added:
+        one: 1 app Kamal encontrado neste servidor, já adicionado.
+        other: '%{count} apps Kamal encontrados neste servidor, todos já adicionados.'
+      none: Nenhum app Kamal está rodando neste servidor.
+    monitoring:
+      no_key: Adicione uma chave SSH ao projeto para coletar métricas.
+      refreshed: Métricas atualizadas.
+    projects:
+      created: Projeto criado.
+      deleted: Projeto excluído.
+      first_sync_failed: '%{message} A primeira sincronização falhou, veja os detalhes abaixo.'
+      sync_failed: 'A sincronização falhou: %{error}'
+      synced: Projeto sincronizado.
+      updated: Projeto atualizado.
+    saved: '%{name} salvo.'
+    servers:
+      check_failed: 'A conexão falhou: %{error}'
+      check_succeeded: O Kamal Web consegue se conectar via SSH.
+      in_use: Este servidor está na configuração do Kamal de um projeto. Remova-o do deploy.yml e sincronize antes de excluí-lo.
+    sessions:
+      rate_limited: Tente novamente mais tarde.
+      wrong_password: Senha incorreta.
+      wrong_password_or_code: Senha ou código incorreto.
+    settings:
+      detect_again: Os apps removidos serão detectados de novo no próximo escaneamento.
+      saved: Configurações salvas.
+      status_board_regenerated: URL do painel de status gerada novamente.
+      update_not_started: A atualização não pôde começar. Veja Instância abaixo.
+      updating: Atualizando para %{version}. O Kamal Web reinicia quando terminar.
+    webhook_tokens:
+      regenerated: URL do webhook de deploy gerada novamente. Atualize-a onde for usada.
+  layouts:
+    application:
+      menu: Menu
+      projects: Projetos
+      sign_out: Sair
+      update_available: Kamal Web %{version} está disponível
+  projects:
+    activity:
+      running: '%{command} %{status} em %{destination}'
+      view_output: Ver saída →
+    command_runs:
+      index:
+        all: Todos
+      show:
+        confirm_again: Executar %{command} de novo?
+        confirm_cancel: Parar este comando? O Kamal pode deixar uma trava de deploy para trás.
+        containers: Contêineres
+        exit_code: código de saída %{code}
+        from: de %{source}
+        run_again: Executar de novo
+        still_streaming: ' Novas linhas continuam chegando a esta página até você sair.'
+        stop_following: Parar de acompanhar
+        truncated: Saída truncada em %{size}.
+    commands:
+      show:
+        add_repository: Adicione o repositório git
+        all_accessories: Todos os acessórios
+        changes_servers: altera servidores
+        confirm: '%{command} em %{destination}?'
+        default_hosts: Hosts padrão
+        intro_html: Os comandos rodam em %{destination}. Só um comando que altera servidores pode rodar por vez em cada projeto.
+        more_commands: Mais comandos disponíveis com o código do app (%{count})
+        unavailable_html: 'O Kamal Web encontrou este app pelos contêineres em execução, então pode gerenciar o que está rodando, mas não tem o código nem os segredos para construí-lo e fazer deploy. %{link} para habilitar:'
+    configs:
+      show:
+        intro_html: Configuração combinada para %{destination} a partir de %{file}, com ERB renderizado. Valores secretos não são mostrados.
+        intro_with_override_html: Configuração combinada para %{destination} a partir de %{file} e da sobrescrita %{override}, com ERB renderizado. Valores secretos não são mostrados.
+        not_loaded: Configuração ainda não carregada. Clique em Sincronizar.
+    console_sessions:
+      index:
+        empty: Nenhuma sessão de console ainda.
+        hint_html: Executa %{command} dentro do contêiner do app em execução em %{destination}. As sessões fecham após %{idle} sem atividade ou quando você sai da página.
+        never_opened: nunca aberta
+        open: Abrir console
+        open_badge: aberta
+        open_title: Abrir um console
+        primary: principal
+        primary_host: Host principal
+        primary_host_named: Host principal (%{host})
+        recent: Sessões recentes
+      show:
+        connecting: Conectando…
+        hint: Sair desta página fecha a sessão. O que você digita não é armazenado.
+        messages:
+          connected: Conectado
+          disconnected: Desconectado
+          ended: Sessão encerrada (código de saída %{code})
+          ended_short: sessão encerrada
+          rejected: Esta sessão não pode mais ser aberta. Inicie uma nova.
+        new_session: Nova sessão
+        primary_host: host principal
+    containers:
+      containers:
+        empty: Nenhum contêiner deste app ainda.
+    deploy_previews:
+      preview:
+        ahead_html:
+          one: 1 commit novo em %{branch} desde a versão no ar %{version}
+          other: '%{count} commits novos em %{branch} desde a versão no ar %{version}'
+        as_of: Segundo a última sincronização, %{time}. O deploy busca o código mais recente primeiro.
+        confirm_release: Liberar a trava de deploy? Confira se ninguém está fazendo deploy.
+        current_html: A versão no ar %{version} é o commit mais recente.
+        locked: Os deploys estão travados
+        more: e mais %{count}
+        no_details: Sem detalhes
+        not_deployed: Ainda sem deploy.
+        release_lock: Liberar trava
+        unknown_html: A versão no ar %{version} não está no histórico recente de %{branch}.
+    edit:
+      title: Editar %{project}
+    environment_variables:
+      edit:
+        title: Editar %{name}
+      form:
+        all_destinations: Todos os destinos
+        keep_value: Deixe vazio para manter o valor atual
+        name: Nome
+        value: Valor
+      new:
+        title: Nova variável
+    form:
+      branch: Branch
+      config_file: Arquivo de configuração do Kamal
+      config_file_hint_html: Arquivos de destino como <code>config/deploy.staging.yml</code> são detectados automaticamente.
+      create: Criar projeto
+      deploy_key: Chave de deploy do repositório
+      deploy_key_placeholder: Opcional. Só se o repositório precisar de uma chave diferente da dos servidores.
+      folder: Pasta
+      folder_hint_html: Monte seus projetos no contêiner em %{path}.
+      format: Formato
+      formats:
+        generic: Genérico
+      key_stored: Armazenada. Cole uma chave nova para substituí-la.
+      kind_discovered: Detectado neste servidor
+      kind_git: Repositório git
+      kind_local: Pasta montada
+      monitoring: Coletar métricas dos servidores a cada minuto
+      name: Nome
+      notifications: Notificações
+      protected_destinations: Destinos protegidos
+      protected_destinations_hint: Comandos que alteram estes servidores pedem que você digite o nome do destino (ou do projeto, no padrão) antes de rodar. O webhook de deploy não é afetado.
+      repository_url: URL do repositório
+      repository_url_placeholder: git@github.com:acme/app.git ou https://github.com/acme/app.git
+      save: Salvar projeto
+      server_access: Acesso aos servidores
+      source: Origem
+      ssh_key: Chave privada SSH
+      ssh_key_hint: Usada pelo Kamal e pelo monitoramento. Armazenada criptografada e carregada apenas em um ssh-agent temporário. Chaves com senha não são suportadas.
+      ssh_key_placeholder: Opcional. Deixe vazio para usar a chave do Kamal Web das Configurações.
+      token: Token de acesso HTTPS
+      token_placeholder: para repositórios https privados
+      token_stored: •••••• armazenado, deixe vazio para manter
+      webhook_hint: Chamado quando um deploy, rollback ou outra alteração nos servidores termina.
+      webhook_url: URL do webhook
+      where: Onde fica o código
+    header:
+      add_repository: adicione o repositório git dele
+      authorize: 'Autorize a chave do Kamal Web executando isto na sua cópia do Kamal Web:'
+      checked_every_minute_html: Verificado a cada minuto. Em %{monitoring} você pode verificar de novo na hora.
+      checking_ssh: ' · verificando acesso SSH…'
+      connect_repository_html: Os deploys que você roda com <code>kamal deploy</code> aparecem aqui. Para rodá-los pelo Kamal Web ou por webhook, %{link}.
+      detected: Detectado neste servidor
+      ssh_failed: O Kamal Web não consegue se conectar a %{hosts} via SSH
+      sync_failed: A última sincronização falhou
+      sync_title: Buscar o código mais recente e reler o deploy.yml
+      synced: sincronizado %{time}
+    monitoring:
+      show:
+        container: Contêiner
+        cores: '%{load} / %{count} núcleos'
+        image: Imagem
+        load: Carga
+        load_help: Sobre a carga do servidor
+        load_hint: Processos rodando ou esperando por CPU ou disco (média de 1 minuto). 100% significa um processo por núcleo; pode passar disso.
+        logs: Logs
+        memory: Memória
+        no_hosts: Nenhum host encontrado na configuração do Kamal.
+        no_samples: ainda sem amostras
+        'off': O monitoramento em segundo plano está desligado para este projeto. Ligue-o nas configurações do projeto.
+        ports: Portas
+        ranges:
+          24h: 24 h
+          30d: 30 dias
+          7d: 7 dias
+        ranges_long:
+          24h: Últimas 24 horas
+          30d: Últimos 30 dias, médias por hora
+          7d: Últimos 7 dias, médias por hora
+        refresh: Atualizar agora
+        sampled: Medido a cada minuto via SSH. Guardado por 24 horas e, como médias por hora, por 30 dias.
+        updated: atualizado %{time}
+    new:
+      terminal_html: Você não precisa adicionar nada aqui. Rode <code class="font-medium text-info">kamal setup</code> ou <code class="font-medium text-info">kamal deploy</code> na pasta do seu app como sempre, apontando para este servidor, e o Kamal Web adiciona o app sozinho em até 5 minutos, ou na hora com %{scan}. Só adicione um projeto abaixo se também quiser fazer deploy pelo Kamal Web.
+      terminal_title: Prefere fazer deploy pelo terminal?
+    project_files:
+      edit:
+        title: Substituir %{path}
+      form:
+        content: Conteúdo
+        keep_content: Deixe vazio para manter o conteúdo atual
+        path: Caminho
+        path_hint: Relativo à raiz do projeto.
+      new:
+        title: Novo arquivo secreto
+    proxies:
+      data:
+        chart_label: Requisições por minuto na última hora
+        errors_5xx: Erros (5xx)
+        latest_300: este app, últimas 300
+        median: Mediana
+        method: Método
+        no_requests: Nenhuma requisição para este app na última hora.
+        no_routes: O kamal-proxy não informou rotas. Ele está rodando em %{host}?
+        path: Caminho
+        peak: pico de %{count}/min
+        recent_requests: Requisições recentes
+        requests_1h: Requisições (1 h)
+        routes: Rotas
+        service: Serviço
+        state: Estado
+        target: Alvo
+        time: Hora
+        traffic: Tráfego
+      show:
+        all: Todos
+        connecting: Conectando a %{host}…
+        no_hosts: Nenhum host do app encontrado na configuração do Kamal.
+    releases:
+      releases:
+        confirm: Fazer rollback de %{project} para %{version}?
+        deployed: implantado %{time}
+        empty: Nenhum contêiner deste app no servidor ainda.
+        live: no ar
+        needs_repository: O rollback inicia a versão antiga com as variáveis de ambiente e segredos atuais do app, então precisa do repositório do app.
+        roll_back: Fazer rollback
+    settings:
+      show:
+        add_file: Adicionar arquivo
+        add_master_key: Adicionar master.key
+        add_variable: Adicionar variável
+        all: todos
+        config_file: Arquivo de configuração
+        confirm_delete: Excluir %{name}?
+        confirm_delete_project: Excluir %{project}? Isto não pode ser desfeito.
+        confirm_regenerate: A URL atual vai parar de funcionar. Continuar?
+        danger_zone: Zona de perigo
+        delete_hint: Exclui o projeto, o histórico, as variáveis, os arquivos e o clone local. Nada muda nos seus servidores.
+        delete_project: Excluir projeto
+        files: Arquivos secretos
+        files_hint_html: Escritos no projeto antes de cada comando, para arquivos que não estão no git, como <code>config/master.key</code>.
+        name: Nome
+        no_files: Nenhum arquivo ainda.
+        no_variables: Nenhuma variável ainda.
+        not_set: Não definida
+        notifications: Notificações
+        'off': Desligado
+        path: Caminho
+        protected: Destinos protegidos
+        regenerate: Gerar novamente
+        replace: Substituir
+        source: Origem
+        source_discovered: Detectado neste servidor (%{service})
+        source_git: 'Git: %{url} (%{branch})'
+        source_local: 'Pasta: %{path}'
+        ssh_key: Chave SSH
+        stored: Armazenada
+        updated: Atualizado
+        value: Valor
+        variables: Variáveis de ambiente
+        variables_hint_html: Disponíveis para o Kamal, seus hooks e o <code>.kamal/secrets</code>, por ex. <code>KAMAL_REGISTRY_PASSWORD</code>. Os valores são criptografados.
+        webhook: Webhook de deploy
+        webhook_example_html: 'Adicione <code>?destination=staging</code> para fazer deploy de um destino específico. Exemplo: %{example}'
+        webhook_hint_html: Faça um POST para esta URL a partir do CI ou de um webhook de push do GitHub/GitLab para fazer deploy. Pushes em branches diferentes de %{branch} são ignorados.
+    show:
+      accessories: Acessórios
+      all_activity: Toda a atividade
+      checks: Verificações
+      click_to_copy: Clique para copiar
+      config_not_loaded: Configuração não carregada
+      confirm_deploy: Fazer deploy de %{project} em %{destination}?
+      confirm_redeploy: Fazer redeploy de %{project} em %{destination}?
+      deploy: Deploy
+      deploy_to_html: Deploy em %{destination}
+      domains: Domínios
+      image: Imagem
+      press_sync_html: Clique em Sincronizar para ler %{file}.
+      protected: protegido
+      redeploy: Redeploy
+      servers: Servidores
+      service: Serviço
+      versions: Versões no servidor
+      versions_hint: O Kamal guarda as últimas 5
+  servers:
+    connection:
+      ok: conectado
+      unknown: não verificado
+    form:
+      host_in_use: Vem do deploy.yml de um projeto. Altere-o lá.
+      name_placeholder: Web de produção
+      ssh_hint_html: Deixe o usuário e a porta SSH vazios para usar os do deploy.yml dos projetos deste servidor (ou <code>root</code> na porta 22).
+    index:
+      add: Adicionar servidor
+      description: Todos os hosts das configurações do Kamal dos seus projetos, mais os que você adicionar manualmente.
+      empty_description: Os servidores do deploy.yml dos seus projetos aparecem aqui sozinhos. Adicione um manualmente para verificar o acesso SSH antes de fazer deploy nele.
+      empty_title: Nenhum servidor ainda
+      no_projects: Nenhum projeto ainda
+    new:
+      description: O Kamal Web verifica se consegue se conectar via SSH com sua chave de acesso. Para fazer deploy aqui, adicione o host ao deploy.yml de um projeto.
+      title: Adicionar servidor
+    show:
+      authorize_command: Comando para autorizar a chave do Kamal Web
+      authorize_html: Autorize a chave do Kamal Web executando isto no servidor como %{user} e verifique de novo.
+      check: Verificar conexão
+      confirm_delete: Excluir %{name}? Nada muda no próprio servidor.
+      connection: Conexão
+      last_check: Última verificação
+      never_checked: nunca
+      no_projects: Nenhum projeto faz deploy aqui ainda. Adicione este host ao deploy.yml de um projeto para fazer deploy nele.
+      notes: Notas
+      projects_hint_html: Segundo os <code>servers</code> e <code>accessories</code> de cada deploy.yml. O uso é a parte do app.
+      resources: Recursos da máquina
+      ssh: SSH
+      system: Sistema
+  sessions:
+    new:
+      code: Código do seu app autenticador
+      hint_html: A senha é a <code class="text-zinc-400">KAMAL_WEB_PASSWORD</code> do arquivo <code class="text-zinc-400">.env</code> com que o Kamal Web foi implantado.
+      password: Senha
+      title: Entrar
+  settings:
+    edit:
+      access_key: Chave de acesso aos servidores
+      access_key_hint: Usada por todo projeto sem chave SSH própria, incluindo os apps detectados neste servidor.
+      alert_disk: Disco usado
+      alert_memory: Memória usada
+      alerts: Alertas
+      alerts_hint: O monitoramento abre um alerta quando algo dá errado e o resolve quando é corrigido. Ambos são enviados ao webhook de notificação do projeto e mostrados no painel.
+      alerts_list: 'Também alerta sobre: um host inacessível via SSH, o app parado, um domínio que não responde ao health check, um certificado TLS que vence em até 14 dias e mais de 10% de respostas 5xx no kamal-proxy.'
+      auto_update: Atualizar automaticamente
+      auto_update_failed: A atualização para %{version} falhou %{time}. Será tentada de novo com a próxima versão.
+      auto_update_hint_html: Verifica o GitHub a cada hora e faz deploy das novas versões neste servidor com <code>kamal deploy</code>, sem downtime. Usa o <code>config/deploy.yml</code> da versão com as configurações com que esta instância foi implantada, então alterações suas nesse arquivo não são mantidas.
+      auto_update_output: Saída
+      auto_update_problems:
+        custom_volumes: Esta instância monta %{paths}, o que o config/deploy.yml da versão não faz. Atualize com kamal deploy a partir da sua cópia.
+        not_deployed: Disponível só quando o Kamal Web roda no contêiner implantado pelo Kamal, com o socket do Docker montado.
+      auto_update_running: Atualizando para %{version}, iniciado %{time}. O Kamal Web reinicia quando terminar.
+      auto_update_succeeded: Atualizado para %{version} %{time}.
+      backup: Backup
+      backup_hint: 'Projetos, variáveis e chaves criptografadas, configurações e histórico, mais a chave que os descriptografa. Guarde o arquivo em um lugar seguro: ele desbloqueia todos os segredos armazenados aqui.'
+      confirm_regenerate: A URL atual vai parar de funcionar.
+      confirm_restore: Substituir tudo nesta instância pelo backup? O Kamal Web reinicia para restaurá-lo.
+      confirm_update_now: O Kamal Web faz deploy da nova versão sobre si mesmo e reinicia.
+      detect_again: Detectar de novo
+      download: Baixar backup
+      download_short: Baixar
+      enabled: Ativado
+      ignored_html: 'Não são detectados de novo porque você os removeu: %{services}'
+      instance: Instância
+      keep: Manter os últimos
+      open: Abrir
+      other_servers_html: 'Em qualquer outro servidor, como o usuário com que o Kamal faz deploy (normalmente <code>root</code>):'
+      regenerate: Gerar URL novamente
+      release_notes: ' (notas da versão)'
+      restore: Restaurar
+      restore_hint_html: Restaurar substitui os dados atuais. O que é substituído fica em <code>storage/before-restore-*</code> no volume.
+      scheduled_backups: Fazer backup todo dia às 3:00
+      scheduled_backups_hint_html: Gravado em %{path} no volume do Kamal Web, o que protege contra erros, mas não contra perder o servidor. Baixe um de vez em quando para guardar uma cópia em outro lugar.
+      status_board: Painel de status
+      status_board_hint: Uma página somente leitura para uma TV ou para sua equipe, com o status dos deploys e a saúde dos servidores. Atualiza ao vivo. Qualquer pessoa com o link pode vê-la.
+      this_server: 'Para o servidor que roda o Kamal Web, a partir da sua cópia do Kamal Web:'
+      up_to_date: Atualizado. GitHub verificado %{time}.
+      update_check_off_html: Verificação de atualizações desligada (<code>KAMAL_WEB_UPDATE_CHECK=false</code>).
+      update_how_html: Atualize a partir da sua cópia do Kamal Web com <code>git pull &amp;&amp; kamal deploy</code>.
+      update_now: Atualizar para %{version} agora
+  shared:
+    preferences:
+      language: Idioma
+      theme: Tema
+      themes:
+        dark: Escuro
+        light: Claro
+        system: Auto
+    typed_confirm:
+      confirm: Confirmar
+      label: Confirmação
+      protected_html: Este destino está protegido. Digite %{word} para confirmar.
+  status_boards:
+    show:
+      live: Ao vivo · atualizado %{time}
+      title: Status dos deploys
+  statuses:
+    canceled: cancelado
+    failed: falhou
+    queued: na fila
+    running: em execução
+    succeeded: concluído
+
+  ui:
+    breadcrumbs: "Trilha de navegação"
+    resource_usage: "App: %{app} · Máquina: %{total}"
+    project_navigation: "Navegação do projeto"
+    navigation: "Navegação principal"
+    skip_navigation: "Pular para o conteúdo"
+    workspace: "Espaço de trabalho"
+    infrastructure: "Console de infraestrutura"
+    no_projects: "Seus projetos vão aparecer aqui"
+    dashboard_title: "Tudo no seu lugar."
+    dashboard_description: "Seus aplicativos, servidores e atividade recente. Uma visão clara."
+    servers: "Servidores"
+    active_operations: "Operações ativas"
+    projects_caption: "Aplicativos conectados"
+    servers_caption: "Em todos os seus projetos"
+    operations_caption: "Rodando agora"
+    dismiss: "Fechar mensagem"
+    search_projects: "Buscar um projeto…"
+    search_commands: "Buscar um comando…"
+    no_results: "Nenhum resultado. Tente outra busca."
+    awaiting_deploy: "Pronto para o primeiro deploy"
+    optional: "Opcional"
+    on_this_page: "Nesta página"
+    appearance: "Aparência"
+    settings_description: "Um espaço de trabalho do seu jeito."
+    login_description: "Um lugar tranquilo para manter tudo rodando."
+    copy_failed: "Não foi possível copiar. Tente novamente."

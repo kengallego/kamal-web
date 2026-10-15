@@ -36,7 +36,7 @@ RSpec.describe "Translations" do
       status_board_path(Setting.instance.status_board_token) ]
   end
 
-  %w[ en es ].each do |locale|
+  I18n.available_locales.map(&:to_s).each do |locale|
     it "has every text of every page in #{locale}" do
       sign_in
       patch preferences_path, params: { locale: locale }
@@ -56,6 +56,30 @@ RSpec.describe "Translations" do
     patch preferences_path, params: { locale: "en" }
     get new_session_path, headers: { "Accept-Language" => "es-ES" }
     expect(response.body).to include("Sign in")
+  end
+
+  it "matches regional browser languages" do
+    { "pt-PT,pt;q=0.9" => "pt-BR", "zh-TW" => "zh-CN", "de-AT" => "de", "fr-CA,en;q=0.8" => "fr" }.each do |header, locale|
+      get new_session_path, headers: { "Accept-Language" => header }
+      expect(response.body).to include(%(lang="#{locale}")), header
+    end
+  end
+
+  it "has every English key in every language" do
+    keys = ->(hash, prefix = nil) do
+      hash.flat_map do |key, value|
+        path = [ prefix, key ].compact.join(".")
+        plural = value.is_a?(Hash) && value.key?(:other) && (value.keys - %i[ zero one two few many other ]).empty?
+        value.is_a?(Hash) && !plural ? keys.(value, path) : [ path ]
+      end
+    end
+    I18n.backend.send(:init_translations)
+    translations = I18n.backend.send(:translations)
+    english = keys.(translations[:en].slice(*YAML.load_file(Rails.root.join("config/locales/en.yml"))["en"].keys.map(&:to_sym)))
+
+    I18n.available_locales.each do |locale|
+      expect(english - keys.(translations[locale])).to be_empty, "#{locale} is missing translations"
+    end
   end
 
   it "remembers the theme" do

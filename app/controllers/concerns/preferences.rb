@@ -23,6 +23,14 @@ module Preferences
       available = I18n.available_locales.map(&:to_s)
       return cookies[:locale] if available.include?(cookies[:locale])
 
-      request.headers["Accept-Language"].to_s.split(",").map { |entry| entry.split(";").first.to_s.strip.split("-").first.to_s.downcase }.find { |code| available.include?(code) }
+      request.headers["Accept-Language"].to_s.split(",").lazy.map { |entry| locale_for(entry.split(";").first.to_s.strip) }.find(&:itself)
+    end
+
+    # An exact match first ("pt-BR"), then the language alone, so "pt-PT" or
+    # "zh-TW" still get Portuguese or Chinese.
+    def locale_for(code)
+      available = I18n.available_locales.map(&:to_s)
+      language = code.split("-").first.to_s.downcase
+      available.find { |locale| locale.casecmp?(code) } || available.find { |locale| locale.split("-").first == language }
     end
 end
