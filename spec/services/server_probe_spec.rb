@@ -60,12 +60,15 @@ RSpec.describe ServerProbe do
           'ps -aq'|'ps -q') printf 'first\\nsecond\\n' ;;
           'stats --no-stream') printf '%s\\n' '{"CPUPerc":"200%","MemUsage":"1GiB / 2GiB"}' ;;
           'inspect --size') printf '%s\\n' '{"SizeRw":1000}' '{"SizeRw":2000}' ;;
-          'inspect --format') printf '/app data\\n/app data\\n' ;;
+          'inspect --format') printf '%s\\n' '#{directory}/app data' '#{directory}/app data' '#{directory}/removed assets' ;;
           *) exit 1 ;;
         esac
       SH
       File.write(File.join(directory, "du"), "#!/bin/sh\nprintf '40\\t%s\\n' \"$3\"\n")
-      File.chmod(0o755, File.join(directory, "docker"), File.join(directory, "du"))
+      # Kamal removes old asset folders that stopped containers still mount.
+      Dir.mkdir(File.join(directory, "app data"))
+      File.write(File.join(directory, "sudo"), "#!/bin/sh\nexit 1\n")
+      File.chmod(0o755, *%w[ docker du sudo ].map { |name| File.join(directory, name) })
       result, status = Open3.capture2({ "PATH" => "#{directory}:#{ENV.fetch('PATH')}" }, "/bin/sh", "-c", probe.send(:container_script))
       expect(status).to be_success
       attributes = probe.parse(output_with_usage.split("#{ServerProbe::SEPARATOR}\n").first(7).join("#{ServerProbe::SEPARATOR}\n") + "#{ServerProbe::SEPARATOR}\n" + result)

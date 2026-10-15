@@ -78,6 +78,9 @@ class ServerProbe
         paths=$(docker_cmd inspect --format '{{println .LogPath}}{{range .Mounts}}{{if .RW}}{{if or (eq .Type "volume") (eq .Type "bind")}}{{println .Source}}{{end}}{{end}}{{end}}' $ids) || exit 0
         if [ -z "$paths" ]; then echo 0; else
           printf '%s\\n' "$paths" | sed '/^$/d' | sort -u | while IFS= read -r path; do
+            # Kamal removes old versions' asset folders while their stopped
+            # containers still list them as mounts; a missing path uses no disk.
+            if [ ! -e "$path" ] && ! sudo -n test -e "$path" 2>/dev/null; then continue; fi
             if usage=$(du -sk -- "$path" 2>/dev/null) || usage=$(sudo -n du -sk -- "$path" 2>/dev/null); then
               printf '%s\\n' "$usage"
             else echo unavailable; fi
