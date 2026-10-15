@@ -93,8 +93,14 @@ class Project < ApplicationRecord
     Server.register(hosts)
   end
 
+  # A host can serve several destinations, e.g. staging and production on
+  # the same machine.
+  def destinations_for_host(host)
+    destinations.select { |destination| config_for(destination).all_hosts.include?(host) }
+  end
+
   def destination_for_host(host)
-    destinations.find { |destination| config_for(destination).all_hosts.include?(host) }
+    destinations_for_host(host).first
   end
 
   # Variables for the base config apply everywhere; destination-specific ones

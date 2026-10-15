@@ -51,7 +51,7 @@
             <% metric = @metrics.find { |sample| sample.project_id == project.id && !sample.error } %>
             <tr>
               <td><%= link_to project.name, project_path(project), class: "font-medium text-foreground hover:underline" %></td>
-              <td class="text-muted"><%= destination_label(project.destination_for_host(@server.host)) %></td>
+              <td><%= destination_badges(project, @server.host) %></td>
               <% [ metric&.app_cpu_percent, metric&.app_memory_percent, metric&.app_disk_percent ].each do |percent| %>
                 <td class="w-28 text-xs tabular-nums text-muted"><%= percent ? "#{percent.round}%" : "–" %></td>
               <% end %>

@@ -12,6 +12,12 @@ module ApplicationHelper
     destination.presence || t("common.default_destination")
   end
 
+  def destination_badges(project, host)
+    tag.span(class: "inline-flex flex-wrap gap-1") do
+      safe_join(project.destinations_for_host(host).map { |destination| render Ui::BadgeComponent.new(label: destination_label(destination)) })
+    end
+  end
+
   def meter(percent)
     render Ui::MeterComponent.new(percent: percent)
   end

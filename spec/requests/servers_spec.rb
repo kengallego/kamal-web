@@ -12,6 +12,20 @@ RSpec.describe "Servers" do
     expect(response.body).to include("192.0.2.10", "shop", "42%", "connected")
   end
 
+  it "shows every destination a project deploys to a server" do
+    project = create(:project, name: "shop", config_snapshots: {
+      "production" => { "roles" => { "web" => [ "192.0.2.10" ] } },
+      "staging" => { "roles" => { "web" => [ "192.0.2.10" ] } }
+    })
+    server = Server.find_by!(host: "192.0.2.10")
+
+    get servers_path
+    expect(response.body).to include("production", "staging")
+
+    get server_path(server)
+    expect(response.body).to include(project_path(project), "production", "staging")
+  end
+
   it "adds a server by hand and checks the connection" do
     Setting.instance.ensure_ssh_key!
     allow(RemoteShell).to receive(:for_server).and_return(instance_double(RemoteShell, run: "Linux 6.8.0 x86_64\n"))

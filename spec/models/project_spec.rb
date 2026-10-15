@@ -46,6 +46,17 @@ RSpec.describe Project do
     expect(project.environment_for("staging")).to eq("TOKEN" => "staging", "ONLY_BASE" => "1")
   end
 
+  it "lists every destination that deploys to a host" do
+    project = build(:project, config_snapshots: {
+      "production" => { "roles" => { "web" => [ "192.0.2.10" ] } },
+      "staging" => { "roles" => { "web" => [ "192.0.2.10" ] }, "accessories" => { "db" => [ "192.0.2.20" ] } }
+    })
+
+    expect(project.destinations_for_host("192.0.2.10")).to eq([ "production", "staging" ])
+    expect(project.destinations_for_host("192.0.2.20")).to eq([ "staging" ])
+    expect(project.destination_for_host("192.0.2.10")).to eq("production")
+  end
+
   it "lists destinations from the config snapshots with the base config as nil" do
     project = build(:project, config_snapshots: { "staging" => {}, "" => {}, "production" => {} })
 

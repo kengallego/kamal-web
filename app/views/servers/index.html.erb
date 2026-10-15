@@ -22,7 +22,17 @@
               <%= link_to server.label, server_path(server), class: "font-medium text-foreground hover:underline" %>
               <% if server.name.present? %><p class="font-mono text-xs text-muted"><%= server.host %></p><% end %>
             </td>
-            <td class="text-muted"><%= projects.any? ? safe_join(projects.map { |project| link_to(project.name, project_path(project), class: "hover:text-foreground hover:underline") }, ", ") : t(".no_projects") %></td>
+            <td class="text-muted">
+              <% if projects.any? %>
+                <ul class="space-y-1">
+                  <% projects.each do |project| %>
+                    <li class="flex flex-wrap items-center gap-2"><%= link_to project.name, project_path(project), class: "hover:text-foreground hover:underline" %><%= destination_badges(project, server.host) %></li>
+                  <% end %>
+                </ul>
+              <% else %>
+                <%= t(".no_projects") %>
+              <% end %>
+            </td>
             <% [ metric&.cpu_percent, metric&.memory_percent, metric&.disk_percent ].each do |percent| %>
               <td class="w-28"><span class="text-xs tabular-nums text-muted"><%= percent ? "#{percent.round}%" : "–" %></span><%= meter(percent) if percent %></td>
             <% end %>
