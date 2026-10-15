@@ -1,0 +1,22 @@
+<%# locals: (run:, error: nil) %>
+<%= turbo_frame_tag "log_output" do %>
+  <% if run %>
+    <%= turbo_stream_from run %>
+    <div class="mb-3 flex flex-wrap items-center justify-between gap-3" data-logs-target="run" data-run-id="<%= run.id %>"
+      data-cancel-url="<%= cancel_project_command_run_path(run.project, run) %>" data-follow="<%= run.follow? %>">
+      <div class="flex min-w-0 items-center gap-3">
+        <%= render "command_runs/status", run: run %>
+        <code class="truncate text-xs text-muted" title="<%= run.display_command %>"><%= run.display_command %></code>
+      </div>
+      <div class="flex items-center gap-3 text-xs">
+        <%= link_to t("projects.logs.output.details"), project_command_run_path(run.project, run), class: "text-muted hover:text-foreground", data: { turbo_frame: "_top" } %>
+        <% if run.follow? %>
+          <button type="button" class="btn btn-sm btn-danger" data-action="logs#stop"><%= t("projects.command_runs.show.stop_following") %></button>
+        <% end %>
+      </div>
+    </div>
+    <pre id="run_output_<%= run.id %>" class="terminal min-h-[50vh]" data-controller="autoscroll"><%= run.output %></pre>
+  <% else %>
+    <p class="rounded-xl border border-danger/30 bg-danger/10 p-4 text-sm text-danger"><%= error %></p>
+  <% end %>
+<% end %>

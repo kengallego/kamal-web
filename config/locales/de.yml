@@ -268,6 +268,7 @@ de:
     from: Von
     host: Host
     loading: Wird geladen…
+    logs: Logs
     monitoring: Monitoring
     never_deployed: nie deployt
     new_project: Neues Projekt
@@ -485,6 +486,9 @@ de:
       sync_failed: Letzte Synchronisierung fehlgeschlagen
       sync_title: Neuesten Code holen und deploy.yml neu einlesen
       synced: synchronisiert %{time}
+    logs:
+      output:
+        details: Details zum Lauf
     monitoring:
       show:
         container: Container

@@ -1,0 +1,40 @@
+<% content_for :title, "#{t("common.logs")} · #{@project.name}" %>
+<%= render "projects/header", project: @project, destination: @destination %>
+
+<div class="grid gap-6 lg:grid-cols-4" data-controller="logs">
+  <%= form_with url: project_logs_path(@project), class: "card card-body flex flex-col gap-4 self-start", data: { turbo_frame: "log_output", logs_target: "form", action: "submit->logs#prepare" } do |form| %>
+    <%= hidden_field_tag :destination, @destination, id: nil %>
+    <%= hidden_field_tag :replace, nil, id: nil, data: { logs_target: "replace" } %>
+
+    <% CommandCatalog.find("app_logs").fields.each do |field| %>
+      <% if field.type == :boolean %>
+        <label class="flex items-center gap-2 text-sm text-body">
+          <%= hidden_field_tag "options[#{field.name}]", "0", id: nil %>
+          <%= check_box_tag "options[#{field.name}]", "1", @options[field.name] == "1", class: "accent-accent", id: "log_#{field.name}" %>
+          <%= field.label %>
+        </label>
+      <% else %>
+        <div>
+          <label class="label" for="log_<%= field.name %>"><%= field.label %></label>
+          <% if field.type == :host %>
+            <%= select_tag "options[#{field.name}]", options_for_select(@config.all_hosts, @options[field.name]), include_blank: t("projects.commands.show.default_hosts"), class: "input", id: "log_#{field.name}" %>
+          <% elsif field.type == :number %>
+            <%= number_field_tag "options[#{field.name}]", @options[field.name], min: 1, max: 5000, placeholder: field.placeholder, class: "input", id: "log_#{field.name}" %>
+          <% else %>
+            <%= text_field_tag "options[#{field.name}]", @options[field.name], placeholder: field.placeholder, class: "input font-mono", id: "log_#{field.name}", autocomplete: "off" %>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+    <% if (description = CommandCatalog.find("app_logs").description) %>
+      <p class="text-xs text-muted"><%= description %></p>
+    <% end %>
+    <%= form.submit t("common.run"), class: "btn btn-primary" %>
+  <% end %>
+
+  <div class="min-w-0 lg:col-span-3">
+    <%= turbo_frame_tag "log_output" do %>
+      <%= render "shared/loading" %>
+    <% end %>
+  </div>
+</div>

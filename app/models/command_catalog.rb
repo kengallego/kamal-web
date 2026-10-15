@@ -45,6 +45,8 @@ class CommandCatalog
     "inspect" => "Inspect"
   }.freeze
 
+  TABBED = %w[ app_logs ].freeze
+
   class << self
     def all
       @all ||= {}
@@ -58,8 +60,10 @@ class CommandCatalog
       all.key?(key.to_s)
     end
 
+    # For the commands page. App logs have their own tab, but stay in the
+    # catalog so earlier runs can still be shown and run again.
     def grouped
-      all.values.group_by(&:group)
+      all.values.reject { |command| command.key.in?(TABBED) }.group_by(&:group)
     end
 
     private

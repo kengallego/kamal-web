@@ -35,7 +35,7 @@ English and Spanish. Light and dark themes. One shared password, with optional a
 - **Checks.** The overview tells you at a glance whether the config loads, SSH works, kamal-proxy and the app are running and every secret is set, and how to fix what isn't.
 - **Versions on the server.** The overview lists the versions Kamal still keeps on the server and rolls back to any of them in one click.
 - **Every everyday Kamal command:** app boot/start/stop/details/logs/exec, maintenance and live mode, accessories, proxy, deploy lock, prune, registry login, server bootstrap, setup and audit.
-- **Live logs.** Follow app, proxy or accessory logs as they're written, from any host or a single container (one click from the Monitoring tab). Following stops after 30 minutes or when you press Stop.
+- **Live logs.** App logs have their own tab and follow live as soon as you open it, from any host or a single container (one click from the Monitoring tab). Proxy and accessory logs run from Commands. Following stops after 30 minutes, when you press Stop or when you leave the Logs tab.
 - **Web console.** An interactive Rails console, database console or shell in the running app container, right in the browser (`kamal app exec --interactive --reuse`). Every session is recorded (what, where, when); what you type isn't.
 - **Rails runner.** Evaluates Ruby inside the running app container.
 - **Monitoring.** CPU, memory, disk and load for every host, sampled each minute over SSH and kept for 24 hours, plus hourly averages for 30 days and the running containers.

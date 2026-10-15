@@ -264,6 +264,7 @@ ja:
     from: 実行元
     host: ホスト
     loading: 読み込み中…
+    logs: ログ
     monitoring: 監視
     never_deployed: 未デプロイ
     new_project: 新しいプロジェクト
@@ -478,6 +479,9 @@ ja:
       sync_failed: 前回の同期に失敗しました
       sync_title: 最新のコードを取得して deploy.yml を読み直します
       synced: '%{time}に同期'
+    logs:
+      output:
+        details: 実行の詳細
     monitoring:
       show:
         container: コンテナ

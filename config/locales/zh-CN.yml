@@ -264,6 +264,7 @@ zh-CN:
     from: 来源
     host: 主机
     loading: 加载中…
+    logs: 日志
     monitoring: 监控
     never_deployed: 从未部署
     new_project: 新建项目
@@ -478,6 +479,9 @@ zh-CN:
       sync_failed: 上次同步失败
       sync_title: 拉取最新代码并重新读取 deploy.yml
       synced: '%{time}已同步'
+    logs:
+      output:
+        details: 运行详情
     monitoring:
       show:
         container: 容器

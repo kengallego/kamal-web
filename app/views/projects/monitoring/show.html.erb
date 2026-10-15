@@ -97,9 +97,8 @@
                     <td class="text-xs text-muted"><%= container["Status"] %></td>
                     <td class="font-mono text-xs text-muted"><%= container["Ports"] %></td>
                     <td class="text-right">
-                      <%= button_to t(".logs"), project_command_runs_path(@project), class: "btn btn-sm",
-                        params: { kind: "app_logs", destination: @project.destination_for_host(host),
-                          "options[host]" => host, "options[container_id]" => container["Names"], "options[lines]" => 200, "options[follow]" => "1" } %>
+                      <% destination = container.dig("Labels", "destination") || @project.destination_for_host(host) %>
+                      <%= link_to t(".logs"), project_logs_path(@project, destination: destination, options: { host: host, container_id: container["Names"] }), class: "btn btn-sm" %>
                     </td>
                   </tr>
                 <% end %>

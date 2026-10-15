@@ -268,6 +268,7 @@ fr:
     from: Depuis
     host: Hôte
     loading: Chargement…
+    logs: Logs
     monitoring: Surveillance
     never_deployed: jamais déployé
     new_project: Nouveau projet
@@ -485,6 +486,9 @@ fr:
       sync_failed: La dernière synchronisation a échoué
       sync_title: Récupérer le code le plus récent et relire deploy.yml
       synced: synchronisé %{time}
+    logs:
+      output:
+        details: Détails de l’exécution
     monitoring:
       show:
         container: Conteneur

@@ -53,6 +53,7 @@
 <nav aria-label="<%= t('ui.project_navigation') %>" class="mt-7 flex gap-1 overflow-x-auto rounded-xl bg-subtle p-1.5">
     <% [
       [ :grid, t("common.overview"), project_path(project, dest) ],
+      [ :logs, t("common.logs"), project_logs_path(project, dest) ],
       [ :terminal, t("common.commands"), project_commands_path(project, dest) ],
       [ :code, t("common.console"), project_console_sessions_path(project, dest) ],
       [ :activity, t("common.activity"), project_command_runs_path(project) ],
