@@ -53,17 +53,22 @@ class ServerProbe
         end
         [ config.service, *accessories ]
       end.uniq
-      filters = services.map { |service| "--filter #{Shellwords.escape("label=service=#{service}")}" }.join(" ")
       return "" if services.empty?
 
+      # Docker ANDs repeated label filters, so each service is listed on its own.
       <<~SH
         docker_cmd() { docker "$@" 2>/dev/null || sudo -n docker "$@" 2>/dev/null; }
-        ids=$(docker_cmd ps -aq #{filters}) || exit 0
+        app_containers() {
+          for service in #{services.map { |service| Shellwords.escape(service) }.join(" ")}; do
+            docker_cmd ps "$@" --filter "label=service=$service" || return 1
+          done
+        }
+        ids=$(app_containers -aq) || exit 0
         if [ -z "$ids" ]; then
           echo ok; echo #{SEPARATOR}; echo ok; echo #{SEPARATOR}; echo 0
           exit 0
         fi
-        running=$(docker_cmd ps -q #{filters}) || exit 0
+        running=$(app_containers -q) || exit 0
         if [ -z "$running" ]; then echo ok; else
           docker_cmd stats --no-stream --format '{{json .}}' $running && echo ok
         fi

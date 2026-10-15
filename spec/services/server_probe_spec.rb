@@ -29,8 +29,27 @@ RSpec.describe ServerProbe do
         "raw" => { "accessories" => { "redis" => { "service" => "custom-cache" } } } }
     })
     script = described_class.new(project, "192.0.2.10").send(:container_script)
-    expect(script).to include("--filter label\\=service\\=demo", "--filter label\\=service\\=demo-db", "--filter label\\=service\\=custom-cache")
+    expect(script).to include("for service in demo demo-db custom-cache; do")
     expect(script).not_to include("kamal-proxy", "demo-*", "demo-redis")
+  end
+
+  it "finds the app and accessory containers although Docker ANDs repeated label filters" do
+    project = build(:project, config_snapshots: { "" => { "service" => "demo", "accessories" => { "db" => [ "192.0.2.10" ] } } })
+    Dir.mktmpdir do |directory|
+      File.write(File.join(directory, "docker"), <<~SH)
+        #!/bin/sh
+        [ "$1" = ps ] || exit 1
+        [ "$#" -eq 4 ] || exit 0
+        case "$4" in
+          label=service=demo) echo web1 ;;
+          label=service=demo-db) echo db1 ;;
+        esac
+      SH
+      File.chmod(0o755, File.join(directory, "docker"))
+      script = described_class.new(project, "192.0.2.10").send(:container_script)
+      result, = Open3.capture2({ "PATH" => "#{directory}:#{ENV.fetch('PATH')}" }, "/bin/sh", "-c", script.lines.first(6).join + "app_containers -q")
+      expect(result.split).to eq(%w[ web1 db1 ])
+    end
   end
 
   it "collects Docker statistics and deduplicates shared mount paths, including paths with spaces" do
