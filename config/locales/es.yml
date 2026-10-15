@@ -129,12 +129,6 @@ es:
     ssh_ok: Accesible %{time}
     ssh_pending: Aún sin comprobar. Se comprueba cada minuto.
   command_fields:
-    code:
-      label: Código Ruby
-      placeholder: puts User.count
-    command:
-      label: Comando
-      placeholder: bin/rails db:migrate:status
     container_id:
       label: Contenedor
       placeholder: contenedor actual de la app
@@ -190,7 +184,6 @@ es:
     app_details:
       label: Detalles de la app
     app_exec:
-      description: Se ejecuta en un contenedor nuevo de la imagen actual en el host principal
       label: Ejecutar comando
     app_images:
       label: Imágenes de la app
@@ -231,7 +224,6 @@ es:
     prune_all:
       label: Limpiar imágenes y contenedores
     rails_runner:
-      description: Evalúa Ruby con bin/rails runner dentro del contenedor de la app en marcha
       label: Rails runner
     redeploy:
       description: Despliega sin preparar servidores, proxy ni login en el registry

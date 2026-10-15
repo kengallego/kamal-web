@@ -48,8 +48,6 @@
               <div>
                 <label class="label" for="<%= field_id %>"><%= field.label %></label>
                 <% case field.type %>
-                <% when :code %>
-                  <%= text_area_tag "options[#{field.name}]", nil, rows: 4, required: field.required, placeholder: field.placeholder, class: "input font-mono", id: field_id %>
                 <% when :number %>
                   <%= number_field_tag "options[#{field.name}]", nil, min: 1, max: 5000, placeholder: field.placeholder, class: "input", id: field_id %>
                 <% when :host %>

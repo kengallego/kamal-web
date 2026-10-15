@@ -43,6 +43,6 @@ RSpec.describe "Logs" do
     get project_commands_path(project)
 
     expect(response.body).to include(project_logs_path(project))
-    expect(response.body).not_to include('value="app_logs"')
+    expect(response.body).not_to include('value="app_logs"', 'value="app_exec"', 'value="rails_runner"')
   end
 end

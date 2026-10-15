@@ -45,7 +45,7 @@ class CommandCatalog
     "inspect" => "Inspect"
   }.freeze
 
-  TABBED = %w[ app_logs ].freeze
+  TABBED = %w[ app_logs app_exec rails_runner ].freeze
 
   class << self
     def all
@@ -60,8 +60,8 @@ class CommandCatalog
       all.key?(key.to_s)
     end
 
-    # For the commands page. App logs have their own tab, but stay in the
-    # catalog so earlier runs can still be shown and run again.
+    # For the commands page. These have their own tabs (Logs and Console), but
+    # stay in the catalog so earlier runs can still be shown and run again.
     def grouped
       all.values.reject { |command| command.key.in?(TABBED) }.group_by(&:group)
     end
@@ -176,15 +176,13 @@ class CommandCatalog
   end
 
   command "app_exec", "Run command", group: "app",
-    fields: [ field("command", "Command", required: true, placeholder: "bin/rails db:migrate:status") ],
-    description: "Runs in a new container from the current image on the primary host" do |options|
+    fields: [ field("command", "Command", required: true) ] do |options|
     raise ArgumentError, "Command is required" if options["command"].blank?
     [ "app", "exec", "--primary", "--reuse", options["command"] ]
   end
 
   command "rails_runner", "Rails runner", group: "app",
-    fields: [ field("code", "Ruby code", type: :code, required: true, placeholder: "puts User.count") ],
-    description: "Evaluates Ruby with bin/rails runner inside the running app container" do |options|
+    fields: [ field("code", "Ruby code", required: true) ] do |options|
     raise ArgumentError, "Code is required" if options["code"].blank?
     [ "app", "exec", "--primary", "--reuse", "bin/rails runner #{Shellwords.escape(options["code"])}" ]
   end

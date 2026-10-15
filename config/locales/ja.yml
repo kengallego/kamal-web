@@ -124,12 +124,6 @@ ja:
     ssh_ok: '%{time}に接続'
     ssh_pending: まだ確認していません。1 分ごとに確認します。
   command_fields:
-    code:
-      label: Ruby コード
-      placeholder: puts User.count
-    command:
-      label: コマンド
-      placeholder: bin/rails db:migrate:status
     container_id:
       label: コンテナ
       placeholder: 現在のアプリコンテナ
@@ -185,7 +179,6 @@ ja:
     app_details:
       label: アプリの詳細
     app_exec:
-      description: プライマリホストで現在のイメージから新しいコンテナを作って実行します
       label: コマンドを実行
     app_images:
       label: アプリのイメージ
@@ -226,7 +219,6 @@ ja:
     prune_all:
       label: イメージとコンテナを削除
     rails_runner:
-      description: 稼働中のアプリコンテナ内で bin/rails runner により Ruby を評価します
       label: Rails runner
     redeploy:
       description: サーバーの準備、プロキシ、レジストリへのログインなしでデプロイします

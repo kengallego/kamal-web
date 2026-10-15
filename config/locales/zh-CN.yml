@@ -124,12 +124,6 @@ zh-CN:
     ssh_ok: '%{time}连接成功'
     ssh_pending: 尚未检查。每分钟检查一次。
   command_fields:
-    code:
-      label: Ruby 代码
-      placeholder: puts User.count
-    command:
-      label: 命令
-      placeholder: bin/rails db:migrate:status
     container_id:
       label: 容器
       placeholder: 当前应用容器
@@ -185,7 +179,6 @@ zh-CN:
     app_details:
       label: 应用详情
     app_exec:
-      description: 在主主机上用当前镜像新建一个容器来运行
       label: 运行命令
     app_images:
       label: 应用镜像
@@ -226,7 +219,6 @@ zh-CN:
     prune_all:
       label: 清理镜像和容器
     rails_runner:
-      description: 在运行中的应用容器里用 bin/rails runner 执行 Ruby
       label: Rails runner
     redeploy:
       description: 部署时不初始化服务器、代理，也不登录镜像仓库
