@@ -19,7 +19,13 @@
           <div class="flex items-center justify-between">
             <span class="text-body"><%= destination_label(destination) %></span>
             <span class="flex items-center gap-2 text-sm text-muted">
-              <% if deploy %><%= time_ago(deploy.created_at) %> <%= status_badge(deploy.status) %><% else %>–<% end %>
+              <% if deploy %>
+                <%= time_ago(deploy.created_at) %> <%= status_badge(deploy.status) %>
+              <% elsif (release = project.live_release(destination, @latest_metrics[project.id] || [])) %>
+                <%= time_ago(release.created_at) if release.created_at %> <%= render Ui::BadgeComponent.new(label: t("projects.releases.releases.live"), tone: :success, dot: true) %>
+              <% else %>
+                –
+              <% end %>
             </span>
           </div>
         <% end %>

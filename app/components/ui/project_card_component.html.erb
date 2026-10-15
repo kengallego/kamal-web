@@ -20,7 +20,14 @@
       <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
         <span class="flex items-center gap-2 text-muted"><%= render Ui::IconComponent.new(name: :globe, size: 13) %><%= helpers.destination_label(destination) %></span>
         <span class="flex min-w-0 items-center gap-2">
-          <% if deploy %><%= helpers.status_badge(deploy.status) %><% else %><span class="text-faint"><%= t('common.never_deployed') %></span><% end %>
+          <% if deploy %>
+            <%= helpers.status_badge(deploy.status) %>
+          <% elsif (release = live_release(destination)) %>
+            <span class="truncate font-mono text-faint" title="<%= release.version %>"><%= release.version.truncate(24) %></span>
+            <%= render Ui::BadgeComponent.new(label: t('projects.releases.releases.live'), tone: :success, dot: true) %>
+          <% else %>
+            <span class="text-faint"><%= t('common.never_deployed') %></span>
+          <% end %>
         </span>
       </div>
     <% end %>
@@ -41,6 +48,6 @@
   <% end %>
   <div class="flex flex-wrap items-center justify-between gap-2 border-t border-line/70 px-6 py-3 text-[11px] text-faint">
     <span class="flex items-center gap-1.5"><%= render Ui::IconComponent.new(name: :branch, size: 12) %><%= @project.branch %></span>
-    <% if (deploy = @project.last_deploy) %><span><%= helpers.time_ago(deploy.created_at) %></span><% else %><span><%= t('ui.awaiting_deploy') %></span><% end %>
+    <% if (deployed_at = last_deployed_at) %><span><%= helpers.time_ago(deployed_at) %></span><% elsif live_releases.none? %><span><%= t('ui.awaiting_deploy') %></span><% end %>
   </div>
 <% end %>

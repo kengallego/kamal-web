@@ -46,6 +46,25 @@ RSpec.describe Project do
     expect(project.environment_for("staging")).to eq("TOKEN" => "staging", "ONLY_BASE" => "1")
   end
 
+  it "finds the live version of each destination from the latest samples" do
+    project = create(:project, config_snapshots: {
+      "production" => { "service" => "shop", "roles" => { "web" => [ "192.0.2.10" ] } },
+      "staging" => { "service" => "shop", "roles" => { "web" => [ "192.0.2.10" ] } }
+    })
+    container = ->(name, destination, state, created) { { "Names" => name, "State" => state, "CreatedAt" => created, "Labels" => { "service" => "shop", "role" => "web", "destination" => destination } } }
+    project.server_metrics.create!(host: "192.0.2.10", collected_at: Time.current, containers: [
+      container.("shop-web-production-abc123", "production", "running", "2026-10-14 13:11:14 +0000 UTC"),
+      container.("shop-web-production-old", "production", "exited", "2026-10-10 10:00:00 +0000 UTC"),
+      container.("shop-web-staging-def456", "staging", "running", "2026-10-15 09:00:00 +0000 UTC")
+    ])
+
+    production = project.live_release("production")
+    expect(production.version).to eq("abc123")
+    expect(production.created_at).to eq(Time.utc(2026, 10, 14, 13, 11, 14))
+    expect(project.live_release("staging").version).to eq("def456")
+    expect(project.live_release("production", [])).to be_nil
+  end
+
   it "lists every destination that deploys to a host" do
     project = build(:project, config_snapshots: {
       "production" => { "roles" => { "web" => [ "192.0.2.10" ] } },

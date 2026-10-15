@@ -152,6 +152,26 @@ class Project < ApplicationRecord
     runs.order(created_at: :desc).first
   end
 
+  LiveRelease = Data.define(:version, :created_at)
+
+  # The version running for a destination, from the containers in the latest
+  # monitoring samples, so apps deployed outside Kamal Web show up too.
+  def live_release(destination, metrics = latest_metrics)
+    config = config_for(destination)
+    prefix = [ config.service, config.primary_role, destination.presence ].compact.join("-") + "-"
+    container = metrics.reject(&:error).flat_map(&:containers).select do |container|
+      labels = container["Labels"] || {}
+      container["State"] == "running" && labels["service"] == config.service && labels["role"] == config.primary_role &&
+        labels["destination"].to_s == destination.to_s && container["Names"].to_s.start_with?(prefix)
+    end.max_by { |container| container["CreatedAt"].to_s }
+
+    if container
+      LiveRelease.new(version: container["Names"].delete_prefix(prefix), created_at: (Time.zone.parse(container["CreatedAt"].to_s) rescue nil))
+    elsif discovered? && (version = discovered_versions[destination.to_s])
+      LiveRelease.new(version: version, created_at: nil)
+    end
+  end
+
   private
     # Only clones made by Kamal Web are removed; mounted folders are left alone.
     def ignore_discovered_service

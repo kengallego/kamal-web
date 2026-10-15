@@ -18,6 +18,22 @@ RSpec.describe "Projects" do
     expect(response).to have_http_status(:ok)
   end
 
+  it "shows apps deployed outside Kamal Web as live on the dashboard" do
+    sign_in
+    project = create(:project, name: "shop", config_snapshots: { "" => { "service" => "shop", "roles" => { "web" => [ "192.0.2.10" ] } } })
+
+    get root_path
+    expect(response.body).to include("never deployed", "Ready for your first deploy")
+
+    project.server_metrics.create!(host: "192.0.2.10", collected_at: Time.current, containers: [
+      { "Names" => "shop-web-abc123", "State" => "running", "CreatedAt" => 2.hours.ago.utc.strftime("%F %T +0000 UTC"), "Labels" => { "service" => "shop", "role" => "web", "destination" => "" } }
+    ])
+
+    get root_path
+    expect(response.body).to include("abc123", "live", "about 2 hours")
+    expect(response.body).not_to include("never deployed", "Ready for your first deploy")
+  end
+
   it "creates a project and attempts a first sync" do
     sign_in
     allow_any_instance_of(ProjectWorkspace).to receive(:sync!).and_return(true)

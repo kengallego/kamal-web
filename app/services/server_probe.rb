@@ -125,7 +125,9 @@ class ServerProbe
     def parse_containers(output)
       output.to_s.lines.filter_map do |line|
         container = JSON.parse(line)
-        container.slice("Names", "Image", "Status", "State", "RunningFor", "Ports")
+        # Kamal's labels tell which app version and destination each container runs.
+        labels = container["Labels"].to_s.split(",").to_h { |pair| pair.split("=", 2) }.slice("service", "role", "destination")
+        container.slice("Names", "Image", "Status", "State", "RunningFor", "Ports", "CreatedAt").merge("Labels" => labels)
       rescue JSON::ParserError
         nil
       end
