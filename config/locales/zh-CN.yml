@@ -521,10 +521,11 @@ zh-CN:
         chart_label: 最近一小时每分钟的请求数
         errors_5xx: 错误（5xx）
         latest_300: 此应用，最近 300 条
-        median: 中位数
+        median: 延迟中位数
         method: 方法
         no_requests: 最近一小时没有对此应用的请求。
         no_routes: kamal-proxy 没有报告任何路由。它在 %{host} 上运行吗？
+        p95: p95 延迟
         path: 路径
         peak: 峰值 %{count}/分钟
         recent_requests: 最近的请求
@@ -532,7 +533,7 @@ zh-CN:
         routes: 路由
         service: 服务
         state: 状态
-        target: 目标
+        target: 上游
         time: 时间
         traffic: 流量
       show:

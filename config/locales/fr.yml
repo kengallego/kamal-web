@@ -528,10 +528,11 @@ fr:
         chart_label: Requêtes par minute sur la dernière heure
         errors_5xx: Erreurs (5xx)
         latest_300: cette app, 300 dernières
-        median: Médiane
+        median: Latence médiane
         method: Méthode
         no_requests: Aucune requête vers cette app sur la dernière heure.
         no_routes: kamal-proxy n’a signalé aucune route. Tourne-t-il sur %{host} ?
+        p95: Latence p95
         path: Chemin
         peak: pic %{count}/min
         recent_requests: Requêtes récentes

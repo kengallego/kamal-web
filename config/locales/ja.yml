@@ -521,10 +521,11 @@ ja:
         chart_label: 過去 1 時間の 1 分あたりのリクエスト数
         errors_5xx: エラー（5xx）
         latest_300: このアプリ、直近 300 件
-        median: 中央値
+        median: レイテンシ中央値
         method: メソッド
         no_requests: 過去 1 時間、このアプリへのリクエストはありません。
         no_routes: kamal-proxy からルートが報告されていません。%{host} で動いていますか？
+        p95: p95 レイテンシ
         path: パス
         peak: ピーク %{count}/分
         recent_requests: 最近のリクエスト

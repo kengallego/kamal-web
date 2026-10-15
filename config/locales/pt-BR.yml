@@ -528,10 +528,11 @@ pt-BR:
         chart_label: Requisições por minuto na última hora
         errors_5xx: Erros (5xx)
         latest_300: este app, últimas 300
-        median: Mediana
+        median: Latência mediana
         method: Método
         no_requests: Nenhuma requisição para este app na última hora.
         no_routes: O kamal-proxy não informou rotas. Ele está rodando em %{host}?
+        p95: Latência p95
         path: Caminho
         peak: pico de %{count}/min
         recent_requests: Requisições recentes

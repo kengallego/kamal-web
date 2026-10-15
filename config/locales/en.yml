@@ -530,10 +530,11 @@ en:
         chart_label: Requests per minute in the last hour
         errors_5xx: Errors (5xx)
         latest_300: this app, latest 300
-        median: Median
+        median: Median latency
         method: Method
         no_requests: No requests to this app in the last hour.
         no_routes: kamal-proxy reported no routes. Is it running on %{host}?
+        p95: p95 latency
         path: Path
         peak: peak %{count}/min
         recent_requests: Recent requests

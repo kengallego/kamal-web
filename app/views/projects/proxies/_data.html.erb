@@ -31,7 +31,7 @@
       [ t(".requests_1h"), total ],
       [ t(".errors_5xx"), @traffic.count { |r| r.status >= 500 } ],
       [ t(".median"), total.positive? ? "#{durations[total / 2]} ms" : "–" ],
-      [ "p95", total.positive? ? "#{durations[(total * 0.95).floor.clamp(0, total - 1)]} ms" : "–" ]
+      [ t(".p95"), total.positive? ? "#{durations[(total * 0.95).floor.clamp(0, total - 1)]} ms" : "–" ]
     ].each do |label, value| %>
       <%= render Ui::PanelComponent.new(class: 'p-4') do %>
         <p class="label"><%= label %></p>
