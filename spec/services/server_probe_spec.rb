@@ -62,7 +62,7 @@ RSpec.describe ServerProbe do
       "2\n",
       "4000000000 1000000000\n",
       "50000000000 25000000000\n",
-      %({"Names":"demo-web-abc","Image":"acme/demo:abc","Status":"Up 2 hours","State":"running","Labels":"service=demo,role=web,destination=,traefik.enable=true"}\n),
+      %({"Names":"demo-web-abc","Image":"acme/demo:abc","Status":"Up 2 hours","State":"running","Labels":"org.opencontainers.image.description=Shop, with commas,service=demo,role=web,destination=,traefik.enable=true"}\n),
       "cpu  150 0 150 900 0 0 0 0 0 0\n"
     ].join(separator)
 

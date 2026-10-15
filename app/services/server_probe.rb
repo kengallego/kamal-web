@@ -125,11 +125,16 @@ class ServerProbe
     def parse_containers(output)
       output.to_s.lines.filter_map do |line|
         container = JSON.parse(line)
-        # Kamal's labels tell which app version and destination each container runs.
-        labels = container["Labels"].to_s.split(",").to_h { |pair| pair.split("=", 2) }.slice("service", "role", "destination")
-        container.slice("Names", "Image", "Status", "State", "RunningFor", "Ports", "CreatedAt").merge("Labels" => labels)
+        container.slice("Names", "Image", "Status", "State", "RunningFor", "Ports", "CreatedAt").merge("Labels" => kamal_labels(container["Labels"]))
       rescue JSON::ParserError
         nil
       end
+    end
+
+    # Kamal's labels tell which app version and destination each container
+    # runs. Docker joins all labels with commas without escaping them, so other
+    # labels' values may contain commas; only these three are picked out.
+    def kamal_labels(joined)
+      %w[ service role destination ].to_h { |key| [ key, joined.to_s[/(?:\A|,)#{key}=([^,]*)/, 1] ] }.compact
     end
 end
