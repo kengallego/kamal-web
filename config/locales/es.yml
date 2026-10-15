@@ -182,7 +182,7 @@ es:
     accessory_start:
       label: Iniciar accesorio
     accessory_stop:
-      label: Parar accesorio
+      label: Detener accesorio
     app_boot:
       label: Arrancar app
     app_containers:
@@ -204,7 +204,7 @@ es:
     app_start:
       label: Iniciar app
     app_stop:
-      label: Parar app
+      label: Detener app
     app_version:
       label: Versión en marcha
     audit:
@@ -365,7 +365,7 @@ es:
         all: Todo
       show:
         confirm_again: ¿Volver a ejecutar %{command}?
-        confirm_cancel: ¿Parar este comando? Kamal puede dejar un bloqueo de deploy.
+        confirm_cancel: ¿Detener este comando? Kamal puede dejar un bloqueo de deploy.
         containers: Contenedores
         exit_code: código de salida %{code}
         from: desde %{source}
