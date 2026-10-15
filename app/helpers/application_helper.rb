@@ -71,6 +71,13 @@ module ApplicationHelper
         title = t("common.edit")
       end
       trail << [ title, nil ] if title.present? && title != @project.name
+    elsif controller_name == "servers" && action_name != "index"
+      trail << [ t("common.servers"), servers_path ]
+      if @server&.persisted? && action_name.in?(%w[ edit update ])
+        trail << [ @server.label, server_path(@server) ]
+        title = t("common.edit")
+      end
+      trail << [ title, nil ] if title.present?
     else
       trail << [ title, nil ] if title.present?
     end

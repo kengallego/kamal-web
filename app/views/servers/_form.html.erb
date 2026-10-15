@@ -1,0 +1,31 @@
+<%= form_with model: server, class: "card card-body max-w-xl space-y-4" do |form| %>
+  <%= form_errors(server) %>
+  <div>
+    <%= form.label :host, class: "label" %>
+    <%= form.text_field :host, required: true, readonly: server.persisted? && server.in_use?, class: "input font-mono", placeholder: "203.0.113.10", autocomplete: "off" %>
+    <% if server.persisted? && server.in_use? %><p class="mt-1 text-xs text-muted"><%= t(".host_in_use") %></p><% end %>
+  </div>
+  <div>
+    <%= form.label :name, class: "label" %>
+    <%= form.text_field :name, class: "input", placeholder: t(".name_placeholder") %>
+  </div>
+  <div class="grid gap-4 sm:grid-cols-2">
+    <div>
+      <%= form.label :ssh_user, class: "label" %>
+      <%= form.text_field :ssh_user, class: "input font-mono", placeholder: server.persisted? ? server.effective_ssh_user : "root", autocomplete: "off" %>
+    </div>
+    <div>
+      <%= form.label :ssh_port, class: "label" %>
+      <%= form.number_field :ssh_port, min: 1, max: 65_535, class: "input font-mono", placeholder: server.persisted? ? server.effective_ssh_port : 22 %>
+    </div>
+  </div>
+  <p class="text-xs text-muted"><%= t(".ssh_hint_html") %></p>
+  <div>
+    <%= form.label :notes, class: "label" %>
+    <%= form.text_area :notes, rows: 3, class: "input" %>
+  </div>
+  <div class="flex gap-3">
+    <%= form.submit t("common.save"), class: "btn btn-primary" %>
+    <%= link_to t("common.cancel"), server.persisted? ? server_path(server) : servers_path, class: "btn" %>
+  </div>
+<% end %>

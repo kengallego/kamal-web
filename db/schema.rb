@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_16_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_16_140000) do
   create_table "alerts", force: :cascade do |t|
     t.integer "project_id", null: false
     t.string "kind", null: false
@@ -155,6 +155,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_16_130000) do
     t.bigint "app_disk_used"
     t.index ["project_id", "host", "collected_at"], name: "index_server_metrics_on_project_id_and_host_and_collected_at"
     t.index ["project_id"], name: "index_server_metrics_on_project_id"
+  end
+
+  create_table "servers", force: :cascade do |t|
+    t.string "host", null: false
+    t.string "name"
+    t.string "ssh_user"
+    t.integer "ssh_port"
+    t.text "notes"
+    t.datetime "checked_at"
+    t.text "check_error"
+    t.string "system_info"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["host"], name: "index_servers_on_host", unique: true
   end
 
   create_table "settings", force: :cascade do |t|

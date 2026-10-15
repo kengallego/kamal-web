@@ -36,6 +36,7 @@ class Project < ApplicationRecord
 
   scope :ordered, -> { order(:name) }
 
+  after_save :register_servers, if: :saved_change_to_config_snapshots?
   after_destroy_commit :remove_clone
   after_destroy_commit :ignore_discovered_service, if: :discovered?
 
@@ -86,6 +87,10 @@ class Project < ApplicationRecord
 
   def hosts
     config_snapshots.values.flat_map { |snapshot| KamalConfigSnapshot.new(snapshot).all_hosts }.uniq
+  end
+
+  def register_servers
+    Server.register(hosts)
   end
 
   def destination_for_host(host)

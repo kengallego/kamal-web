@@ -18,7 +18,7 @@
 <% else %>
   <div class="stat-strip">
     <%= render Ui::StatComponent.new(label: t('layouts.application.projects'), value: @projects.size, icon: :cube) %>
-    <%= render Ui::StatComponent.new(label: t('ui.servers'), value: @projects.flat_map(&:hosts).uniq.size, icon: :server) %>
+    <%= render Ui::StatComponent.new(label: t('ui.servers'), value: @server_count, icon: :server) %>
     <%= render Ui::StatComponent.new(label: t('ui.active_operations'), value: @projects.count { |project| project.active_operation }, icon: :activity) %>
   </div>
   <section aria-labelledby="projects-heading" data-controller="filter">

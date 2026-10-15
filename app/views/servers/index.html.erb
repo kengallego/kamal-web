@@ -1,0 +1,35 @@
+<% content_for :title, t("common.servers") %>
+<%= render Ui::PageHeaderComponent.new(title: t("common.servers"), description: t(".description")) do %>
+  <%= link_to new_server_path, class: "btn btn-primary" do %><%= render Ui::IconComponent.new(name: :plus, size: 16) %><%= t(".add") %><% end %>
+<% end %>
+
+<% if @servers.empty? %>
+  <%= render Ui::PanelComponent.new do %>
+    <%= render Ui::EmptyStateComponent.new(title: t(".empty_title"), description: t(".empty_description"), icon: :server) do %>
+      <%= link_to new_server_path, class: "btn btn-primary" do %><%= render Ui::IconComponent.new(name: :plus, size: 16) %><%= t(".add") %><% end %>
+    <% end %>
+  <% end %>
+<% else %>
+  <%= render Ui::PanelComponent.new do %>
+    <div class="overflow-x-auto"><table class="table">
+      <thead><tr><th><%= t("common.host") %></th><th><%= t("layouts.application.projects") %></th><th><%= t("common.cpu") %></th><th><%= t("common.ram") %></th><th><%= t("common.disk") %></th><th><%= t("common.status") %></th></tr></thead>
+      <tbody>
+        <% @servers.each do |server| %>
+          <% projects = @projects.select { |project| project.hosts.include?(server.host) } %>
+          <% metric = @latest_metrics[server.host]&.reject(&:error)&.max_by(&:collected_at) %>
+          <tr>
+            <td>
+              <%= link_to server.label, server_path(server), class: "font-medium text-foreground hover:underline" %>
+              <% if server.name.present? %><p class="font-mono text-xs text-muted"><%= server.host %></p><% end %>
+            </td>
+            <td class="text-muted"><%= projects.any? ? safe_join(projects.map { |project| link_to(project.name, project_path(project), class: "hover:text-foreground hover:underline") }, ", ") : t(".no_projects") %></td>
+            <% [ metric&.cpu_percent, metric&.memory_percent, metric&.disk_percent ].each do |percent| %>
+              <td class="w-28"><span class="text-xs tabular-nums text-muted"><%= percent ? "#{percent.round}%" : "–" %></span><%= meter(percent) if percent %></td>
+            <% end %>
+            <td><%= render "servers/connection", server: server %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table></div>
+  <% end %>
+<% end %>

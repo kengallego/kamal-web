@@ -1,0 +1,5 @@
+<% if (connection = server.connection) %>
+  <span title="<%= connection.error %>"><%= render Ui::BadgeComponent.new(label: connection.ok ? t("servers.connection.ok") : t("common.unreachable"), tone: connection.ok ? :success : :danger, dot: true) %></span>
+<% else %>
+  <%= render Ui::BadgeComponent.new(label: t("servers.connection.unknown"), tone: :neutral, dot: true) %>
+<% end %>

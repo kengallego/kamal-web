@@ -1,0 +1,3 @@
+<% content_for :title, @server.label %>
+<%= render Ui::PageHeaderComponent.new(title: @server.label) %>
+<%= render "form", server: @server %>

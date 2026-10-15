@@ -26,6 +26,10 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :servers do
+    post :check, on: :member
+  end
+
   resource :settings, only: %i[ edit update ] do
     post :regenerate_status_board_token
     post :reset_ignored_services

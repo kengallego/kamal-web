@@ -30,6 +30,12 @@ en:
       project_file:
         content: Content
         path: Path
+      server:
+        host: Host
+        name: Name
+        notes: Notes
+        ssh_port: SSH port
+        ssh_user: SSH user
       setting:
         alert_disk_percent: Disk alert
         alert_memory_percent: Memory alert
@@ -71,6 +77,10 @@ en:
           attributes:
             path:
               outside_project: must be a relative path inside the project
+        server:
+          attributes:
+            host:
+              in_use: can't change while a project deploys to it
     models:
       project: Project
   alerts:
@@ -273,6 +283,7 @@ en:
     run: Run
     save: Save
     scan_this_server: Scan this server
+    servers: Servers
     settings: Settings
     status: Status
     sync: Sync
@@ -324,6 +335,10 @@ en:
       synced: Project synced.
       updated: Project updated.
     saved: '%{name} saved.'
+    servers:
+      check_failed: 'Connection failed: %{error}'
+      check_succeeded: Kamal Web can connect over SSH.
+      in_use: This server is in a project's Kamal config. Remove it from deploy.yml and sync before deleting it.
     sessions:
       rate_limited: Try again later.
       wrong_password: Wrong password.
@@ -598,6 +613,37 @@ en:
       service: Service
       versions: Versions on the server
       versions_hint: Kamal keeps the last 5
+  servers:
+    connection:
+      ok: connected
+      unknown: not checked
+    form:
+      host_in_use: Comes from a project's deploy.yml. Change it there.
+      name_placeholder: Production web
+      ssh_hint_html: Leave the SSH user and port empty to use the ones in the deploy.yml of the projects on this server (or <code>root</code> on port 22).
+    index:
+      add: Add server
+      description: Every host in your projects' Kamal configs, plus the ones you add by hand.
+      empty_description: Servers in your projects' deploy.yml show up here by themselves. Add one by hand to check SSH access before deploying to it.
+      empty_title: No servers yet
+      no_projects: No projects yet
+    new:
+      description: Kamal Web checks it can connect over SSH with its access key. To deploy here, add the host to a project's deploy.yml.
+      title: Add server
+    show:
+      authorize_command: Command to authorize Kamal Web's key
+      authorize_html: Authorize Kamal Web's key by running this on the server as %{user}, then check again.
+      check: Check connection
+      confirm_delete: Delete %{name}? Nothing changes on the server itself.
+      connection: Connection
+      last_check: Last check
+      never_checked: never
+      no_projects: No project deploys here yet. Add this host to a project's deploy.yml to deploy to it.
+      notes: Notes
+      projects_hint_html: From the <code>servers</code> and <code>accessories</code> in each deploy.yml. Usage is the app's share.
+      resources: Machine resources
+      ssh: SSH
+      system: System
   sessions:
     new:
       code: Code from your authenticator app

@@ -29,6 +29,12 @@ es:
       project_file:
         content: Contenido
         path: Ruta
+      server:
+        host: Host
+        name: Nombre
+        notes: Notas
+        ssh_port: Puerto SSH
+        ssh_user: Usuario SSH
       setting:
         alert_disk_percent: Alerta de disco
         alert_memory_percent: Alerta de memoria
@@ -70,6 +76,10 @@ es:
           attributes:
             path:
               outside_project: debe ser una ruta relativa dentro del proyecto
+        server:
+          attributes:
+            host:
+              in_use: no se puede cambiar mientras un proyecto despliega en él
     models:
       project: Proyecto
   alerts:
@@ -272,6 +282,7 @@ es:
     run: Ejecutar
     save: Guardar
     scan_this_server: Escanear este servidor
+    servers: Servidores
     settings: Ajustes
     status: Estado
     sync: Sincronizar
@@ -323,6 +334,10 @@ es:
       synced: Proyecto sincronizado.
       updated: Proyecto actualizado.
     saved: '%{name} guardado.'
+    servers:
+      check_failed: 'La conexión falló: %{error}'
+      check_succeeded: Kamal Web puede conectarse por SSH.
+      in_use: Este servidor está en la config de Kamal de un proyecto. Quítalo del deploy.yml y sincroniza antes de eliminarlo.
     sessions:
       rate_limited: Inténtalo más tarde.
       wrong_password: Contraseña incorrecta.
@@ -597,6 +612,37 @@ es:
       service: Servicio
       versions: Versiones en el servidor
       versions_hint: Kamal guarda las últimas 5
+  servers:
+    connection:
+      ok: conectado
+      unknown: sin comprobar
+    form:
+      host_in_use: Viene del deploy.yml de un proyecto. Cámbialo allí.
+      name_placeholder: Web de producción
+      ssh_hint_html: Deja el usuario y el puerto SSH vacíos para usar los del deploy.yml de los proyectos de este servidor (o <code>root</code> en el puerto 22).
+    index:
+      add: Añadir servidor
+      description: Todos los hosts de las configs de Kamal de tus proyectos, más los que añadas a mano.
+      empty_description: Los servidores del deploy.yml de tus proyectos aparecen aquí solos. Añade uno a mano para comprobar el acceso SSH antes de desplegar en él.
+      empty_title: Aún no hay servidores
+      no_projects: Sin proyectos todavía
+    new:
+      description: Kamal Web comprueba que puede conectarse por SSH con su clave de acceso. Para desplegar aquí, añade el host al deploy.yml de un proyecto.
+      title: Añadir servidor
+    show:
+      authorize_command: Comando para autorizar la clave de Kamal Web
+      authorize_html: Autoriza la clave de Kamal Web ejecutando esto en el servidor como %{user} y vuelve a comprobarlo.
+      check: Comprobar conexión
+      confirm_delete: ¿Eliminar %{name}? No cambia nada en el propio servidor.
+      connection: Conexión
+      last_check: Última comprobación
+      never_checked: nunca
+      no_projects: Ningún proyecto despliega aquí todavía. Añade este host al deploy.yml de un proyecto para desplegar en él.
+      notes: Notas
+      projects_hint_html: Según los <code>servers</code> y <code>accessories</code> de cada deploy.yml. El uso es la parte de la app.
+      resources: Recursos de la máquina
+      ssh: SSH
+      system: Sistema
   sessions:
     new:
       code: Código de tu app de autenticación

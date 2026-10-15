@@ -31,7 +31,8 @@ RSpec.describe "Translations" do
       project_proxy_path(project), project_config_path(project), project_settings_path(project),
       new_project_environment_variable_path(project), new_project_project_file_path(project), edit_settings_path,
       project_releases_path(project), project_containers_path(project, run_id: run.id), project_deploy_preview_path(project),
-      project_monitoring_path(project, range: "30d"),
+      project_monitoring_path(project, range: "30d"), servers_path, new_server_path,
+      server_path(Server.find_by!(host: "192.0.2.10")), edit_server_path(Server.find_by!(host: "192.0.2.10")),
       status_board_path(Setting.instance.status_board_token) ]
   end
 

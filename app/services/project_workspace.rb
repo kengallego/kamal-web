@@ -41,6 +41,7 @@ class ProjectWorkspace
     end
 
     project.update_columns(config_snapshots: snapshots, git_revision: current_revision, synced_at: Time.current, sync_error: nil)
+    project.register_servers
   end
 
   # Full sync used by the "Sync" button and after editing a project.
