@@ -98,7 +98,18 @@
         <input type="text" readonly value="<%= hook_url %>" class="input font-mono text-xs">
         <button class="btn" data-controller="clipboard" data-clipboard-error-value="<%= t('ui.copy_failed') %>" data-clipboard-copied-value="<%= t("common.copied") %>" data-clipboard-text-value="<%= hook_url %>" data-action="clipboard#copy"><%= t("common.copy") %></button>
       </div>
-      <p class="hint"><%= t(".webhook_example_html", example: tag.code(%(curl -X POST "#{hook_url}?destination=#{@project.destinations.compact.first || "production"}"), class: "break-all")) %></p>
+      <% if (secret = @project.deploy_webhook_secret) %>
+        <span class="label"><%= t(".webhook_secret") %></span>
+        <div class="flex flex-wrap gap-2 [&>input]:min-w-0 [&>input]:flex-1 [&>input]:basis-48">
+          <input type="password" readonly value="<%= secret %>" class="input font-mono text-xs" aria-label="<%= t(".webhook_secret") %>">
+          <button class="btn" data-controller="clipboard" data-clipboard-error-value="<%= t('ui.copy_failed') %>" data-clipboard-copied-value="<%= t("common.copied") %>" data-clipboard-text-value="<%= secret %>" data-action="clipboard#copy"><%= t("common.copy") %></button>
+        </div>
+        <p class="hint"><%= t(".webhook_secret_hint") %></p>
+        <p class="hint"><%= t(".webhook_example_html", example: tag.code(%(curl -X POST -H "Authorization: Bearer $KAMAL_WEB_DEPLOY_SECRET" "#{hook_url}?destination=#{@project.destinations.compact.first || "production"}"), class: "break-all")) %></p>
+      <% else %>
+        <p class="rounded-lg border border-warning/30 bg-warning/10 p-3 text-sm text-warning"><%= t(".webhook_unsigned") %></p>
+        <p class="hint"><%= t(".webhook_example_html", example: tag.code(%(curl -X POST "#{hook_url}?destination=#{@project.destinations.compact.first || "production"}"), class: "break-all")) %></p>
+      <% end %>
     </div>
   <% end %>
 

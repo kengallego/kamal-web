@@ -642,7 +642,6 @@ pt-BR:
   sessions:
     new:
       code: Código do seu app autenticador
-      hint_html: A senha é a <code class="text-zinc-400">KAMAL_WEB_PASSWORD</code> do arquivo <code class="text-zinc-400">.env</code> com que o Kamal Web foi implantado.
       password: Senha
       title: Entrar
   settings:

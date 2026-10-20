@@ -1,0 +1,158 @@
+# 账号、活动页面、签名发布和 SSH 主机密钥。
+zh-CN:
+  activerecord:
+    attributes:
+      user:
+        email_address: 邮箱
+        name: 名称
+        password: 密码
+        password_confirmation: 确认密码
+  common:
+    users: 用户
+  layouts:
+    application:
+      account: 你的账号（%{name}）
+  sessions:
+    new:
+      code_hint: 仅当你的账号或此实例使用身份验证器应用时填写。
+      email_address: 邮箱
+      hint: 请已有账号的人为你添加账号。
+  setups:
+    new:
+      description_html: Kamal Web 还没有账号。用部署 Kamal Web 时 <code>.env</code> 文件中的密码（<code>KAMAL_WEB_PASSWORD</code>）创建第一个账号。账号创建后，该密码将不能再登录。
+      instance_password: 实例密码（KAMAL_WEB_PASSWORD）
+      submit: 创建账号
+      title: 创建第一个账号
+  users:
+    fields:
+      password_hint:
+        one: 至少 %{count} 个字符。
+        other: 至少 %{count} 个字符。
+      password_unchanged:
+        one: 留空则保持密码不变。至少 %{count} 个字符。
+        other: 留空则保持密码不变。至少 %{count} 个字符。
+    index:
+      add: 添加账号
+      confirm_delete: 删除 %{name} 的账号？对方会立即退出登录。
+      description: 每个账号都拥有 Kamal Web 及其可访问服务器的完整权限。每人使用自己的账号，活动页面才能显示谁做了什么。
+      edit_account: 你的账号
+      instance_code: 实例验证码
+      last_sign_in: 上次登录
+      name: 名称
+      "off": 关闭
+      own_app: 自己的应用
+      title: 用户
+      two_factor: 身份验证器
+      you: 你
+    new:
+      description: 请通过安全方式把密码交给对方；对方可在“你的账号”中修改。
+      title: 添加账号
+  accounts:
+    edit:
+      current_password: 当前密码
+      disable: 关闭
+      enable: 设置
+      title: 你的账号
+      two_factor: 身份验证器应用
+      two_factor_instance: 已关闭。登录时改为要求实例验证码（KAMAL_WEB_TOTP_SECRET）。
+      two_factor_off: 已关闭：登录时只需要密码。
+      two_factor_on: 已开启：登录时需要应用中的验证码。
+  two_factors:
+    new:
+      confirm: 开启
+      description: 将此密钥添加到身份验证器应用，然后输入它显示的验证码。
+      open_app: 在身份验证器应用中打开
+      secret: 密钥
+      secret_hint: 请妥善保管；它只在这里显示。
+      title: 设置身份验证器应用
+  audit_events:
+    actions:
+      accounts_update: 修改了自己的账号
+      backups_create: 恢复了备份
+      backups_show: 下载了备份
+      backups_stored: 下载了已保存的备份
+      deploy_hooks_create: 部署 Webhook 发起了部署
+      discoveries_create: 扫描了此服务器上的应用
+      projects_command_runs_cancel: 取消了命令
+      projects_command_runs_create: 运行了命令
+      projects_console_sessions_create: 打开了控制台
+      projects_create: 添加了项目
+      projects_destroy: 删除了项目
+      projects_environment_variables_create: 添加了密钥变量
+      projects_environment_variables_destroy: 删除了密钥变量
+      projects_environment_variables_update: 修改了密钥变量
+      projects_logs_create: 跟踪了日志
+      projects_monitoring_create: 收集了指标
+      projects_project_files_create: 添加了密钥文件
+      projects_project_files_destroy: 删除了密钥文件
+      projects_project_files_update: 修改了密钥文件
+      projects_sync: 同步了项目
+      projects_update: 修改了项目设置
+      projects_webhook_tokens_create: 重新生成了部署 Webhook
+      servers_check: 检查了服务器
+      servers_create: 添加了服务器
+      servers_destroy: 删除了服务器
+      servers_forget_host_key: 移除了服务器的主机密钥
+      servers_trust_host_key: 信任了服务器的主机密钥
+      servers_update: 修改了服务器
+      sessions_create: 登录
+      sessions_destroy: 退出登录
+      sessions_failed: 登录失败
+      settings_regenerate_status_board_token: 重新生成了状态看板 URL
+      settings_reset_ignored_services: 重置了已移除的应用
+      settings_update: 修改了设置
+      settings_update_instance: 开始更新 Kamal Web
+      setups_create: 创建了第一个账号
+      two_factors_create: 开启了身份验证器应用
+      two_factors_destroy: 关闭了身份验证器应用
+      users_create: 添加了账号
+      users_destroy: 删除了账号
+    index:
+      description: 记录通过控制面板或部署 Webhook 做出的每项更改，以及操作者和来源。控制台中输入的内容不会被记录。
+      empty: 暂无记录。
+      everyone: 所有人
+      filter: 筛选
+      from: IP
+      older: 更早
+      title: 活动
+      what: 操作
+      who: 操作者
+  flash:
+    accounts:
+      saved: 账号已保存。
+      wrong_password: 当前密码不正确。
+    servers:
+      host_key_changed: 服务器不再提供该密钥。请重新比较指纹。
+      host_key_forgotten: 已移除主机密钥。请在 Kamal Web 再次连接前信任新密钥。
+      host_key_trusted: 已信任主机密钥。
+    setups:
+      created: 账号已创建。请在“用户”中添加其他需要访问的人。
+    two_factors:
+      disabled: 身份验证器应用已关闭。
+      enabled: 身份验证器应用已开启。
+      wrong_code: 验证码不匹配。请使用当前的验证码。
+    users:
+      not_yourself: 不能删除你自己的账号。
+  settings:
+    edit:
+      auto_update_problems:
+        no_signing_key: 此版本的 Kamal Web 没有用于校验发布签名的密钥（config/release-signing.pub），因此无法自动更新。请在你的代码目录中用 kamal deploy 更新。
+      auto_update_unsigned: 发布 %{version} （尚）未使用发布密钥签名，因此未安装（%{time}）。每小时重新检查一次。
+  projects:
+    settings:
+      show:
+        webhook_secret: 密钥
+        webhook_secret_hint: 在 CI 中以 Authorization Bearer 请求头发送，在 GitHub Webhook 中作为 Secret（GitHub 会用它签名每个负载），在 GitLab Webhook 中作为 Secret token。重新生成会同时更改 URL 和密钥。
+        webhook_unsigned: 此 URL 无需密钥即可单独触发部署。重新生成以同时要求密钥，然后更新 CI 或 Git 托管服务。
+  servers:
+    show:
+      compare_html: 请与服务器上 %{command} 的输出（在服务器本机运行，或向服务商询问）进行比较，只信任一致的密钥。
+      confirm_forget_host_key: 移除此服务器的主机密钥？仅在密钥有意更换（例如重装系统）后这样做。
+      forget_host_key: 移除
+      host_key: 主机密钥
+      host_key_first_use: Kamal Web 首次连接时信任该密钥；之后若密钥变化则拒绝连接。
+      host_key_strict: 只有在此处信任密钥后，Kamal Web 才会连接（KAMAL_WEB_SSH_HOST_KEYS=strict）。
+      no_host_key: 尚未信任任何密钥。
+      scan_failed: 服务器的 SSH 端口没有响应。
+      scan_host_key: 获取服务器密钥
+      trust_host_key: 信任

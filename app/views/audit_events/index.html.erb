@@ -1,0 +1,35 @@
+<% content_for :title, t(".title") %>
+<%= render Ui::PageHeaderComponent.new(title: t(".title"), description: t(".description")) do %>
+  <%= form_with url: audit_events_path, method: :get, class: "flex gap-2" do %>
+    <%= select_tag :user_id, options_from_collection_for_select(@users, :id, :name, params[:user_id]), include_blank: t(".everyone"), class: "input", aria: { label: t(".who") } %>
+    <%= submit_tag t(".filter"), name: nil, class: "btn" %>
+  <% end %>
+<% end %>
+
+<%= render Ui::PanelComponent.new do %>
+  <% if @events.empty? %>
+    <p class="px-4 py-6 text-center text-sm text-muted"><%= t(".empty") %></p>
+  <% else %>
+    <div class="overflow-x-auto"><table class="table">
+      <thead><tr><th><%= t("common.when") %></th><th><%= t(".who") %></th><th><%= t(".what") %></th><th><%= t("common.project") %></th><th><%= t(".from") %></th></tr></thead>
+      <tbody>
+        <% @events.each do |event| %>
+          <tr>
+            <td class="whitespace-nowrap text-muted" title="<%= event.created_at %>"><%= time_ago(event.created_at) %></td>
+            <td class="break-words [overflow-wrap:anywhere]"><%= event.actor %></td>
+            <td>
+              <%= event.label %>
+              <% details = event.details.except("status", "project_id", "id") %>
+              <% if details.any? %><p class="font-mono text-[11px] text-faint"><%= details.map { |key, value| "#{key}=#{value}" }.join(" ") %></p><% end %>
+            </td>
+            <td class="text-muted"><%= event.project ? link_to(event.project.name, project_path(event.project), class: "hover:underline") : "–" %></td>
+            <td class="font-mono text-xs text-muted"><%= event.ip_address || "–" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table></div>
+    <% if @older %>
+      <div class="border-t border-line px-4 py-3 text-right"><%= link_to t(".older"), audit_events_path(params.permit(:user_id, :project_id).merge(before: @older.id)), class: "btn btn-sm" %></div>
+    <% end %>
+  <% end %>
+<% end %>

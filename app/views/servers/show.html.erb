@@ -37,6 +37,39 @@
   <%= render Ui::PanelComponent.new do %>
     <div class="card-header">
       <div>
+        <h2 class="card-title"><%= t(".host_key") %></h2>
+        <p class="text-xs text-muted"><%= SshHostKeys.strict? ? t(".host_key_strict") : t(".host_key_first_use") %></p>
+      </div>
+      <% if @host_keys.any? %>
+        <%= button_to t(".forget_host_key"), forget_host_key_server_path(@server), method: :delete, class: "btn btn-sm", form: { data: { turbo_confirm: t(".confirm_forget_host_key") } } %>
+      <% elsif !@scanned_host_keys %>
+        <%= link_to t(".scan_host_key"), server_path(@server, scan: 1), class: "btn btn-sm" %>
+      <% end %>
+    </div>
+    <div class="card-body space-y-2 text-sm">
+      <% if @host_keys.any? %>
+        <% @host_keys.each do |key| %>
+          <p><span class="text-muted"><%= key.type %></span> <code class="break-all"><%= key.fingerprint %></code></p>
+        <% end %>
+      <% elsif @scanned_host_keys&.any? %>
+        <p class="text-muted"><%= t(".compare_html", command: tag.code("ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub")) %></p>
+        <% @scanned_host_keys.each do |key| %>
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <p><span class="text-muted"><%= key.type %></span> <code class="break-all"><%= key.fingerprint %></code></p>
+            <%= button_to t(".trust_host_key"), trust_host_key_server_path(@server), params: { fingerprint: key.fingerprint }, class: "btn btn-sm" %>
+          </div>
+        <% end %>
+      <% elsif @scanned_host_keys %>
+        <p class="text-danger"><%= t(".scan_failed") %></p>
+      <% else %>
+        <p class="text-muted"><%= t(".no_host_key") %></p>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%= render Ui::PanelComponent.new do %>
+    <div class="card-header">
+      <div>
         <h2 class="card-title"><%= t("layouts.application.projects") %></h2>
         <p class="text-xs text-muted"><%= t(".projects_hint_html") %></p>
       </div>

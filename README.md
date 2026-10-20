@@ -23,7 +23,7 @@ Runs as **one container on your own server**, alongside your apps. SQLite includ
 | **Keep configuration together** | Git repositories, destination-specific encrypted secrets, secret files and SSH keys. |
 | **Keep your team in the loop** | Slack, Discord or JSON webhooks, deploy hooks for CI and a live, read-only status board. |
 
-English and Spanish. Light and dark themes. One shared password, with optional authenticator codes and IP restrictions.
+English and Spanish. Light and dark themes. Personal accounts with an activity log, optional authenticator codes and IP restrictions.
 
 <details>
 <summary><strong>Explore all features</strong></summary>
@@ -42,7 +42,7 @@ English and Spanish. Light and dark themes. One shared password, with optional a
 - **Alerts.** Kamal Web opens an alert when a host is unreachable over SSH, its disk or memory is almost full, the app isn't running, a domain fails its health check, a certificate expires within 14 days or kamal-proxy returns more than 10% 5xx responses. Alerts show on the dashboard and are posted to the project's notification webhook when they open and when they resolve.
 - **Proxy view.** kamal-proxy routes and TLS state, plus the app's traffic over the last hour: requests per minute by status, median and p95 latency, and the latest requests.
 - **Secrets.** Encrypted environment variables (per destination) for `.kamal/secrets`, and secret files such as `config/master.key`. SSH keys are encrypted and only loaded into a temporary ssh-agent while a command runs.
-- **One password.** No accounts to manage: the password lives in your Kamal secrets.
+- **Accounts and activity.** Everyone signs in with their own account, optionally with an authenticator app. The Activity page records who deployed, opened a console, changed a secret or a setting, and from which IP.
 - **Notifications.** Slack, Discord or JSON webhooks when an operation finishes or an alert opens or resolves, plus browser notifications.
 - **Deploy webhook.** Trigger deploys from CI or a GitHub/GitLab push.
 - **Status board.** A read-only page for a TV or for stakeholders, behind a secret URL. It updates live as deploys run and metrics arrive.
@@ -79,7 +79,7 @@ kamal setup
 kamal authorize
 ```
 
-Open `https://kamal.203-0-113-10.sslip.io` (your IP with dashes) and sign in with the password. There are no user accounts: everyone who knows the password has full access.
+Open `https://kamal.203-0-113-10.sslip.io` (your IP with dashes) and create the first account with that password. From then on the password no longer signs anyone in: add an account under **Users** for each person who needs access. Every account has full access, but each action is recorded under its name.
 
 kamal-proxy serves Kamal Web over HTTPS with a Let's Encrypt certificate, next to your other apps. [sslip.io](https://sslip.io) gives the IP a name a certificate can be issued for; set `KAMAL_WEB_HOST` in `.env` to use a domain of your own instead. No registry account is needed either: images go through a registry Kamal runs on your machine.
 
@@ -94,7 +94,7 @@ kamal deploy
 
 Or let Kamal Web do it: with **Settings → Update automatically** on, it deploys each new release over itself, without downtime (see [Automatic updates](#automatic-updates)).
 
-To change the password, change `KAMAL_WEB_PASSWORD` in `.env` and run `kamal deploy`. That signs everybody out.
+If nobody can sign in any more, give an account a new password from your checkout: `kamal app exec -i "bin/rails 'kamal_web:account[you@example.com]'"` (it also creates the account if it doesn't exist).
 
 ### Apps already running on the server
 
@@ -140,9 +140,10 @@ Read command output in the browser and follow app, proxy or accessory logs as th
 | `.env` | Default | |
 |---|---|---|
 | `KAMAL_WEB_SERVER` | | Required. The server Kamal Web runs on |
-| `KAMAL_WEB_PASSWORD` | | Required. At least 12 characters |
+| `KAMAL_WEB_PASSWORD` | | Required. At least 12 characters. Creates the first account |
 | `KAMAL_WEB_HOST` | `kamal.<ip>.sslip.io` | Domain Kamal Web is served at |
 | `KAMAL_WEB_SSH_USER` | `root` | User Kamal connects as |
+| `KAMAL_WEB_SSH_HOST_KEYS` | | `strict` to only connect to servers whose host key you trusted |
 | `KAMAL_WEB_BUILD_ON_SERVER` | `false` | Build the image on the server instead of your machine |
 | `KAMAL_WEB_TOTP_SECRET` | | Also ask for a code from an authenticator app |
 | `KAMAL_WEB_ALLOWED_IPS` | | Only these IPs or networks can open the dashboard |
@@ -158,10 +159,10 @@ Less common settings go under `env.clear` in `config/deploy.yml`:
 
 Kamal Web controls your servers, so it's worth more than a password:
 
-- **Authenticator app.** Run `bin/totp-secret`, add the line it prints to `.env`, add the key to an authenticator app (1Password, Google Authenticator, Aegis…) and `kamal deploy`. Signing in then asks for the 6-digit code too.
+- **Authenticator app.** Each person can turn one on under **Your account** (the person icon in the sidebar). To require a code from everyone who hasn't, run `bin/totp-secret`, add the line it prints to `.env`, add the key to an authenticator app (1Password, Google Authenticator, Aegis…) and `kamal deploy`: accounts without their own app then need that code, and so does creating the first account.
 - **Allowed IPs.** `KAMAL_WEB_ALLOWED_IPS=203.0.113.7,198.51.100.0/24` in `.env` makes the dashboard answer only those addresses. The deploy webhook and the status board keep working from anywhere, since they have their own secret URLs.
 
-Sign-in attempts are limited to 10 every 3 minutes per IP. Changing the password or the TOTP secret signs everybody out.
+Sign-in attempts are limited to 10 every 3 minutes per IP, and failed ones show up on the Activity page. Deleting an account, or changing its password, signs it out everywhere.
 
 ### Backups
 
@@ -181,13 +182,15 @@ Every hour Kamal Web asks GitHub for its latest release and shows a notice when 
 
 ### Automatic updates
 
-**Settings → Update automatically** (off by default) deploys each new release as soon as the update check finds it, and **Update now** does it once. Kamal Web starts a short-lived helper container next to itself, which pulls the release's image from `ghcr.io/kengallego/kamal-web`, hands it to the registry Kamal runs on the server and runs `kamal deploy` against the server over SSH. kamal-proxy switches over when the new version is healthy, and the release shows up under Kamal's versions like any other deploy, so `kamal rollback` still works.
+**Settings → Update automatically** (off by default) deploys each new release as soon as the update check finds it, and **Update now** does it once. Kamal Web starts a short-lived helper container next to itself, which checks the release's signature, pulls the release's image from `ghcr.io/kengallego/kamal-web` by the digest that signature covers, hands it to the registry Kamal runs on the server and runs `kamal deploy` against the server over SSH. kamal-proxy switches over when the new version is healthy, and the release shows up under Kamal's versions like any other deploy, so `kamal rollback` still works.
 
-It uses the release's `config/deploy.yml` and `.kamal`, with the settings Kamal Web was deployed with (password, TOTP secret, allowed IPs, host, SSH user) in place of `.env`. Changes you made to `config/deploy.yml` are not kept, so it stays off when Kamal Web mounts volumes other than its own. It needs `kamal authorize` to have been run. A failed update is shown in Settings with its output and isn't retried until the next release.
+Releases are signed with [cosign](https://github.com/sigstore/cosign) by the maintainer, on their own machine and not in CI (`bin/sign-release`), against the public key in `config/release-signing.pub`. An image without a valid signature for its tag is never pulled, so taking over the GitHub account or the registry isn't enough to ship code to your server. A release that isn't signed yet is checked again every hour. Without that key in your version, Kamal Web can't update itself and you update with `kamal deploy`.
+
+It uses the `config/deploy.yml` and `.kamal` inside the verified image, with the settings Kamal Web was deployed with (password, TOTP secret, allowed IPs, host, SSH user and host key mode) in place of `.env`. Changes you made to `config/deploy.yml` are not kept, so it stays off when Kamal Web mounts volumes other than its own. It needs `kamal authorize` to have been run. A failed update is shown in Settings with its output and isn't retried until the next release.
 
 ### Building images
 
-Kamal Web builds your apps' images with the server's Docker, through the socket mounted in `config/deploy.yml`. **Anything that can use that socket controls the server, so only share the password with people you trust with it.** If all your projects use a [remote builder](https://kamal-deploy.org/docs/configuration/builder/) you can remove the socket mount, but apps on the server are then no longer detected.
+Kamal Web builds your apps' images with the server's Docker, through the socket mounted in `config/deploy.yml`. **Anything that can use that socket controls the server, so only give accounts to people you trust with it.** If all your projects use a [remote builder](https://kamal-deploy.org/docs/configuration/builder/) you can remove the socket mount, but apps on the server are then no longer detected.
 
 ### Mounted projects
 
@@ -203,10 +206,13 @@ volumes:
 - Secrets (SSH keys, tokens, variables, files, webhook URLs) are encrypted with Active Record encryption and never rendered back into forms.
 - Commands come from a fixed catalog and run without a shell. Options are validated.
 - Child processes get an allowlisted environment, so the instance's own secrets never reach your project's hooks.
-- Deploy webhook and status board URLs use long random tokens and can be regenerated.
-- Sign-in is rate limited, can require a code from an authenticator app and can be limited to some IPs. Sessions are tied to the password and the TOTP secret, so changing either signs everybody out.
+- **Every account is root on your servers.** Kamal Web mounts `/var/run/docker.sock`, connects over SSH as `root` unless `KAMAL_WEB_SSH_USER` says otherwise, and offers a shell in your containers. A non-root SSH user in the `docker` group is just as powerful, so the protection is who gets an account, and the Activity page records what each account did (sign-ins, failed sign-ins, every change, consoles opened, backups downloaded; not what is typed in consoles).
+- The deploy webhook URL finds the project; a separate secret proves who is calling, as a bearer token, GitLab's secret token or the HMAC signature of a GitHub webhook. GitHub deliveries are only accepted once. Projects created before secrets existed accept the URL alone until it's regenerated, which their settings warn about. The webhook skips the allowed IPs so it works from CI.
+- Status board URLs use long random tokens and can be regenerated.
+- Sign-in is rate limited, can require a code from an authenticator app and can be limited to some IPs.
+- Automatic updates only install releases signed with the key in `config/release-signing.pub`, by digest. They're off by default.
 - Web consoles can only be attached once, and close when the page is left or after 30 minutes idle.
-- Interactive consoles and followed logs use the system `ssh`, which trusts a server's host key the first time it connects and refuses it if it later changes.
+- Kamal, the system `ssh` used for consoles and followed logs, git and monitoring share one `known_hosts` in the volume. By default a server's host key is trusted the first time Kamal Web connects and refused if it later changes. With `KAMAL_WEB_SSH_HOST_KEYS=strict` in `.env`, Kamal Web only connects once you've compared the key's fingerprint and trusted it on the server's page.
 
 ## Development
 

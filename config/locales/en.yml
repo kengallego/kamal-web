@@ -644,7 +644,6 @@ en:
   sessions:
     new:
       code: Code from your authenticator app
-      hint_html: The password is <code class="text-zinc-400">KAMAL_WEB_PASSWORD</code> from the <code class="text-zinc-400">.env</code> file Kamal Web was deployed with.
       password: Password
       title: Sign in
   settings:

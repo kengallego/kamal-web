@@ -1,0 +1,10 @@
+<% content_for :title, t(".title") %>
+<%= render Ui::PageHeaderComponent.new(title: t(".title"), description: t(".description")) %>
+<%= form_with model: @user, class: "card card-body max-w-xl space-y-4" do |form| %>
+  <%= form_errors(@user) %>
+  <%= render "users/fields", form: form %>
+  <div class="flex gap-3">
+    <%= form.submit t("common.save"), class: "btn btn-primary" %>
+    <%= link_to t("common.cancel"), users_path, class: "btn" %>
+  </div>
+<% end %>

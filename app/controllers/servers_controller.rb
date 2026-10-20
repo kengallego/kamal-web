@@ -1,5 +1,5 @@
 class ServersController < ApplicationController
-  before_action :set_server, only: %i[ show edit update destroy check ]
+  before_action :set_server, only: %i[ show edit update destroy check trust_host_key forget_host_key ]
 
   def index
     @servers = Server.ordered
@@ -10,6 +10,8 @@ class ServersController < ApplicationController
   def show
     @projects = @server.projects
     @metrics = @server.latest_metrics
+    @host_keys = @server.trusted_host_keys
+    @scanned_host_keys = @server.scan_host_keys if params[:scan] && @host_keys.empty?
   end
 
   def new
@@ -55,6 +57,19 @@ class ServersController < ApplicationController
     else
       redirect_to @server, notice: t("flash.servers.check_succeeded")
     end
+  end
+
+  def trust_host_key
+    if @server.trust_host_key!(params[:fingerprint])
+      redirect_to @server, notice: t("flash.servers.host_key_trusted")
+    else
+      redirect_to server_path(@server, scan: 1), alert: t("flash.servers.host_key_changed")
+    end
+  end
+
+  def forget_host_key
+    @server.forget_host_keys!
+    redirect_to @server, notice: t("flash.servers.host_key_forgotten"), status: :see_other
   end
 
   private

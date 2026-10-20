@@ -61,6 +61,22 @@ class Server < ApplicationRecord
 
   Connection = Data.define(:ok, :error, :at)
 
+  def trusted_host_keys
+    SshHostKeys.trusted(host, effective_ssh_port)
+  end
+
+  def scan_host_keys
+    SshHostKeys.scan(host, effective_ssh_port)
+  end
+
+  def trust_host_key!(fingerprint)
+    SshHostKeys.trust!(host, effective_ssh_port, fingerprint)
+  end
+
+  def forget_host_keys!
+    SshHostKeys.forget!(host, effective_ssh_port)
+  end
+
   def check!
     output = RemoteShell.for_server(self).run(CHECK_SCRIPT)
     update!(checked_at: Time.current, check_error: nil, system_info: output.lines.map(&:strip).compact_blank.join(" · ").truncate(255))

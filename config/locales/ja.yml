@@ -635,7 +635,6 @@ ja:
   sessions:
     new:
       code: 認証アプリのコード
-      hint_html: パスワードは、Kamal Web のデプロイに使った <code class="text-zinc-400">.env</code> ファイルの <code class="text-zinc-400">KAMAL_WEB_PASSWORD</code> です。
       password: パスワード
       title: ログイン
   settings:

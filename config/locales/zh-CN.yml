@@ -635,7 +635,6 @@ zh-CN:
   sessions:
     new:
       code: 身份验证器应用中的验证码
-      hint_html: 密码是部署 Kamal Web 时所用 <code class="text-zinc-400">.env</code> 文件中的 <code class="text-zinc-400">KAMAL_WEB_PASSWORD</code>。
       password: 密码
       title: 登录
   settings:

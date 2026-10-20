@@ -1,0 +1,27 @@
+<% content_for :title, t(".title") %>
+
+<%= render Ui::PanelComponent.new(class: 'card-body') do %>
+  <h1 class="mb-2 text-lg font-semibold text-foreground"><%= t(".title") %></h1>
+  <p class="mb-6 text-sm text-muted"><%= t(".description_html") %></p>
+
+  <% if (problem = AccessPassword.problem) %>
+    <p class="rounded-lg border border-danger/30 bg-danger/10 p-3 text-sm text-danger"><%= problem %></p>
+  <% else %>
+    <%= form_with model: @user, url: setup_url, class: "space-y-4" do |form| %>
+      <%= form_errors(@user) %>
+      <div>
+        <%= label_tag :instance_password, t(".instance_password"), class: "label" %>
+        <%= password_field_tag :instance_password, nil, required: true, autofocus: true, autocomplete: "off", class: "input" %>
+      </div>
+      <% if AccessPassword.two_factor? %>
+        <div>
+          <%= label_tag :code, t("sessions.new.code"), class: "label" %>
+          <%= text_field_tag :code, nil, required: true, inputmode: "numeric", pattern: "[0-9 ]{6,7}", maxlength: 7, autocomplete: "one-time-code", class: "input font-mono tracking-widest" %>
+        </div>
+      <% end %>
+      <hr class="border-line">
+      <%= render "users/fields", form: form %>
+      <%= form.submit t(".submit"), class: "btn btn-primary w-full" %>
+    <% end %>
+  <% end %>
+<% end %>

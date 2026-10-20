@@ -13,6 +13,7 @@ class ConsoleSession < ApplicationRecord
   CLAIM_WINDOW = 5.minutes
 
   belongs_to :project
+  belongs_to :user, optional: true, default: -> { Current.user }
 
   normalizes :destination, :host, with: ->(value) { value.presence }
 

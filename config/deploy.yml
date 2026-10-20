@@ -45,6 +45,8 @@ env:
     KAMAL_WEB_URL: https://<%= host %>
     # For Update automatically, which deploys from the server with these settings.
     KAMAL_WEB_SSH_USER: <%= ssh_user %>
+    # "strict" only connects to servers whose host key was trusted in Servers.
+    KAMAL_WEB_SSH_HOST_KEYS: "<%= ENV["KAMAL_WEB_SSH_HOST_KEYS"] %>"
 
 volumes:
   # Databases, the key that encrypts secrets, clones and the SSH key. Back it up.

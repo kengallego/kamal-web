@@ -642,7 +642,6 @@ de:
   sessions:
     new:
       code: Code aus deiner Authenticator-App
-      hint_html: Das Passwort ist <code class="text-zinc-400">KAMAL_WEB_PASSWORD</code> aus der <code class="text-zinc-400">.env</code>-Datei, mit der Kamal Web deployt wurde.
       password: Passwort
       title: Anmelden
   settings:

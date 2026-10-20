@@ -1,11 +1,13 @@
 class BackupsController < ApplicationController
   def show
+    audit "backups#show"
     send_data InstanceBackup.write(StringIO.new).string, filename: InstanceBackup.filename, type: "application/gzip"
   end
 
   def stored
     path = InstanceBackup.find_stored(params[:name])
     return head :not_found unless path
+    audit "backups#stored", name: path.basename.to_s
 
     send_file path, filename: path.basename.to_s, type: "application/gzip"
   end

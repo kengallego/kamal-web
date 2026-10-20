@@ -1,0 +1,158 @@
+# Konten, die Aktivitätsseite, signierte Releases und SSH-Hostschlüssel.
+de:
+  activerecord:
+    attributes:
+      user:
+        email_address: E-Mail
+        name: Name
+        password: Passwort
+        password_confirmation: Passwort bestätigen
+  common:
+    users: Benutzer
+  layouts:
+    application:
+      account: Dein Konto (%{name})
+  sessions:
+    new:
+      code_hint: Nur wenn dein Konto oder diese Instanz eine Authenticator-App verwendet.
+      email_address: E-Mail
+      hint: Bitte jemanden mit Konto, dich hinzuzufügen.
+  setups:
+    new:
+      description_html: Kamal Web hat noch keine Konten. Lege das erste mit dem Passwort aus der <code>.env</code>-Datei an, mit der Kamal Web deployt wurde (<code>KAMAL_WEB_PASSWORD</code>). Sobald es existiert, meldet dieses Passwort niemanden mehr an.
+      instance_password: Instanzpasswort (KAMAL_WEB_PASSWORD)
+      submit: Konto anlegen
+      title: Erstes Konto anlegen
+  users:
+    fields:
+      password_hint:
+        one: Mindestens %{count} Zeichen.
+        other: Mindestens %{count} Zeichen.
+      password_unchanged:
+        one: Leer lassen, um dein Passwort zu behalten. Mindestens %{count} Zeichen.
+        other: Leer lassen, um dein Passwort zu behalten. Mindestens %{count} Zeichen.
+    index:
+      add: Konto hinzufügen
+      confirm_delete: Konto von %{name} löschen? Die Person wird sofort abgemeldet.
+      description: Jedes Konto hat vollen Zugriff auf Kamal Web und die Server, die es erreicht. Jede Person bekommt ein eigenes, damit die Aktivitätsseite zeigt, wer was getan hat.
+      edit_account: Dein Konto
+      instance_code: Instanzcode
+      last_sign_in: Letzte Anmeldung
+      name: Name
+      "off": Aus
+      own_app: Eigene App
+      title: Benutzer
+      two_factor: Authenticator
+      you: du
+    new:
+      description: Gib das Passwort sicher an die Person weiter; sie kann es unter Dein Konto ändern.
+      title: Konto hinzufügen
+  accounts:
+    edit:
+      current_password: Aktuelles Passwort
+      disable: Ausschalten
+      enable: Einrichten
+      title: Dein Konto
+      two_factor: Authenticator-App
+      two_factor_instance: Aus. Bei der Anmeldung wird stattdessen der Code der Instanz (KAMAL_WEB_TOTP_SECRET) verlangt.
+      two_factor_off: "Aus: Bei der Anmeldung wird nur dein Passwort verlangt."
+      two_factor_on: "An: Bei der Anmeldung wird ein Code aus deiner App verlangt."
+  two_factors:
+    new:
+      confirm: Einschalten
+      description: Füge diesen Schlüssel deiner Authenticator-App hinzu und gib den angezeigten Code ein.
+      open_app: In Authenticator-App öffnen
+      secret: Schlüssel
+      secret_hint: Halte ihn geheim; er wird nur hier angezeigt.
+      title: Authenticator-App einrichten
+  audit_events:
+    actions:
+      accounts_update: Hat sein Konto geändert
+      backups_create: Hat ein Backup wiederhergestellt
+      backups_show: Hat ein Backup heruntergeladen
+      backups_stored: Hat ein gespeichertes Backup heruntergeladen
+      deploy_hooks_create: Deploy-Webhook hat ein Deployment gestartet
+      discoveries_create: Hat diesen Server nach Apps durchsucht
+      projects_command_runs_cancel: Hat einen Befehl abgebrochen
+      projects_command_runs_create: Hat einen Befehl ausgeführt
+      projects_console_sessions_create: Hat eine Konsole geöffnet
+      projects_create: Hat ein Projekt hinzugefügt
+      projects_destroy: Hat ein Projekt gelöscht
+      projects_environment_variables_create: Hat ein Secret hinzugefügt
+      projects_environment_variables_destroy: Hat ein Secret gelöscht
+      projects_environment_variables_update: Hat ein Secret geändert
+      projects_logs_create: Hat Logs verfolgt
+      projects_monitoring_create: Hat Metriken gesammelt
+      projects_project_files_create: Hat eine Secret-Datei hinzugefügt
+      projects_project_files_destroy: Hat eine Secret-Datei gelöscht
+      projects_project_files_update: Hat eine Secret-Datei geändert
+      projects_sync: Hat ein Projekt synchronisiert
+      projects_update: Hat Projekteinstellungen geändert
+      projects_webhook_tokens_create: Hat den Deploy-Webhook neu erzeugt
+      servers_check: Hat einen Server geprüft
+      servers_create: Hat einen Server hinzugefügt
+      servers_destroy: Hat einen Server gelöscht
+      servers_forget_host_key: Hat den Hostschlüssel eines Servers vergessen
+      servers_trust_host_key: Hat dem Hostschlüssel eines Servers vertraut
+      servers_update: Hat einen Server geändert
+      sessions_create: Hat sich angemeldet
+      sessions_destroy: Hat sich abgemeldet
+      sessions_failed: Fehlgeschlagene Anmeldung
+      settings_regenerate_status_board_token: Hat die Statusboard-URL neu erzeugt
+      settings_reset_ignored_services: Hat entfernte Apps zurückgesetzt
+      settings_update: Hat Einstellungen geändert
+      settings_update_instance: Hat ein Kamal-Web-Update gestartet
+      setups_create: Hat das erste Konto angelegt
+      two_factors_create: Hat seine Authenticator-App eingeschaltet
+      two_factors_destroy: Hat seine Authenticator-App ausgeschaltet
+      users_create: Hat ein Konto hinzugefügt
+      users_destroy: Hat ein Konto gelöscht
+    index:
+      description: Jede Änderung über das Dashboard oder den Deploy-Webhook, mit wer und von wo. Was in Konsolen getippt wird, wird nicht aufgezeichnet.
+      empty: Noch nichts.
+      everyone: Alle
+      filter: Filtern
+      from: IP
+      older: Ältere
+      title: Aktivität
+      what: Was
+      who: Wer
+  flash:
+    accounts:
+      saved: Konto gespeichert.
+      wrong_password: Dein aktuelles Passwort ist falsch.
+    servers:
+      host_key_changed: Der Server bietet diesen Schlüssel nicht mehr an. Vergleiche den Fingerabdruck erneut.
+      host_key_forgotten: Hostschlüssel vergessen. Vertraue dem neuen, bevor Kamal Web wieder verbindet.
+      host_key_trusted: Hostschlüssel vertraut.
+    setups:
+      created: Konto angelegt. Füge unter Benutzer alle hinzu, die ebenfalls Zugriff brauchen.
+    two_factors:
+      disabled: Authenticator-App ausgeschaltet.
+      enabled: Authenticator-App eingeschaltet.
+      wrong_code: Der Code passt nicht. Versuche den aktuellen.
+    users:
+      not_yourself: Du kannst dein eigenes Konto nicht löschen.
+  settings:
+    edit:
+      auto_update_problems:
+        no_signing_key: Diese Kamal-Web-Version hat keinen Schlüssel zur Prüfung von Release-Signaturen (config/release-signing.pub) und kann sich daher nicht selbst aktualisieren. Aktualisiere mit kamal deploy aus deinem Checkout.
+      auto_update_unsigned: Release %{version} ist (noch) nicht mit dem Release-Schlüssel signiert und wurde daher nicht installiert (%{time}). Wird stündlich erneut geprüft.
+  projects:
+    settings:
+      show:
+        webhook_secret: Secret
+        webhook_secret_hint: Sende es aus der CI als Authorization-Bearer-Header, als Secret eines GitHub-Webhooks (der jeden Payload damit signiert) oder als Secret Token eines GitLab-Webhooks. Neu erzeugen ändert URL und Secret.
+        webhook_unsigned: Diese URL deployt allein, ohne Secret. Erzeuge sie neu, um zusätzlich eines zu verlangen, und aktualisiere dann CI oder deinen Git-Host.
+  servers:
+    show:
+      compare_html: Vergleiche sie mit dem, was der Server für %{command} anzeigt (auf dem Server selbst ausführen oder beim Anbieter erfragen), und vertraue nur einem passenden Schlüssel.
+      confirm_forget_host_key: Hostschlüssel dieses Servers vergessen? Nur tun, wenn er sich absichtlich geändert hat, z. B. nach einer Neuinstallation.
+      forget_host_key: Vergessen
+      host_key: Hostschlüssel
+      host_key_first_use: Wird bei der ersten Verbindung von Kamal Web vertraut; ein späterer anderer Schlüssel wird abgelehnt.
+      host_key_strict: Kamal Web verbindet sich erst, wenn hier einem Schlüssel vertraut wurde (KAMAL_WEB_SSH_HOST_KEYS=strict).
+      no_host_key: Noch kein Schlüssel vertraut.
+      scan_failed: Der Server hat auf seinem SSH-Port nicht geantwortet.
+      scan_host_key: Schlüssel des Servers abrufen
+      trust_host_key: Vertrauen

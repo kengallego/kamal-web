@@ -1,0 +1,30 @@
+<% content_for :title, t(".title") %>
+<%= render Ui::PageHeaderComponent.new(title: t(".title"), description: t(".description")) do %>
+  <%= link_to audit_events_path, class: "btn btn-quiet" do %><%= render Ui::IconComponent.new(name: :activity, size: 15) %><%= t("audit_events.index.title") %><% end %>
+  <%= link_to new_user_path, class: "btn btn-primary" do %><%= render Ui::IconComponent.new(name: :plus, size: 16) %><%= t(".add") %><% end %>
+<% end %>
+
+<%= render Ui::PanelComponent.new(class: "max-w-4xl") do %>
+  <div class="overflow-x-auto"><table class="table">
+    <thead><tr><th><%= t(".name") %></th><th><%= t(".two_factor") %></th><th><%= t(".last_sign_in") %></th><th></th></tr></thead>
+    <tbody>
+      <% @users.each do |user| %>
+        <tr>
+          <td>
+            <span class="font-medium text-foreground"><%= user.name %></span><% if user == current_user %> <span class="text-xs text-muted">(<%= t(".you") %>)</span><% end %>
+            <p class="text-xs text-muted"><%= user.email_address %></p>
+          </td>
+          <td class="text-muted"><%= user.two_factor? ? t(".own_app") : (AccessPassword.two_factor? ? t(".instance_code") : t(".off")) %></td>
+          <td class="whitespace-nowrap text-muted"><%= user.last_signed_in_at ? time_ago(user.last_signed_in_at) : "–" %></td>
+          <td class="text-right">
+            <% if user == current_user %>
+              <%= link_to t(".edit_account"), edit_account_path, class: "btn btn-sm" %>
+            <% else %>
+              <%= button_to t("common.delete"), user_path(user), method: :delete, class: "btn btn-sm btn-danger", form: { data: { turbo_confirm: t(".confirm_delete", name: user.name) } } %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table></div>
+<% end %>

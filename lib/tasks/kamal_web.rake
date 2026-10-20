@@ -5,6 +5,7 @@ namespace :kamal_web do
       abort "Kamal Web can't start: #{problem}"
     end
 
+    SshHostKeys.write_config!
     CommandRun.interrupt_stale!
     ConsoleSession.close_stale!
 
@@ -26,6 +27,16 @@ namespace :kamal_web do
   desc "Deploy a Kamal Web release over this instance. Run by SelfUpdate, in a helper container"
   task :self_update, [ :tag ] => :environment do |_, args|
     SelfUpdate.new.perform(args.fetch(:tag))
+  end
+
+  desc "Add an account, or give an existing one a new password and sign it out everywhere, for when nobody can sign in"
+  task :account, %i[ email name ] => :environment do |_, args|
+    password = SecureRandom.base58(20)
+    user = User.find_or_initialize_by(email_address: args.fetch(:email).strip.downcase)
+    user.update!(name: args[:name].presence || user.name.presence || user.email_address, password: password)
+    user.sessions.destroy_all
+    AuditEvent.record("users#reset", actor: "bin/rails kamal_web:account", user: nil, subject: user)
+    puts "#{user.label} can sign in with this password: #{password}"
   end
 
   desc "Detect the Kamal apps running on this server and add them as projects"

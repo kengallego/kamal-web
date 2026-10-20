@@ -1,0 +1,158 @@
+# アカウント、アクティビティページ、署名付きリリース、SSHホスト鍵。
+ja:
+  activerecord:
+    attributes:
+      user:
+        email_address: メールアドレス
+        name: 名前
+        password: パスワード
+        password_confirmation: パスワード（確認）
+  common:
+    users: ユーザー
+  layouts:
+    application:
+      account: アカウント（%{name}）
+  sessions:
+    new:
+      code_hint: アカウントまたはこのインスタンスが認証アプリを使う場合のみ。
+      email_address: メールアドレス
+      hint: アカウントを持っている人に追加してもらってください。
+  setups:
+    new:
+      description_html: Kamal Web にはまだアカウントがありません。Kamal Web をデプロイした <code>.env</code> ファイルのパスワード（<code>KAMAL_WEB_PASSWORD</code>）で最初のアカウントを作成してください。作成後、このパスワードではサインインできなくなります。
+      instance_password: インスタンスのパスワード（KAMAL_WEB_PASSWORD）
+      submit: アカウントを作成
+      title: 最初のアカウントを作成
+  users:
+    fields:
+      password_hint:
+        one: "%{count} 文字以上。"
+        other: "%{count} 文字以上。"
+      password_unchanged:
+        one: 空欄のままならパスワードは変わりません。%{count} 文字以上。
+        other: 空欄のままならパスワードは変わりません。%{count} 文字以上。
+    index:
+      add: アカウントを追加
+      confirm_delete: "%{name} のアカウントを削除しますか？すぐにサインアウトされます。"
+      description: すべてのアカウントが Kamal Web と接続先のサーバーへのフルアクセスを持ちます。一人ひとりが自分のアカウントを使うことで、アクティビティページに誰が何をしたかが残ります。
+      edit_account: 自分のアカウント
+      instance_code: インスタンスのコード
+      last_sign_in: 最終サインイン
+      name: 名前
+      "off": オフ
+      own_app: 自分のアプリ
+      title: ユーザー
+      two_factor: 認証アプリ
+      you: あなた
+    new:
+      description: パスワードは安全な方法で本人に伝えてください。本人が「自分のアカウント」で変更できます。
+      title: アカウントを追加
+  accounts:
+    edit:
+      current_password: 現在のパスワード
+      disable: オフにする
+      enable: 設定する
+      title: 自分のアカウント
+      two_factor: 認証アプリ
+      two_factor_instance: オフ。サインイン時は代わりにインスタンスのコード（KAMAL_WEB_TOTP_SECRET）を求めます。
+      two_factor_off: オフ：サインイン時はパスワードのみを求めます。
+      two_factor_on: オン：サインイン時にアプリのコードを求めます。
+  two_factors:
+    new:
+      confirm: オンにする
+      description: この鍵を認証アプリに追加し、表示されたコードを入力してください。
+      open_app: 認証アプリで開く
+      secret: 鍵
+      secret_hint: 他人に見せないでください。ここにしか表示されません。
+      title: 認証アプリを設定
+  audit_events:
+    actions:
+      accounts_update: 自分のアカウントを変更
+      backups_create: バックアップを復元
+      backups_show: バックアップをダウンロード
+      backups_stored: 保存済みバックアップをダウンロード
+      deploy_hooks_create: デプロイ Webhook がデプロイを開始
+      discoveries_create: このサーバーのアプリを検索
+      projects_command_runs_cancel: コマンドをキャンセル
+      projects_command_runs_create: コマンドを実行
+      projects_console_sessions_create: コンソールを開いた
+      projects_create: プロジェクトを追加
+      projects_destroy: プロジェクトを削除
+      projects_environment_variables_create: シークレットを追加
+      projects_environment_variables_destroy: シークレットを削除
+      projects_environment_variables_update: シークレットを変更
+      projects_logs_create: ログを追跡
+      projects_monitoring_create: メトリクスを収集
+      projects_project_files_create: シークレットファイルを追加
+      projects_project_files_destroy: シークレットファイルを削除
+      projects_project_files_update: シークレットファイルを変更
+      projects_sync: プロジェクトを同期
+      projects_update: プロジェクト設定を変更
+      projects_webhook_tokens_create: デプロイ Webhook を再生成
+      servers_check: サーバーを確認
+      servers_create: サーバーを追加
+      servers_destroy: サーバーを削除
+      servers_forget_host_key: サーバーのホスト鍵を削除
+      servers_trust_host_key: サーバーのホスト鍵を信頼
+      servers_update: サーバーを変更
+      sessions_create: サインイン
+      sessions_destroy: サインアウト
+      sessions_failed: サインイン失敗
+      settings_regenerate_status_board_token: ステータスボードの URL を再生成
+      settings_reset_ignored_services: 削除したアプリをリセット
+      settings_update: 設定を変更
+      settings_update_instance: Kamal Web の更新を開始
+      setups_create: 最初のアカウントを作成
+      two_factors_create: 認証アプリをオンにした
+      two_factors_destroy: 認証アプリをオフにした
+      users_create: アカウントを追加
+      users_destroy: アカウントを削除
+    index:
+      description: ダッシュボードやデプロイ Webhook からの変更すべてを、誰がどこから行ったかとともに記録します。コンソールで入力した内容は記録されません。
+      empty: まだありません。
+      everyone: 全員
+      filter: 絞り込む
+      from: IP
+      older: さらに前
+      title: アクティビティ
+      what: 内容
+      who: 誰
+  flash:
+    accounts:
+      saved: アカウントを保存しました。
+      wrong_password: 現在のパスワードが違います。
+    servers:
+      host_key_changed: サーバーはもうその鍵を提示していません。フィンガープリントをもう一度比較してください。
+      host_key_forgotten: ホスト鍵を削除しました。Kamal Web が再接続する前に新しい鍵を信頼してください。
+      host_key_trusted: ホスト鍵を信頼しました。
+    setups:
+      created: アカウントを作成しました。アクセスが必要な人を「ユーザー」で追加してください。
+    two_factors:
+      disabled: 認証アプリをオフにしました。
+      enabled: 認証アプリをオンにしました。
+      wrong_code: コードが一致しません。現在のコードを入力してください。
+    users:
+      not_yourself: 自分のアカウントは削除できません。
+  settings:
+    edit:
+      auto_update_problems:
+        no_signing_key: このバージョンの Kamal Web にはリリース署名を確認する鍵（config/release-signing.pub）がないため、自動更新できません。チェックアウトから kamal deploy で更新してください。
+      auto_update_unsigned: リリース %{version} はリリース鍵で（まだ）署名されていないため、インストールしませんでした（%{time}）。1 時間ごとに再確認します。
+  projects:
+    settings:
+      show:
+        webhook_secret: シークレット
+        webhook_secret_hint: CI からは Authorization Bearer ヘッダーとして、GitHub Webhook では Secret（各ペイロードに署名されます）として、GitLab Webhook では Secret token として送ってください。再生成すると URL とシークレットの両方が変わります。
+        webhook_unsigned: この URL はシークレットなしで単独でデプロイできます。シークレットも必須にするには再生成し、CI や Git ホストを更新してください。
+  servers:
+    show:
+      compare_html: サーバー上で %{command} を実行した結果（またはプロバイダーに確認した値）と比較し、一致する鍵だけを信頼してください。
+      confirm_forget_host_key: このサーバーのホスト鍵を削除しますか？再インストール後など、意図的に変わった場合のみ行ってください。
+      forget_host_key: 削除
+      host_key: ホスト鍵
+      host_key_first_use: Kamal Web が最初に接続したときに信頼し、後で異なる鍵になった場合は拒否します。
+      host_key_strict: ここで鍵を信頼するまで Kamal Web は接続しません（KAMAL_WEB_SSH_HOST_KEYS=strict）。
+      no_host_key: まだ信頼された鍵はありません。
+      scan_failed: サーバーが SSH ポートで応答しませんでした。
+      scan_host_key: サーバーの鍵を取得
+      trust_host_key: 信頼する

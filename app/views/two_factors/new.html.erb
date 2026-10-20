@@ -1,0 +1,22 @@
+<% content_for :title, t(".title") %>
+<%= render Ui::PageHeaderComponent.new(title: t(".title"), description: t(".description")) %>
+
+<%= form_with url: two_factor_path, class: "card card-body max-w-xl space-y-4" do |form| %>
+  <% uri = Totp.provisioning_uri(@secret, "Kamal Web (#{current_user.email_address})") %>
+  <div>
+    <span class="label"><%= t(".secret") %></span>
+    <div class="flex flex-wrap gap-2 [&>input]:min-w-0 [&>input]:flex-1 [&>input]:basis-48">
+      <input type="text" readonly value="<%= @secret %>" class="input font-mono text-xs" aria-label="<%= t(".secret") %>">
+      <button type="button" class="btn" data-controller="clipboard" data-clipboard-error-value="<%= t('ui.copy_failed') %>" data-clipboard-copied-value="<%= t("common.copied") %>" data-clipboard-text-value="<%= @secret %>" data-action="clipboard#copy"><%= t("common.copy") %></button>
+    </div>
+    <p class="hint"><%= t(".secret_hint") %> <%= link_to t(".open_app"), uri, class: "text-accent hover:underline" %></p>
+  </div>
+  <div>
+    <%= form.label :code, t("sessions.new.code"), class: "label" %>
+    <%= form.text_field :code, required: true, autofocus: true, inputmode: "numeric", pattern: "[0-9 ]{6,7}", maxlength: 7, autocomplete: "one-time-code", class: "input font-mono tracking-widest" %>
+  </div>
+  <div class="flex gap-3">
+    <%= form.submit t(".confirm"), class: "btn btn-primary" %>
+    <%= link_to t("common.cancel"), edit_account_path, class: "btn" %>
+  </div>
+<% end %>

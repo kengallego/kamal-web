@@ -643,7 +643,6 @@ es:
   sessions:
     new:
       code: Código de tu app de autenticación
-      hint_html: La contraseña es <code class="text-zinc-400">KAMAL_WEB_PASSWORD</code> del archivo <code class="text-zinc-400">.env</code> con el que se desplegó Kamal Web.
       password: Contraseña
       title: Iniciar sesión
   settings:

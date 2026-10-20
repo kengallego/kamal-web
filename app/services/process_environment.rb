@@ -25,7 +25,8 @@ module ProcessEnvironment
       "GIT_CONFIG_COUNT" => "1",
       "GIT_CONFIG_KEY_0" => "safe.directory",
       "GIT_CONFIG_VALUE_0" => "*",
-      "GIT_SSH_COMMAND" => "ssh -o StrictHostKeyChecking=accept-new -o BatchMode=yes",
+      # Through SshWrapper's ssh, which applies SshHostKeys.
+      "GIT_SSH_COMMAND" => "ssh -o BatchMode=yes",
       "TERM" => "dumb",
       "NO_COLOR" => "1"
     ).merge(extra.transform_keys(&:to_s).transform_values(&:to_s))

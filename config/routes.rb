@@ -1,5 +1,10 @@
 Rails.application.routes.draw do
   resource :session
+  resource :setup, only: %i[ new create ]
+  resource :account, only: %i[ edit update ]
+  resource :two_factor, only: %i[ new create destroy ]
+  resources :users, only: %i[ index new create destroy ]
+  resources :audit_events, only: :index, path: "activity"
   resource :preferences, only: :update
 
   resources :projects do
@@ -28,7 +33,11 @@ Rails.application.routes.draw do
   end
 
   resources :servers do
-    post :check, on: :member
+    member do
+      post :check
+      post :trust_host_key
+      delete :forget_host_key
+    end
   end
 
   resource :settings, only: %i[ edit update ] do

@@ -48,8 +48,8 @@ class RemoteShell
         keys_only: @keys.any?,
         non_interactive: true,
         timeout: TIMEOUT,
-        verify_host_key: :accept_new,
-        user_known_hosts_file: File.join(Dir.home, ".ssh", "known_hosts"),
+        verify_host_key: SshHostKeys.net_ssh_verify,
+        user_known_hosts_file: SshHostKeys.known_hosts,
         logger: Logger.new(File::NULL)
       }
     end

@@ -1,6 +1,9 @@
 module AuthenticationHelpers
-  def sign_in
-    post session_path, params: { password: AccessPassword::DEVELOPMENT_PASSWORD }
+  PASSWORD = "correct horse battery".freeze
+
+  def sign_in(user = User.first || FactoryBot.create(:user), code: nil)
+    post session_path, params: { email_address: user.email_address, password: PASSWORD, code: code }.compact
+    user
   end
 end
 

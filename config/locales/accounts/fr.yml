@@ -1,0 +1,158 @@
+# Comptes, la page Activité, releases signées et clés d'hôte SSH.
+fr:
+  activerecord:
+    attributes:
+      user:
+        email_address: E-mail
+        name: Nom
+        password: Mot de passe
+        password_confirmation: Confirmer le mot de passe
+  common:
+    users: Utilisateurs
+  layouts:
+    application:
+      account: Votre compte (%{name})
+  sessions:
+    new:
+      code_hint: Seulement si votre compte ou cette instance utilise une app d'authentification.
+      email_address: E-mail
+      hint: Demandez à quelqu'un qui a déjà un compte de vous ajouter.
+  setups:
+    new:
+      description_html: Kamal Web n'a pas encore de comptes. Créez le premier avec le mot de passe du fichier <code>.env</code> avec lequel Kamal Web a été déployé (<code>KAMAL_WEB_PASSWORD</code>). Dès qu'il existe, ce mot de passe ne connecte plus personne.
+      instance_password: Mot de passe de l'instance (KAMAL_WEB_PASSWORD)
+      submit: Créer le compte
+      title: Créez le premier compte
+  users:
+    fields:
+      password_hint:
+        one: Au moins %{count} caractère.
+        other: Au moins %{count} caractères.
+      password_unchanged:
+        one: Laissez vide pour garder votre mot de passe. Au moins %{count} caractère.
+        other: Laissez vide pour garder votre mot de passe. Au moins %{count} caractères.
+    index:
+      add: Ajouter un compte
+      confirm_delete: Supprimer le compte de %{name} ? La personne est déconnectée immédiatement.
+      description: Chaque compte a un accès complet à Kamal Web et aux serveurs qu'il atteint. Chaque personne a le sien, pour que la page Activité montre qui a fait quoi.
+      edit_account: Votre compte
+      instance_code: Code de l'instance
+      last_sign_in: Dernière connexion
+      name: Nom
+      "off": Désactivée
+      own_app: App personnelle
+      title: Utilisateurs
+      two_factor: Authentification
+      you: vous
+    new:
+      description: Transmettez le mot de passe à la personne de façon sûre ; elle peut le changer dans Votre compte.
+      title: Ajouter un compte
+  accounts:
+    edit:
+      current_password: Mot de passe actuel
+      disable: Désactiver
+      enable: Configurer
+      title: Votre compte
+      two_factor: App d'authentification
+      two_factor_instance: Désactivée. La connexion demande à la place le code de l'instance (KAMAL_WEB_TOTP_SECRET).
+      two_factor_off: "Désactivée : la connexion ne demande que votre mot de passe."
+      two_factor_on: "Activée : la connexion demande un code de votre app."
+  two_factors:
+    new:
+      confirm: Activer
+      description: Ajoutez cette clé à votre app d'authentification, puis saisissez le code qu'elle affiche.
+      open_app: Ouvrir dans l'app d'authentification
+      secret: Clé
+      secret_hint: Gardez-la privée ; elle n'est affichée qu'ici.
+      title: Configurer une app d'authentification
+  audit_events:
+    actions:
+      accounts_update: A modifié son compte
+      backups_create: A restauré une sauvegarde
+      backups_show: A téléchargé une sauvegarde
+      backups_stored: A téléchargé une sauvegarde conservée
+      deploy_hooks_create: Le webhook de déploiement a lancé un déploiement
+      discoveries_create: A recherché des apps sur ce serveur
+      projects_command_runs_cancel: A annulé une commande
+      projects_command_runs_create: A lancé une commande
+      projects_console_sessions_create: A ouvert une console
+      projects_create: A ajouté un projet
+      projects_destroy: A supprimé un projet
+      projects_environment_variables_create: A ajouté un secret
+      projects_environment_variables_destroy: A supprimé un secret
+      projects_environment_variables_update: A modifié un secret
+      projects_logs_create: A suivi les logs
+      projects_monitoring_create: A collecté des métriques
+      projects_project_files_create: A ajouté un fichier secret
+      projects_project_files_destroy: A supprimé un fichier secret
+      projects_project_files_update: A modifié un fichier secret
+      projects_sync: A synchronisé un projet
+      projects_update: A modifié les réglages du projet
+      projects_webhook_tokens_create: A régénéré le webhook de déploiement
+      servers_check: A vérifié un serveur
+      servers_create: A ajouté un serveur
+      servers_destroy: A supprimé un serveur
+      servers_forget_host_key: A oublié la clé d'hôte d'un serveur
+      servers_trust_host_key: A approuvé la clé d'hôte d'un serveur
+      servers_update: A modifié un serveur
+      sessions_create: S'est connecté
+      sessions_destroy: S'est déconnecté
+      sessions_failed: Connexion échouée
+      settings_regenerate_status_board_token: A régénéré l'URL du tableau de statut
+      settings_reset_ignored_services: A réinitialisé les apps retirées
+      settings_update: A modifié les réglages
+      settings_update_instance: A lancé une mise à jour de Kamal Web
+      setups_create: A créé le premier compte
+      two_factors_create: A activé son app d'authentification
+      two_factors_destroy: A désactivé son app d'authentification
+      users_create: A ajouté un compte
+      users_destroy: A supprimé un compte
+    index:
+      description: Chaque modification faite depuis le tableau de bord ou le webhook de déploiement, avec qui l'a faite et d'où. Ce qui est tapé dans les consoles n'est pas enregistré.
+      empty: Rien pour l'instant.
+      everyone: Tout le monde
+      filter: Filtrer
+      from: IP
+      older: Plus anciens
+      title: Activité
+      what: Quoi
+      who: Qui
+  flash:
+    accounts:
+      saved: Compte enregistré.
+      wrong_password: Votre mot de passe actuel est incorrect.
+    servers:
+      host_key_changed: Le serveur ne propose plus cette clé. Comparez de nouveau l'empreinte.
+      host_key_forgotten: Clé d'hôte oubliée. Approuvez la nouvelle avant que Kamal Web ne se reconnecte.
+      host_key_trusted: Clé d'hôte approuvée.
+    setups:
+      created: Compte créé. Ajoutez dans Utilisateurs les personnes qui ont aussi besoin d'accès.
+    two_factors:
+      disabled: App d'authentification désactivée.
+      enabled: App d'authentification activée.
+      wrong_code: Ce code ne correspond pas. Essayez le code actuel.
+    users:
+      not_yourself: Vous ne pouvez pas supprimer votre propre compte.
+  settings:
+    edit:
+      auto_update_problems:
+        no_signing_key: Cette version de Kamal Web n'a pas de clé pour vérifier la signature des releases (config/release-signing.pub) et ne peut donc pas se mettre à jour seule. Mettez à jour avec kamal deploy depuis votre copie.
+      auto_update_unsigned: La release %{version} n'est pas (encore) signée avec la clé des releases, elle n'a donc pas été installée (%{time}). Vérifié de nouveau toutes les heures.
+  projects:
+    settings:
+      show:
+        webhook_secret: Secret
+        webhook_secret_hint: Envoyez-le depuis la CI comme en-tête Authorization Bearer, comme Secret d'un webhook GitHub (qui signe chaque payload avec) ou comme Secret token d'un webhook GitLab. Régénérer change l'URL et le secret.
+        webhook_unsigned: Cette URL déploie à elle seule, sans secret. Régénérez-la pour en exiger un aussi, puis mettez à jour la CI ou votre hébergeur git.
+  servers:
+    show:
+      compare_html: Comparez-les avec ce que le serveur affiche pour %{command} (à lancer sur le serveur lui-même, ou demandez à votre hébergeur), et n'approuvez qu'une clé qui correspond.
+      confirm_forget_host_key: Oublier la clé d'hôte de ce serveur ? Faites-le seulement si elle a changé volontairement, par exemple après une réinstallation.
+      forget_host_key: Oublier
+      host_key: Clé d'hôte
+      host_key_first_use: Approuvée à la première connexion de Kamal Web ; une autre clé ensuite est refusée.
+      host_key_strict: Kamal Web ne se connecte qu'une fois une clé approuvée ici (KAMAL_WEB_SSH_HOST_KEYS=strict).
+      no_host_key: Aucune clé approuvée pour l'instant.
+      scan_failed: Le serveur n'a pas répondu sur son port SSH.
+      scan_host_key: Récupérer la clé du serveur
+      trust_host_key: Approuver

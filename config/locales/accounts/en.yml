@@ -1,0 +1,158 @@
+# Accounts, the Activity page, signed releases and SSH host keys.
+en:
+  activerecord:
+    attributes:
+      user:
+        email_address: Email
+        name: Name
+        password: Password
+        password_confirmation: Confirm password
+  common:
+    users: Users
+  layouts:
+    application:
+      account: Your account (%{name})
+  sessions:
+    new:
+      code_hint: Only if your account or this instance uses an authenticator app.
+      email_address: Email
+      hint: Ask someone who already has an account to add you.
+  setups:
+    new:
+      description_html: Kamal Web has no accounts yet. Create the first one with the password in the <code>.env</code> file Kamal Web was deployed with (<code>KAMAL_WEB_PASSWORD</code>). Once it exists, that password no longer signs anyone in.
+      instance_password: Instance password (KAMAL_WEB_PASSWORD)
+      submit: Create account
+      title: Create the first account
+  users:
+    fields:
+      password_hint:
+        one: At least %{count} character.
+        other: At least %{count} characters.
+      password_unchanged:
+        one: Leave empty to keep your password. At least %{count} character.
+        other: Leave empty to keep your password. At least %{count} characters.
+    index:
+      add: Add account
+      confirm_delete: Delete %{name}'s account? They are signed out right away.
+      description: Every account has full access to Kamal Web and the servers it reaches. Each person gets their own, so the Activity page shows who did what.
+      edit_account: Your account
+      instance_code: Instance code
+      last_sign_in: Last sign-in
+      name: Name
+      "off": "Off"
+      own_app: Own app
+      title: Users
+      two_factor: Authenticator
+      you: you
+    new:
+      description: Give the password to the person in a safe way; they can change it under Your account.
+      title: Add account
+  accounts:
+    edit:
+      current_password: Current password
+      disable: Turn off
+      enable: Set up
+      title: Your account
+      two_factor: Authenticator app
+      two_factor_instance: Off. Signing in asks for the instance's code (KAMAL_WEB_TOTP_SECRET) instead.
+      two_factor_off: "Off: signing in only asks for your password."
+      two_factor_on: "On: signing in asks for a code from your app."
+  two_factors:
+    new:
+      confirm: Turn on
+      description: Add this key to your authenticator app, then enter the code it shows.
+      open_app: Open in authenticator app
+      secret: Key
+      secret_hint: Keep it private; it's only shown here.
+      title: Set up an authenticator app
+  audit_events:
+    actions:
+      accounts_update: Changed their account
+      backups_create: Restored a backup
+      backups_show: Downloaded a backup
+      backups_stored: Downloaded a stored backup
+      deploy_hooks_create: Deploy webhook started a deploy
+      discoveries_create: Scanned this server for apps
+      projects_command_runs_cancel: Canceled a command
+      projects_command_runs_create: Ran a command
+      projects_console_sessions_create: Opened a console
+      projects_create: Added a project
+      projects_destroy: Deleted a project
+      projects_environment_variables_create: Added a secret
+      projects_environment_variables_destroy: Deleted a secret
+      projects_environment_variables_update: Changed a secret
+      projects_logs_create: Followed logs
+      projects_monitoring_create: Collected metrics
+      projects_project_files_create: Added a secret file
+      projects_project_files_destroy: Deleted a secret file
+      projects_project_files_update: Changed a secret file
+      projects_sync: Synced a project
+      projects_update: Changed project settings
+      projects_webhook_tokens_create: Regenerated the deploy webhook
+      servers_check: Checked a server
+      servers_create: Added a server
+      servers_destroy: Deleted a server
+      servers_forget_host_key: Forgot a server's host key
+      servers_trust_host_key: Trusted a server's host key
+      servers_update: Changed a server
+      sessions_create: Signed in
+      sessions_destroy: Signed out
+      sessions_failed: Failed sign-in
+      settings_regenerate_status_board_token: Regenerated the status board URL
+      settings_reset_ignored_services: Reset removed apps
+      settings_update: Changed settings
+      settings_update_instance: Started a Kamal Web update
+      setups_create: Created the first account
+      two_factors_create: Turned on their authenticator app
+      two_factors_destroy: Turned off their authenticator app
+      users_create: Added an account
+      users_destroy: Deleted an account
+    index:
+      description: Every change made from the dashboard or the deploy webhook, with who made it and from where. What's typed in consoles isn't recorded.
+      empty: Nothing yet.
+      everyone: Everyone
+      filter: Filter
+      from: IP
+      older: Older
+      title: Activity
+      what: What
+      who: Who
+  flash:
+    accounts:
+      saved: Account saved.
+      wrong_password: Your current password is wrong.
+    servers:
+      host_key_changed: The server no longer offers that key. Compare the fingerprint again.
+      host_key_forgotten: Host key forgotten. Trust the new one before Kamal Web connects again.
+      host_key_trusted: Host key trusted.
+    setups:
+      created: Account created. Add the people who also need access under Users.
+    two_factors:
+      disabled: Authenticator app turned off.
+      enabled: Authenticator app turned on.
+      wrong_code: That code didn't match. Try the current one.
+    users:
+      not_yourself: You can't delete your own account.
+  settings:
+    edit:
+      auto_update_problems:
+        no_signing_key: This version of Kamal Web has no key to check release signatures with (config/release-signing.pub), so it can't update itself. Update with kamal deploy from your checkout.
+      auto_update_unsigned: Release %{version} isn't signed with the release key (yet), so it wasn't installed (%{time}). Checked again every hour.
+  projects:
+    settings:
+      show:
+        webhook_secret: Secret
+        webhook_secret_hint: Send it as an Authorization Bearer header from CI, as the Secret of a GitHub webhook (which signs each payload with it) or as the Secret token of a GitLab webhook. Regenerating changes both the URL and the secret.
+        webhook_unsigned: This URL deploys on its own, without a secret. Regenerate it to also require one, then update CI or your git host.
+  servers:
+    show:
+      compare_html: Compare these with what the server shows for %{command} (run on the server itself, or ask your provider), and only trust a key that matches.
+      confirm_forget_host_key: Forget this server's host key? Only do this if it changed on purpose, e.g. after a reinstall.
+      forget_host_key: Forget
+      host_key: Host key
+      host_key_first_use: Trusted the first time Kamal Web connects; a different key later is refused.
+      host_key_strict: Kamal Web only connects once a key is trusted here (KAMAL_WEB_SSH_HOST_KEYS=strict).
+      no_host_key: No key trusted yet.
+      scan_failed: The server didn't answer on its SSH port.
+      scan_host_key: Get the server's key
+      trust_host_key: Trust

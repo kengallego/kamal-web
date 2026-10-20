@@ -7,6 +7,7 @@ RSpec.describe "Backups" do
   after do
     FileUtils.rm_f(InstanceBackup::STAGED_PATH)
     Project.destroy_all
+    [ AuditEvent, Session, User ].each(&:delete_all)
   end
 
   it "downloads a backup that can be restored on the next boot" do

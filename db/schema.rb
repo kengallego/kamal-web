@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_16_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_19_090000) do
   create_table "alerts", force: :cascade do |t|
     t.integer "project_id", null: false
     t.string "kind", null: false
@@ -22,6 +22,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_16_140000) do
     t.datetime "updated_at", null: false
     t.index ["project_id", "kind", "subject"], name: "index_alerts_open", unique: true, where: "resolved_at IS NULL"
     t.index ["project_id"], name: "index_alerts_on_project_id"
+  end
+
+  create_table "audit_events", force: :cascade do |t|
+    t.integer "user_id"
+    t.string "actor", null: false
+    t.string "action", null: false
+    t.integer "project_id"
+    t.string "subject_type"
+    t.integer "subject_id"
+    t.json "details", default: {}, null: false
+    t.string "ip_address"
+    t.datetime "created_at", null: false
+    t.index ["created_at"], name: "index_audit_events_on_created_at"
+    t.index ["project_id"], name: "index_audit_events_on_project_id"
+    t.index ["user_id"], name: "index_audit_events_on_user_id"
   end
 
   create_table "command_runs", force: :cascade do |t|
@@ -39,9 +54,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_16_140000) do
     t.datetime "finished_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "user_id"
     t.index ["project_id", "created_at"], name: "index_command_runs_on_project_id_and_created_at"
     t.index ["project_id"], name: "index_command_runs_on_project_id"
     t.index ["status"], name: "index_command_runs_on_status"
+    t.index ["user_id"], name: "index_command_runs_on_user_id"
   end
 
   create_table "console_sessions", force: :cascade do |t|
@@ -54,7 +71,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_16_140000) do
     t.integer "exit_code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "user_id"
     t.index ["project_id"], name: "index_console_sessions_on_project_id"
+    t.index ["user_id"], name: "index_console_sessions_on_user_id"
   end
 
   create_table "environment_variables", force: :cascade do |t|
@@ -130,6 +149,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_16_140000) do
     t.text "discovered_files"
     t.json "discovered_versions", default: {}, null: false
     t.json "protected_destinations", default: [], null: false
+    t.string "deploy_webhook_secret"
     t.index ["deploy_webhook_token"], name: "index_projects_on_deploy_webhook_token", unique: true
     t.index ["discovered_service"], name: "index_projects_on_discovered_service", unique: true, where: "discovered_service IS NOT NULL"
     t.index ["name"], name: "index_projects_on_name", unique: true
@@ -171,6 +191,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_16_140000) do
     t.index ["host"], name: "index_servers_on_host", unique: true
   end
 
+  create_table "sessions", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "ip_address"
+    t.string "user_agent"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_sessions_on_user_id"
+  end
+
   create_table "settings", force: :cascade do |t|
     t.boolean "status_board_enabled", default: false, null: false
     t.string "status_board_token", null: false
@@ -194,12 +223,28 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_16_140000) do
     t.text "auto_update_output"
   end
 
+  create_table "users", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "email_address", null: false
+    t.string "password_digest", null: false
+    t.text "otp_secret"
+    t.datetime "last_signed_in_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email_address"], name: "index_users_on_email_address", unique: true
+  end
+
   add_foreign_key "alerts", "projects"
+  add_foreign_key "audit_events", "projects", on_delete: :nullify
+  add_foreign_key "audit_events", "users", on_delete: :nullify
   add_foreign_key "command_runs", "projects"
+  add_foreign_key "command_runs", "users", on_delete: :nullify
   add_foreign_key "console_sessions", "projects"
+  add_foreign_key "console_sessions", "users", on_delete: :nullify
   add_foreign_key "environment_variables", "projects"
   add_foreign_key "health_checks", "projects"
   add_foreign_key "hourly_metrics", "projects"
   add_foreign_key "project_files", "projects"
   add_foreign_key "server_metrics", "projects"
+  add_foreign_key "sessions", "users"
 end

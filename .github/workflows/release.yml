@@ -3,6 +3,10 @@ name: Release
 # Publishes each release's image, which instances with Update automatically on
 # deploy (see app/services/self_update.rb). Make the package public once, in the
 # repository's Packages settings, so they can pull it without a login.
+#
+# Instances only install it once it's signed, and it's deliberately not signed
+# here: run bin/sign-release on your own machine, so nothing with access to
+# GitHub can sign a release.
 on:
   release:
     types: [ published ]
@@ -34,6 +38,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
+        id: build
         uses: docker/build-push-action@v7
         with:
           context: .
@@ -44,3 +49,8 @@ jobs:
             ghcr.io/${{ github.repository }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Show the digest to sign
+        run: |
+          echo "Sign with: bin/sign-release $GITHUB_REF_NAME" >> "$GITHUB_STEP_SUMMARY"
+          echo "Image digest: \`${{ steps.build.outputs.digest }}\`" >> "$GITHUB_STEP_SUMMARY"

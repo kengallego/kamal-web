@@ -65,4 +65,23 @@ RSpec.describe "Servers" do
     expect(response).to redirect_to(servers_path)
     expect(Server.pluck(:host)).to eq([ "192.0.2.10" ])
   end
+
+  it "shows the server's key to compare before trusting it, and forgets it" do
+    server = Server.create!(host: "192.0.2.20", ssh_port: 2222)
+    key = SshHostKeys::Key.new(type: "ED25519", fingerprint: "SHA256:abc", line: nil)
+    allow(SshHostKeys).to receive(:trusted).and_return([])
+    allow(SshHostKeys).to receive(:scan).with("192.0.2.20", 2222).and_return([ key ])
+
+    get server_path(server, scan: 1)
+    expect(response.body).to include("SHA256:abc", "Trust")
+
+    expect(SshHostKeys).to receive(:trust!).with("192.0.2.20", 2222, "SHA256:abc").and_return(true)
+    post trust_host_key_server_path(server), params: { fingerprint: "SHA256:abc" }
+    expect(flash[:notice]).to eq("Host key trusted.")
+    expect(AuditEvent.last).to have_attributes(action: "servers#trust_host_key", subject_id: server.id)
+
+    expect(SshHostKeys).to receive(:forget!).with("192.0.2.20", 2222)
+    delete forget_host_key_server_path(server)
+    expect(response).to redirect_to(server_path(server))
+  end
 end

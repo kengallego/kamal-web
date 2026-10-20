@@ -642,7 +642,6 @@ fr:
   sessions:
     new:
       code: Code de votre application d’authentification
-      hint_html: Le mot de passe est <code class="text-zinc-400">KAMAL_WEB_PASSWORD</code> du fichier <code class="text-zinc-400">.env</code> avec lequel Kamal Web a été déployé.
       password: Mot de passe
       title: Se connecter
   settings:

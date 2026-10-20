@@ -20,9 +20,10 @@ class Setting < ApplicationRecord
   end
 
   # A failed update isn't tried again until there's a newer release, or it's
-  # started from Settings.
+  # started from Settings. One that wasn't signed (yet) is tried every hour,
+  # since the maintainer signs releases after CI publishes them.
   def auto_update_due?
-    auto_update_enabled? && update_available? && auto_update_version != latest_version
+    auto_update_enabled? && update_available? && (auto_update_version != latest_version || auto_update_status == "unsigned")
   end
 
   # A helper that died without saying so stops counting after a while.

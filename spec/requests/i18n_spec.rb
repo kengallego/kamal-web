@@ -33,13 +33,19 @@ RSpec.describe "Translations" do
       project_releases_path(project), project_containers_path(project, run_id: run.id), project_deploy_preview_path(project),
       project_monitoring_path(project, range: "30d"), servers_path, new_server_path,
       server_path(Server.find_by!(host: "192.0.2.10")), edit_server_path(Server.find_by!(host: "192.0.2.10")),
-      status_board_path(Setting.instance.status_board_token) ]
+      server_path(Server.find_by!(host: "192.0.2.10"), scan: 1), users_path, new_user_path, edit_account_path, new_two_factor_path,
+      audit_events_path, status_board_path(Setting.instance.status_board_token) ]
   end
 
   I18n.available_locales.map(&:to_s).each do |locale|
     it "has every text of every page in #{locale}" do
-      sign_in
       patch preferences_path, params: { locale: locale }
+      get new_setup_path
+      expect(response.body).not_to include("translation_missing", "Translation missing"), response.body[/translation_missing[^>]*>[^<]*/]
+
+      sign_in
+      AuditEvent.record("projects/command_runs#create", project: project, subject: project.command_runs.first, kind: "deploy")
+      allow(SshHostKeys).to receive(:scan).and_return([ SshHostKeys::Key.new(type: "ED25519", fingerprint: "SHA256:abc", line: "x") ])
 
       [ new_session_path, *pages ].each do |path|
         get path, headers: { "Turbo-Frame" => (path.include?("/releases") ? "releases" : path.include?("/deploy_preview") ? "deploy_preview" : path.include?("/containers") ? "containers" : path.include?("/proxy") ? "proxy_data" : nil) }.compact
@@ -50,6 +56,7 @@ RSpec.describe "Translations" do
   end
 
   it "speaks Spanish when the browser asks for it, and remembers a choice" do
+    create(:user)
     get new_session_path, headers: { "Accept-Language" => "es-ES,es;q=0.9,en;q=0.8" }
     expect(response.body).to include("Iniciar sesión", 'lang="es"')
 
@@ -59,6 +66,7 @@ RSpec.describe "Translations" do
   end
 
   it "matches regional browser languages" do
+    create(:user)
     { "pt-PT,pt;q=0.9" => "pt-BR", "zh-TW" => "zh-CN", "de-AT" => "de", "fr-CA,en;q=0.8" => "fr" }.each do |header, locale|
       get new_session_path, headers: { "Accept-Language" => header }
       expect(response.body).to include(%(lang="#{locale}")), header
@@ -83,6 +91,7 @@ RSpec.describe "Translations" do
   end
 
   it "remembers the theme" do
+    create(:user)
     get new_session_path
     expect(response.body).not_to include("data-theme=")
 

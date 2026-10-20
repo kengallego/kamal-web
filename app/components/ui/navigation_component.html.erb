@@ -1,6 +1,7 @@
 <nav aria-label="<%= t('ui.navigation') %>" class="space-y-1">
   <%= render Ui::NavLinkComponent.new(label: t('common.dashboard'), path: root_path, active: current_page?(root_path), icon: :grid) %>
   <%= render Ui::NavLinkComponent.new(label: t('common.servers'), path: servers_path, active: request.path == servers_path || request.path.start_with?(servers_path + '/'), icon: :server) %>
+  <%= render Ui::NavLinkComponent.new(label: t('common.users'), path: users_path, active: request.path.start_with?(users_path) || request.path.start_with?(audit_events_path), icon: :user) %>
 </nav>
 <div class="mt-8 mb-2 flex items-center justify-between px-3">
   <span class="section-label"><%= t('layouts.application.projects') %></span>
@@ -18,6 +19,9 @@
       <%= render Ui::IconComponent.new(name: :settings, size: 17) %>
     <% end %>
     <%= render Ui::ThemeSwitcherComponent.new(align: :center, placement: :top) %>
+    <%= link_to edit_account_path, class: ['icon-button', ('nav-link-active' if current_page?(edit_account_path))], aria: { label: t('layouts.application.account', name: helpers.current_user&.name) }, title: t('layouts.application.account', name: helpers.current_user&.name) do %>
+      <%= render Ui::IconComponent.new(name: :user, size: 17) %>
+    <% end %>
     <%= button_to session_path, method: :delete, class: 'icon-button', aria: { label: t('layouts.application.sign_out') }, title: t('layouts.application.sign_out') do %>
       <%= render Ui::IconComponent.new(name: :logout, size: 17) %>
     <% end %>

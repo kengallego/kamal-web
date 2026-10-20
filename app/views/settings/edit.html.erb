@@ -160,6 +160,8 @@
         <p><%= t(".auto_update_running", version: @setting.auto_update_version, time: time_ago(@setting.auto_update_started_at)) %></p>
       <% elsif @setting.auto_update_status == "succeeded" %>
         <p><%= t(".auto_update_succeeded", version: @setting.auto_update_version, time: time_ago(@setting.auto_update_finished_at)) %></p>
+      <% elsif @setting.auto_update_status == "unsigned" %>
+        <p class="text-warning"><%= t(".auto_update_unsigned", version: @setting.auto_update_version, time: time_ago(@setting.auto_update_finished_at || @setting.auto_update_started_at)) %></p>
       <% else %>
         <p class="text-danger"><%= t(".auto_update_failed", version: @setting.auto_update_version, time: time_ago(@setting.auto_update_finished_at || @setting.auto_update_started_at)) %></p>
       <% end %>

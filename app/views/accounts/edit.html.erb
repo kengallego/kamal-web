@@ -1,0 +1,35 @@
+<% content_for :title, t(".title") %>
+<%= render Ui::PageHeaderComponent.new(title: t(".title"), description: current_user.email_address) %>
+
+<div class="max-w-xl space-y-6">
+  <%= form_with model: @user, url: account_path, method: :patch, class: "card card-body space-y-4" do |form| %>
+    <%= form_errors(@user) %>
+    <%= render "users/fields", form: form, optional_password: true %>
+    <div>
+      <%= label_tag :current_password, t(".current_password"), class: "label" %>
+      <%= password_field_tag :current_password, nil, required: true, autocomplete: "current-password", class: "input" %>
+    </div>
+    <%= form.submit t("common.save"), class: "btn btn-primary" %>
+  <% end %>
+
+  <%= render Ui::PanelComponent.new do %>
+    <div class="card-header">
+      <div>
+        <h2 class="card-title"><%= t(".two_factor") %></h2>
+        <p class="text-xs text-muted"><%= current_user.two_factor? ? t(".two_factor_on") : (AccessPassword.two_factor? ? t(".two_factor_instance") : t(".two_factor_off")) %></p>
+      </div>
+      <% unless current_user.two_factor? %>
+        <%= link_to t(".enable"), new_two_factor_path, class: "btn btn-sm" %>
+      <% end %>
+    </div>
+    <% if current_user.two_factor? %>
+      <%= form_with url: two_factor_path, method: :delete, class: "card-body flex flex-wrap items-end gap-3" do %>
+        <div class="min-w-0 flex-1 basis-48">
+          <%= label_tag :disable_current_password, t(".current_password"), class: "label" %>
+          <%= password_field_tag :current_password, nil, id: "disable_current_password", required: true, autocomplete: "current-password", class: "input" %>
+        </div>
+        <%= submit_tag t(".disable"), class: "btn btn-danger" %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

@@ -39,9 +39,13 @@
 # Ignore CI service files.
 /.github
 
-# Ignore Kamal files.
+# Ignore Kamal files, except the config releases are deployed with: Update
+# automatically takes it from the signed release image (see app/services/self_update.rb).
 /config/deploy*.yml
-/.kamal
+!/config/deploy.yml
+/.kamal/*
+!/.kamal/secrets
+!/.kamal/hooks
 
 # Ignore development files
 /.devcontainer

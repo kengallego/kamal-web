@@ -1,9 +1,9 @@
-# Kamal Web has no user accounts: everyone signs in with KAMAL_WEB_PASSWORD, set
-# in the .env Kamal Web is deployed with and passed on by .kamal/secrets.
-# KAMAL_WEB_TOTP_SECRET adds a code from an authenticator app, and
-# KAMAL_WEB_ALLOWED_IPS limits where the dashboard can be reached from.
-# Changing any of them signs everybody out, because sessions are tied to a
-# fingerprint of the password and the TOTP secret.
+# The instance's own access settings, from the .env Kamal Web is deployed with
+# and passed on by .kamal/secrets. KAMAL_WEB_PASSWORD creates the first account
+# (see SetupsController) and lets nobody in once one exists.
+# KAMAL_WEB_TOTP_SECRET adds a code from an authenticator app to that, and to
+# signing in to accounts without one of their own. KAMAL_WEB_ALLOWED_IPS limits
+# where the dashboard can be reached from.
 module AccessPassword
   MINIMUM_LENGTH = 12
   DEVELOPMENT_PASSWORD = "kamal-web-development".freeze
@@ -51,14 +51,6 @@ module AccessPassword
       (!two_factor? || Totp.verify(totp_secret, code))
   end
 
-  def fingerprint
-    OpenSSL::HMAC.hexdigest("SHA256", Rails.application.secret_key_base, "kamal-web-session:#{value}:#{totp_secret}") if problem.nil?
-  end
-
-  def valid_fingerprint?(candidate)
-    expected = fingerprint
-    expected.present? && candidate.is_a?(String) && ActiveSupport::SecurityUtils.secure_compare(candidate, expected)
-  end
 
   def invalid_networks
     ENV["KAMAL_WEB_ALLOWED_IPS"].to_s.split(/[\s,]+/).compact_blank.reject do |entry|

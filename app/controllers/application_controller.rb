@@ -1,6 +1,8 @@
 class ApplicationController < ActionController::Base
   include Authentication
+  include Auditing
   include Preferences
+  before_action { Current.ip_address = request.remote_ip }
   before_action :require_allowed_ip
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern

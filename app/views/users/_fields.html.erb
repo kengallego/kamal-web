@@ -1,0 +1,19 @@
+<div>
+  <%= form.label :name, class: "label" %>
+  <%= form.text_field :name, required: true, autocomplete: "name", class: "input" %>
+</div>
+<div>
+  <%= form.label :email_address, class: "label" %>
+  <%= form.email_field :email_address, required: true, autocomplete: "email", class: "input" %>
+</div>
+<div class="grid gap-4 sm:grid-cols-2">
+  <div>
+    <%= form.label :password, class: "label" %>
+    <%= form.password_field :password, required: !local_assigns[:optional_password], minlength: AccessPassword::MINIMUM_LENGTH, autocomplete: "new-password", class: "input" %>
+  </div>
+  <div>
+    <%= form.label :password_confirmation, class: "label" %>
+    <%= form.password_field :password_confirmation, required: !local_assigns[:optional_password], autocomplete: "new-password", class: "input" %>
+  </div>
+</div>
+<p class="hint"><%= local_assigns[:optional_password] ? t("users.fields.password_unchanged", count: AccessPassword::MINIMUM_LENGTH) : t("users.fields.password_hint", count: AccessPassword::MINIMUM_LENGTH) %></p>

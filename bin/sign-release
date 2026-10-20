@@ -1,0 +1,28 @@
+#!/bin/sh -e
+
+# Signs a published release so instances with Update automatically install it
+# (see app/services/self_update.rb). Run it on your own machine after the
+# Release workflow has pushed the image. The private key never goes to GitHub:
+# that's what keeps someone who takes over the account or the registry from
+# shipping code to every instance.
+#
+# Once, before the first signed release:
+#   cosign generate-key-pair --output-key-prefix ~/.config/kamal-web/release-signing
+#   cp ~/.config/kamal-web/release-signing.pub config/release-signing.pub   # and commit it
+#
+# Then, for each release:
+#   bin/sign-release v1.2.0
+
+tag=${1:?usage: bin/sign-release vX.Y.Z}
+key=${KAMAL_WEB_SIGNING_KEY:-$HOME/.config/kamal-web/release-signing.key}
+repository=$(ruby -e 'load "config/initializers/version.rb"; print KamalWeb::REPOSITORY')
+image="ghcr.io/$repository"
+
+cmp -s "${key%.key}.pub" config/release-signing.pub || { echo "${key%.key}.pub doesn't match config/release-signing.pub" >&2; exit 1; }
+
+digest=$(docker buildx imagetools inspect "$image:$tag" --format '{{json .Manifest.Digest}}' | tr -d '"')
+echo "Signing $image:$tag ($digest)"
+echo "Check it matches the digest in the Release workflow's summary before you go on."
+cosign sign --key "$key" --annotations "tag=$tag" "$image@$digest"
+cosign verify --key config/release-signing.pub --annotations "tag=$tag" "$image:$tag" >/dev/null
+echo "Signed. Instances pick it up within the hour."

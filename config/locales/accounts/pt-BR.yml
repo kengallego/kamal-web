@@ -1,0 +1,158 @@
+# Contas, a página Atividade, releases assinadas e chaves de host SSH.
+pt-BR:
+  activerecord:
+    attributes:
+      user:
+        email_address: E-mail
+        name: Nome
+        password: Senha
+        password_confirmation: Confirmar senha
+  common:
+    users: Usuários
+  layouts:
+    application:
+      account: Sua conta (%{name})
+  sessions:
+    new:
+      code_hint: Só se sua conta ou esta instância usar um app autenticador.
+      email_address: E-mail
+      hint: Peça a alguém que já tem conta para adicionar você.
+  setups:
+    new:
+      description_html: O Kamal Web ainda não tem contas. Crie a primeira com a senha do arquivo <code>.env</code> com que o Kamal Web foi implantado (<code>KAMAL_WEB_PASSWORD</code>). Assim que ela existir, essa senha não dá mais acesso a ninguém.
+      instance_password: Senha da instância (KAMAL_WEB_PASSWORD)
+      submit: Criar conta
+      title: Crie a primeira conta
+  users:
+    fields:
+      password_hint:
+        one: Pelo menos %{count} caractere.
+        other: Pelo menos %{count} caracteres.
+      password_unchanged:
+        one: Deixe vazio para manter sua senha. Pelo menos %{count} caractere.
+        other: Deixe vazio para manter sua senha. Pelo menos %{count} caracteres.
+    index:
+      add: Adicionar conta
+      confirm_delete: Excluir a conta de %{name}? A sessão é encerrada na hora.
+      description: Toda conta tem acesso completo ao Kamal Web e aos servidores que ele alcança. Cada pessoa tem a sua, para que a página Atividade mostre quem fez o quê.
+      edit_account: Sua conta
+      instance_code: Código da instância
+      last_sign_in: Último acesso
+      name: Nome
+      "off": Desativado
+      own_app: App próprio
+      title: Usuários
+      two_factor: Autenticador
+      you: você
+    new:
+      description: Passe a senha para a pessoa de forma segura; ela pode mudá-la em Sua conta.
+      title: Adicionar conta
+  accounts:
+    edit:
+      current_password: Senha atual
+      disable: Desativar
+      enable: Configurar
+      title: Sua conta
+      two_factor: App autenticador
+      two_factor_instance: Desativado. Ao entrar, é pedido o código da instância (KAMAL_WEB_TOTP_SECRET).
+      two_factor_off: "Desativado: ao entrar, só sua senha é pedida."
+      two_factor_on: "Ativado: ao entrar, é pedido um código do seu app."
+  two_factors:
+    new:
+      confirm: Ativar
+      description: Adicione esta chave ao seu app autenticador e digite o código que ele mostra.
+      open_app: Abrir no app autenticador
+      secret: Chave
+      secret_hint: Mantenha em sigilo; ela só aparece aqui.
+      title: Configurar um app autenticador
+  audit_events:
+    actions:
+      accounts_update: Alterou sua conta
+      backups_create: Restaurou um backup
+      backups_show: Baixou um backup
+      backups_stored: Baixou um backup guardado
+      deploy_hooks_create: O webhook de deploy iniciou um deploy
+      discoveries_create: Procurou apps neste servidor
+      projects_command_runs_cancel: Cancelou um comando
+      projects_command_runs_create: Executou um comando
+      projects_console_sessions_create: Abriu um console
+      projects_create: Adicionou um projeto
+      projects_destroy: Excluiu um projeto
+      projects_environment_variables_create: Adicionou um segredo
+      projects_environment_variables_destroy: Excluiu um segredo
+      projects_environment_variables_update: Alterou um segredo
+      projects_logs_create: Acompanhou os logs
+      projects_monitoring_create: Coletou métricas
+      projects_project_files_create: Adicionou um arquivo secreto
+      projects_project_files_destroy: Excluiu um arquivo secreto
+      projects_project_files_update: Alterou um arquivo secreto
+      projects_sync: Sincronizou um projeto
+      projects_update: Alterou as configurações do projeto
+      projects_webhook_tokens_create: Gerou de novo o webhook de deploy
+      servers_check: Verificou um servidor
+      servers_create: Adicionou um servidor
+      servers_destroy: Excluiu um servidor
+      servers_forget_host_key: Esqueceu a chave de host de um servidor
+      servers_trust_host_key: Confiou na chave de host de um servidor
+      servers_update: Alterou um servidor
+      sessions_create: Entrou
+      sessions_destroy: Saiu
+      sessions_failed: Falha ao entrar
+      settings_regenerate_status_board_token: Gerou de novo a URL do painel de status
+      settings_reset_ignored_services: Redefiniu os apps removidos
+      settings_update: Alterou as configurações
+      settings_update_instance: Iniciou uma atualização do Kamal Web
+      setups_create: Criou a primeira conta
+      two_factors_create: Ativou seu app autenticador
+      two_factors_destroy: Desativou seu app autenticador
+      users_create: Adicionou uma conta
+      users_destroy: Excluiu uma conta
+    index:
+      description: Toda alteração feita pelo painel ou pelo webhook de deploy, com quem fez e de onde. O que é digitado nos consoles não é registrado.
+      empty: Nada ainda.
+      everyone: Todos
+      filter: Filtrar
+      from: IP
+      older: Anteriores
+      title: Atividade
+      what: O quê
+      who: Quem
+  flash:
+    accounts:
+      saved: Conta salva.
+      wrong_password: Sua senha atual está errada.
+    servers:
+      host_key_changed: O servidor não oferece mais essa chave. Compare a impressão digital de novo.
+      host_key_forgotten: Chave de host esquecida. Confie na nova antes que o Kamal Web conecte de novo.
+      host_key_trusted: Chave de host confiável.
+    setups:
+      created: Conta criada. Adicione em Usuários quem também precisa de acesso.
+    two_factors:
+      disabled: App autenticador desativado.
+      enabled: App autenticador ativado.
+      wrong_code: O código não confere. Tente o atual.
+    users:
+      not_yourself: Você não pode excluir sua própria conta.
+  settings:
+    edit:
+      auto_update_problems:
+        no_signing_key: Esta versão do Kamal Web não tem chave para verificar a assinatura das releases (config/release-signing.pub), então não pode se atualizar sozinha. Atualize com kamal deploy a partir da sua cópia.
+      auto_update_unsigned: A release %{version} (ainda) não está assinada com a chave de releases, então não foi instalada (%{time}). Verificado de novo a cada hora.
+  projects:
+    settings:
+      show:
+        webhook_secret: Segredo
+        webhook_secret_hint: Envie-o pela CI como cabeçalho Authorization Bearer, como Secret de um webhook do GitHub (que assina cada payload com ele) ou como Secret token de um webhook do GitLab. Gerar de novo muda a URL e o segredo.
+        webhook_unsigned: Esta URL faz deploy sozinha, sem segredo. Gere-a de novo para exigir também um, depois atualize a CI ou seu host git.
+  servers:
+    show:
+      compare_html: Compare com o que o servidor mostra para %{command} (rode no próprio servidor ou peça ao seu provedor) e só confie numa chave que corresponda.
+      confirm_forget_host_key: Esquecer a chave de host deste servidor? Só faça isso se ela mudou de propósito, por exemplo após uma reinstalação.
+      forget_host_key: Esquecer
+      host_key: Chave de host
+      host_key_first_use: Confiada na primeira vez que o Kamal Web conecta; uma chave diferente depois é recusada.
+      host_key_strict: O Kamal Web só conecta depois que uma chave é confiada aqui (KAMAL_WEB_SSH_HOST_KEYS=strict).
+      no_host_key: Nenhuma chave confiada ainda.
+      scan_failed: O servidor não respondeu na porta SSH.
+      scan_host_key: Obter a chave do servidor
+      trust_host_key: Confiar

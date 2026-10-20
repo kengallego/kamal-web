@@ -10,6 +10,7 @@ class CommandRun < ApplicationRecord
   KEEP_PER_PROJECT = 50
 
   belongs_to :project
+  belongs_to :user, optional: true, default: -> { Current.user }
 
   # What was typed to confirm a command on a protected destination.
   attribute :confirmation, :string
@@ -70,7 +71,7 @@ class CommandRun < ApplicationRecord
   end
 
   def triggered_by
-    I18n.t("command_runs.triggers.#{trigger == "webhook" ? "webhook" : "manual"}")
+    trigger == "manual" && user ? user.name : I18n.t("command_runs.triggers.#{trigger == "webhook" ? "webhook" : "manual"}")
   end
 
   def start!(pid: nil)

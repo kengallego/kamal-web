@@ -16,8 +16,11 @@ class Project < ApplicationRecord
   has_many :alerts, dependent: :delete_all
 
   has_secure_token :deploy_webhook_token, length: 36
+  # Proves a deploy webhook call comes from CI or the git host, on top of the
+  # URL's token. See DeployHooksController.
+  has_secure_token :deploy_webhook_secret, length: 36, on: :create
 
-  encrypts :ssh_private_key, :git_ssh_private_key, :git_access_token, :notification_webhook_url, :discovered_files
+  encrypts :ssh_private_key, :git_ssh_private_key, :git_access_token, :notification_webhook_url, :discovered_files, :deploy_webhook_secret
 
   normalizes :repository_url, :local_path, :branch, :config_file, with: ->(value) { value.strip.presence }
 
