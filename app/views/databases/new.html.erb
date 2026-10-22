@@ -1,0 +1,14 @@
+<% content_for :title, t(".title") %>
+<%= render Ui::PageHeaderComponent.new(title: t(".title"), description: t(".description")) %>
+<nav class="mb-4 flex flex-wrap gap-2" aria-label="<%= t(".source") %>">
+  <% Database::SOURCES.each do |source| %>
+    <%= link_to t("databases.sources.#{source}"), new_database_path(source: source, engine: @database.engine), class: [ "btn btn-sm", ("btn-primary" if @database.source == source) ], aria: { current: ("page" if @database.source == source) } %>
+  <% end %>
+</nav>
+<nav class="mb-4 flex flex-wrap gap-2" aria-label="<%= t(".engine") %>">
+  <% Database::ENGINES.each do |engine| %>
+    <%= link_to t("databases.engines.#{engine}"), new_database_path(source: @database.source, engine: engine), class: [ "btn btn-sm", ("btn-primary" if @database.engine == engine) ], aria: { current: ("page" if @database.engine == engine) } %>
+  <% end %>
+</nav>
+<p class="mb-4 max-w-xl text-sm text-muted"><%= t("databases.form.source_hints.#{@database.source}") %></p>
+<%= render "form", database: @database %>

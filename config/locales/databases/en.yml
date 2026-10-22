@@ -1,0 +1,138 @@
+# Databases and the apps attached to them.
+en:
+  activerecord:
+    attributes:
+      database:
+        admin_user: Superuser
+        container_name: Container
+        engine: Engine
+        image: Version
+        name: Name
+        password: Password
+        public_port: Port for other servers
+        server: Server
+        server_id: Server
+        url: Connection URL
+      database_attachment:
+        destination: Destination
+        variable: Variable
+    errors:
+      models:
+        database:
+          attributes:
+            url:
+              wrong_scheme: 'must start with one of: %{schemes}'
+        database_attachment:
+          attributes:
+            destination:
+              unknown: is not configured in this project
+            variable:
+              invalid_name: must be a valid environment variable name
+              taken_by_variable: is already one of the project's environment variables. Delete it or choose another name.
+          no_redis_database: Every Redis database number (0–15) is in use.
+          not_reachable: The app runs on another server, and this database isn't published for other servers. Set a port for other servers first.
+          not_running: The database isn't running. Check it, or wait until it has started.
+  common:
+    databases: Databases
+  databases:
+    engines:
+      postgresql: PostgreSQL
+      redis: Redis / Valkey
+    form:
+      admin_user_hint: Kamal Web runs psql inside the container as this user, through the container's local socket. postgres in the official image.
+      container_hint_html: The name in <code>docker ps</code>, such as <code>myapp-db</code> for a Kamal accessory named db.
+      image_hint: The major version can't change later, because the data on disk belongs to it.
+      keep_password: Leave empty to keep the current password
+      keep_url: Leave empty to keep the current URL
+      name_hint: Lowercase letters, numbers and dashes. Created containers are called kamal-web-db-NAME.
+      no_servers_html: Add a server first. %{link}
+      public_port_hint_created: Leave empty if every app using it runs on the same server. With a port, only the servers of attached apps can connect, over TLS.
+      public_port_hint_existing: The port the container is already published on, if apps on other servers will use it.
+      public_port_placeholder: Same server only
+      redis_password_hint: The requirepass of this Redis server, if it has one.
+      source_hints:
+        created: Kamal Web runs the database in a container on the server, on the kamal network, with its data in a Docker volume and a generated password.
+        existing: A database container that is already running on one of your servers, such as a Kamal accessory. Kamal Web creates databases and users in it.
+        external: A managed database, such as one from DigitalOcean, or any other server Kamal Web reaches by URL. Apps get that URL as it is.
+      url_hint: Kept encrypted. Every app attached to it gets this URL, so use a user and database meant for them.
+    index:
+      add: Add database
+      description: PostgreSQL and Redis servers your apps use, on your servers or managed elsewhere.
+      empty_description: Create a PostgreSQL or Redis server on one of your servers, register one that is already running, or link a managed database. Then attach it to an app.
+      empty_title: No databases yet
+      engine: Engine
+      name: Name
+      not_attached: Not attached
+      where: Where
+    new:
+      description: Apps are attached to it afterwards, from its page.
+      engine: Engine
+      source: Kind
+      title: Add database
+    show:
+      app: App
+      attach: Attach
+      attachments: Attached apps
+      attachments_hint_postgresql: Each app gets its own database and user. The URL is stored as an encrypted environment variable of the project.
+      attachments_hint_postgresql_external: Each app gets the connection URL as an encrypted environment variable of the project.
+      attachments_hint_redis: Each app gets its own database number. The URL is stored as an encrypted environment variable of the project.
+      attachments_hint_redis_external: Each app gets the connection URL as an encrypted environment variable of the project.
+      check: Check
+      confirm_delete: Delete %{name}?
+      confirm_delete_data: Delete %{name} and its volume %{volume}? Its data can't be recovered.
+      confirm_detach_delete: Delete the database %{database} and its user? Its data can't be recovered.
+      confirm_detach_other: Detach %{project}? Its %{variable} variable is deleted.
+      confirm_detach_postgresql: Detach %{project}? Its %{variable} variable is deleted and its user can no longer sign in. The data stays.
+      container: Container
+      delete_created_hint: Stops and removes the container. Its volume %{volume} can stay, to start a new one with the same data.
+      delete_data: Delete with its data
+      delete_in_use: Detach every app before deleting this database.
+      delete_keep: Delete, keep the volume
+      delete_registered_hint: Kamal Web forgets it. Nothing changes on the database itself.
+      detach: Detach
+      detach_delete: Detach and delete data
+      details: Database
+      firewall_hint: The port only accepts the servers of attached apps (iptables rules in Docker's DOCKER-USER chain, applied again every 5 minutes, since they are lost on reboot).
+      firewall_existing_hint: Kamal Web doesn't manage this container's firewall. Make sure only your app servers reach its port.
+      host: Host
+      image: Image
+      last_check: Last check
+      no_attachments: No app uses it yet.
+      no_projects: Add a project to attach it to.
+      not_in_config_html: Add %{variable} to env.secret in the app's deploy.yml and %{line} to .kamal/secrets, then redeploy.
+      not_published: Not published
+      other_servers: From other servers
+      provisioning: Starting the container. The first time, the server downloads the image, which can take a minute.
+      remote: From another server
+      same_server: From the same server
+      server: Server
+      source: Kind
+      variable: Variable
+    sources:
+      created: Created by Kamal Web
+      existing: Existing container
+      external: External or managed
+    statuses:
+      external: not checked
+      failed: failed
+      missing: container missing
+      provisioning: starting
+      reachable: reachable
+      running: running
+      stopped: stopped
+      unknown: not checked
+      unreachable: unreachable
+  flash:
+    databases:
+      attached: '%{project} attached as %{variable}. Redeploy it to use the database.'
+      checked: 'Database %{status}.'
+      detached: '%{project} detached. Redeploy it so it stops using the database.'
+      failed: 'It failed: %{error}'
+      in_use: Detach every app before deleting this database.
+  projects:
+    settings:
+      show:
+        attach_database: Attach database
+        databases: Databases
+        databases_hint: Attached from the Databases page. Their URLs are environment variables of this project.
+        no_databases: No database attached.

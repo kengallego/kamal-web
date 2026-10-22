@@ -1,0 +1,138 @@
+# 数据库及连接到它们的应用。
+zh-CN:
+  activerecord:
+    attributes:
+      database:
+        admin_user: 超级用户
+        container_name: 容器
+        engine: 引擎
+        image: 版本
+        name: 名称
+        password: 密码
+        public_port: 供其他服务器使用的端口
+        server: 服务器
+        server_id: 服务器
+        url: 连接 URL
+      database_attachment:
+        destination: 目标环境
+        variable: 变量
+    errors:
+      models:
+        database:
+          attributes:
+            url:
+              wrong_scheme: '必须以以下之一开头：%{schemes}'
+        database_attachment:
+          attributes:
+            destination:
+              unknown: 未在此项目中配置
+            variable:
+              invalid_name: 必须是有效的环境变量名
+              taken_by_variable: 已经是项目的环境变量。请删除它或换一个名称。
+          no_redis_database: Redis 的数据库编号（0–15）已全部使用。
+          not_reachable: 应用运行在另一台服务器上，而此数据库未对其他服务器发布。请先设置供其他服务器使用的端口。
+          not_running: 数据库未运行。请检查它，或等待它启动。
+  common:
+    databases: 数据库
+  databases:
+    engines:
+      postgresql: PostgreSQL
+      redis: Redis / Valkey
+    form:
+      admin_user_hint: Kamal Web 以此用户在容器内通过容器的本地套接字运行 psql。官方镜像中为 postgres。
+      container_hint_html: <code>docker ps</code> 中显示的名称，例如名为 db 的 Kamal accessory 为 <code>myapp-db</code>。
+      image_hint: 主版本之后无法更改，因为磁盘上的数据属于该版本。
+      keep_password: 留空以保留当前密码
+      keep_url: 留空以保留当前 URL
+      name_hint: 小写字母、数字和连字符。创建的容器名为 kamal-web-db-名称。
+      no_servers_html: 请先添加服务器。%{link}
+      public_port_hint_created: 如果使用它的应用都在同一台服务器上，请留空。设置端口后，只有已连接应用的服务器可以通过 TLS 连接。
+      public_port_hint_existing: 如果其他服务器上的应用要使用它，填写容器已发布的端口。
+      public_port_placeholder: 仅同一服务器
+      redis_password_hint: 此 Redis 服务器的 requirepass（如有）。
+      source_hints:
+        created: Kamal Web 在服务器上的容器中运行数据库，位于 kamal 网络，数据存放在 Docker 卷中，并生成密码。
+        existing: 已在你的某台服务器上运行的数据库容器，例如 Kamal accessory。Kamal Web 会在其中创建数据库和用户。
+        external: 托管数据库（例如 DigitalOcean 的），或 Kamal Web 通过 URL 访问的其他服务器。应用会原样获得该 URL。
+      url_hint: 加密保存。每个已连接的应用都会获得此 URL，因此请使用专为它们准备的用户和数据库。
+    index:
+      add: 添加数据库
+      description: 你的应用使用的 PostgreSQL 和 Redis 服务器，位于你的服务器上或在别处托管。
+      empty_description: 在你的服务器上创建 PostgreSQL 或 Redis，登记一个已在运行的，或链接一个托管数据库。然后把它连接到应用。
+      empty_title: 还没有数据库
+      engine: 引擎
+      name: 名称
+      not_attached: 未连接
+      where: 位置
+    new:
+      description: 之后在它的页面上连接应用。
+      engine: 引擎
+      source: 类型
+      title: 添加数据库
+    show:
+      app: 应用
+      attach: 连接
+      attachments: 已连接的应用
+      attachments_hint_postgresql: 每个应用都有自己的数据库和用户。URL 作为项目的加密环境变量保存。
+      attachments_hint_postgresql_external: 每个应用都会以项目加密环境变量的形式获得连接 URL。
+      attachments_hint_redis: 每个应用都有自己的数据库编号。URL 作为项目的加密环境变量保存。
+      attachments_hint_redis_external: 每个应用都会以项目加密环境变量的形式获得连接 URL。
+      check: 检查
+      confirm_delete: 删除 %{name}？
+      confirm_delete_data: 删除 %{name} 及其卷 %{volume}？数据将无法恢复。
+      confirm_detach_delete: 删除数据库 %{database} 及其用户？数据将无法恢复。
+      confirm_detach_other: 断开 %{project}？其变量 %{variable} 将被删除。
+      confirm_detach_postgresql: 断开 %{project}？其变量 %{variable} 将被删除，其用户将无法再登录。数据会保留。
+      container: 容器
+      delete_created_hint: 停止并删除容器。其卷 %{volume} 可以保留，以便用相同数据启动新容器。
+      delete_data: 连同数据删除
+      delete_in_use: 删除此数据库前，请先断开所有应用。
+      delete_keep: 删除，保留卷
+      delete_registered_hint: Kamal Web 只是忘记它，数据库本身不会有任何变化。
+      detach: 断开
+      detach_delete: 断开并删除数据
+      details: 数据库
+      firewall_hint: 端口只接受已连接应用的服务器（Docker 的 DOCKER-USER 链中的 iptables 规则，因重启后会丢失，每 5 分钟重新应用）。
+      firewall_existing_hint: Kamal Web 不管理此容器的防火墙。请确保只有你的应用服务器能访问其端口。
+      host: 主机
+      image: 镜像
+      last_check: 上次检查
+      no_attachments: 还没有应用使用它。
+      no_projects: 添加一个项目以连接它。
+      not_in_config_html: 在应用的 deploy.yml 的 env.secret 中添加 %{variable}，在 .kamal/secrets 中添加 %{line}，然后重新部署。
+      not_published: 未发布
+      other_servers: 从其他服务器
+      provisioning: 正在启动容器。首次启动时服务器会下载镜像，可能需要一分钟。
+      remote: 从另一台服务器
+      same_server: 从同一服务器
+      server: 服务器
+      source: 类型
+      variable: 变量
+    sources:
+      created: 由 Kamal Web 创建
+      existing: 现有容器
+      external: 外部或托管
+    statuses:
+      external: 未检查
+      failed: 失败
+      missing: 容器缺失
+      provisioning: 启动中
+      reachable: 可访问
+      running: 运行中
+      stopped: 已停止
+      unknown: 未检查
+      unreachable: 无法访问
+  flash:
+    databases:
+      attached: '已将 %{project} 连接为 %{variable}。重新部署后它才会使用该数据库。'
+      checked: '数据库：%{status}。'
+      detached: '已断开 %{project}。重新部署后它才会停止使用该数据库。'
+      failed: '失败：%{error}'
+      in_use: 删除此数据库前，请先断开所有应用。
+  projects:
+    settings:
+      show:
+        attach_database: 连接数据库
+        databases: 数据库
+        databases_hint: 在数据库页面连接。它们的 URL 是此项目的环境变量。
+        no_databases: 未连接任何数据库。

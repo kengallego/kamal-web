@@ -84,6 +84,13 @@ module ApplicationHelper
         title = t("common.edit")
       end
       trail << [ title, nil ] if title.present?
+    elsif controller_path.in?(%w[ databases databases/attachments ]) && action_name != "index"
+      trail << [ t("common.databases"), databases_path ]
+      if @database&.persisted? && action_name.in?(%w[ edit update ])
+        trail << [ @database.name, database_path(@database) ]
+        title = t("common.edit")
+      end
+      trail << [ title, nil ] if title.present?
     else
       trail << [ title, nil ] if title.present?
     end

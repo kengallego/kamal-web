@@ -1,0 +1,39 @@
+<% content_for :title, t("common.databases") %>
+<%= render Ui::PageHeaderComponent.new(title: t("common.databases"), description: t(".description")) do %>
+  <%= link_to new_database_path, class: "btn btn-primary" do %><%= render Ui::IconComponent.new(name: :plus, size: 16) %><%= t(".add") %><% end %>
+<% end %>
+
+<% if @databases.empty? %>
+  <%= render Ui::PanelComponent.new do %>
+    <%= render Ui::EmptyStateComponent.new(title: t(".empty_title"), description: t(".empty_description"), icon: :database) do %>
+      <%= link_to new_database_path, class: "btn btn-primary" do %><%= render Ui::IconComponent.new(name: :plus, size: 16) %><%= t(".add") %><% end %>
+    <% end %>
+  <% end %>
+<% else %>
+  <%= render Ui::PanelComponent.new do %>
+    <div class="overflow-x-auto"><table class="table">
+      <thead><tr><th><%= t(".name") %></th><th><%= t(".engine") %></th><th><%= t(".where") %></th><th><%= t("layouts.application.projects") %></th><th><%= t("common.status") %></th></tr></thead>
+      <tbody>
+        <% @databases.each do |database| %>
+          <tr>
+            <td><%= link_to database.name, database_path(database), class: "font-medium text-foreground hover:underline" %></td>
+            <td class="text-muted"><%= t("databases.engines.#{database.engine}") %></td>
+            <td class="text-muted"><%= database.external? ? t("databases.sources.external") : database.server.label %></td>
+            <td class="text-muted">
+              <% if database.attachments.any? %>
+                <ul class="space-y-1">
+                  <% database.attachments.each do |attachment| %>
+                    <li class="flex flex-wrap items-center gap-2"><%= link_to attachment.project.name, project_path(attachment.project), class: "hover:text-foreground hover:underline" %><% if attachment.destination %><%= render Ui::BadgeComponent.new(label: attachment.destination, tone: :neutral) %><% end %></li>
+                  <% end %>
+                </ul>
+              <% else %>
+                <%= t(".not_attached") %>
+              <% end %>
+            </td>
+            <td><%= render "databases/status", database: database %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table></div>
+  <% end %>
+<% end %>

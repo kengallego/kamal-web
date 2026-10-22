@@ -1,0 +1,122 @@
+<% content_for :title, @database.name %>
+<%= turbo_stream_from @database %>
+<%= render Ui::PageHeaderComponent.new(title: @database.name, description: t("databases.engines.#{@database.engine}")) do %>
+  <% unless @database.status == "provisioning" %>
+    <%= button_to check_database_path(@database), class: "btn btn-quiet" do %><%= render Ui::IconComponent.new(name: :refresh, size: 15) %><%= t(".check") %><% end %>
+  <% end %>
+  <%= link_to t("common.edit"), edit_database_path(@database), class: "btn" %>
+<% end %>
+
+<div class="max-w-4xl space-y-6">
+  <%= render Ui::PanelComponent.new do %>
+    <div class="card-header">
+      <h2 class="card-title"><%= t(".details") %></h2>
+      <%= render "databases/status", database: @database %>
+    </div>
+    <dl class="card-body grid gap-3 text-sm sm:grid-cols-2">
+      <div><dt class="label"><%= t(".source") %></dt><dd><%= t("databases.sources.#{@database.source}") %></dd></div>
+      <% if @database.external? %>
+        <div><dt class="label"><%= t(".host") %></dt><dd class="font-mono break-words [overflow-wrap:anywhere]"><%= URI.parse(@database.url).then { |uri| [ uri.host, uri.port ].compact.join(":") } rescue "–" %></dd></div>
+      <% else %>
+        <div><dt class="label"><%= t(".server") %></dt><dd><%= link_to @database.server.label, server_path(@database.server), class: "hover:underline" %></dd></div>
+        <div><dt class="label"><%= t(".container") %></dt><dd class="font-mono break-words [overflow-wrap:anywhere]"><%= @database.container_name %></dd></div>
+        <% if @database.image %><div><dt class="label"><%= t(".image") %></dt><dd class="font-mono"><%= @database.image %></dd></div><% end %>
+        <div><dt class="label"><%= t(".same_server") %></dt><dd class="font-mono break-words [overflow-wrap:anywhere]"><%= @database.container_name %>:<%= @database.internal_port %></dd></div>
+        <div>
+          <dt class="label"><%= t(".other_servers") %></dt>
+          <dd class="break-words [overflow-wrap:anywhere]"><%= @database.public_port ? tag.span("#{@database.server.host}:#{@database.public_port}", class: "font-mono") : t(".not_published") %></dd>
+        </div>
+      <% end %>
+      <div><dt class="label"><%= t(".last_check") %></dt><dd><%= @database.checked_at ? time_ago(@database.checked_at) : t("servers.show.never_checked") %></dd></div>
+    </dl>
+    <% if @database.status == "provisioning" %>
+      <p class="border-t border-line px-4 py-4 text-sm text-muted"><%= t(".provisioning") %></p>
+    <% elsif @database.status_message.present? %>
+      <div class="border-t border-line px-4 py-4"><pre class="whitespace-pre-wrap font-mono text-xs text-danger"><%= @database.status_message.last(1500) %></pre></div>
+    <% end %>
+    <% if @database.created? && @database.public_port %>
+      <p class="border-t border-line px-4 py-4 text-xs text-muted"><%= t(".firewall_hint") %></p>
+    <% elsif @database.existing? && @database.public_port %>
+      <p class="border-t border-line px-4 py-4 text-xs text-warning"><%= t(".firewall_existing_hint") %></p>
+    <% end %>
+  <% end %>
+
+  <%= render Ui::PanelComponent.new do %>
+    <div class="card-header">
+      <div>
+        <h2 class="card-title"><%= t(".attachments") %></h2>
+        <p class="text-xs text-muted"><%= t(".attachments_hint_#{@database.engine}#{"_external" if @database.external?}") %></p>
+      </div>
+    </div>
+    <% if @attachments.empty? %>
+      <p class="px-4 py-6 text-center text-sm text-muted"><%= t(".no_attachments") %></p>
+    <% else %>
+      <div class="overflow-x-auto"><table class="table">
+        <thead><tr><th><%= t("common.project") %></th><th><%= t("common.destination") %></th><th><%= t(".variable") %></th><th></th></tr></thead>
+        <tbody>
+          <% @attachments.each do |attachment| %>
+            <tr>
+              <td>
+                <%= link_to attachment.project.name, project_path(attachment.project), class: "font-medium text-foreground hover:underline" %>
+                <% if attachment.database_name %><p class="font-mono text-xs text-muted"><%= attachment.database_name %></p><% elsif attachment.redis_index %><p class="font-mono text-xs text-muted">/<%= attachment.redis_index %></p><% end %>
+              </td>
+              <td class="text-muted"><%= attachment.destination || t("projects.settings.show.all") %></td>
+              <td>
+                <span class="font-mono text-xs text-foreground"><%= attachment.variable %></span>
+                <% if attachment.remote? %><p class="text-xs text-muted"><%= t(".remote") %></p><% end %>
+                <% unless attachment.listed_in_config? %>
+                  <p class="mt-1 text-xs text-warning"><%= t(".not_in_config_html", variable: tag.code(attachment.variable), line: tag.code("#{attachment.variable}=$#{attachment.variable}")) %></p>
+                <% end %>
+              </td>
+              <td class="text-right">
+                <div class="flex justify-end gap-2">
+                  <%= button_to t(".detach"), database_attachment_path(@database, attachment), method: :delete, class: "btn btn-sm", form: { data: { turbo_confirm: t(".confirm_detach_#{@database.postgresql? && !@database.external? ? "postgresql" : "other"}", project: attachment.project.name, variable: attachment.variable) } } %>
+                  <% if @database.postgresql? && !@database.external? %>
+                    <%= button_to t(".detach_delete"), database_attachment_path(@database, attachment), method: :delete, params: { delete_data: "1" }, class: "btn btn-sm btn-danger", form: { data: { turbo_confirm: t(".confirm_detach_delete", database: attachment.database_name) } } %>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table></div>
+    <% end %>
+    <% if @projects.any? %>
+      <%= form_with model: DatabaseAttachment.new, url: database_attachments_path(@database), class: "border-t border-line px-4 py-4 flex flex-wrap items-end gap-3" do |form| %>
+        <div class="min-w-0 flex-1 basis-56">
+          <%= form.label :target, t(".app"), class: "label" %>
+          <%= form.select :target, grouped_options_for_select(@projects.map { |project| [ project.name, [ [ "#{project.name} · #{t("projects.settings.show.all")}", "#{project.id}/" ], *project.destinations.compact.map { |destination| [ "#{project.name} · #{destination}", "#{project.id}/#{destination}" ] } ] ] }), {}, class: "input" %>
+        </div>
+        <div class="min-w-0 basis-44">
+          <%= form.label :variable, t(".variable"), class: "label" %>
+          <%= form.text_field :variable, value: @database.default_variable, class: "input font-mono", autocomplete: "off" %>
+        </div>
+        <%= form.submit t(".attach"), class: "btn btn-primary" %>
+      <% end %>
+    <% else %>
+      <p class="border-t border-line px-4 py-4 text-sm text-muted"><%= t(".no_projects") %></p>
+    <% end %>
+  <% end %>
+
+  <%= render Ui::PanelComponent.new(class: "border-danger/30") do %>
+    <div class="card-header"><h2 class="card-title text-danger"><%= t("projects.settings.show.danger_zone") %></h2></div>
+    <div class="card-body space-y-3">
+      <% if @attachments.any? %>
+        <p class="text-sm text-muted"><%= t(".delete_in_use") %></p>
+      <% elsif @database.created? %>
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <p class="text-sm text-muted"><%= t(".delete_created_hint", volume: @database.volume_name) %></p>
+          <div class="flex flex-wrap gap-2">
+            <%= button_to t(".delete_keep"), database_path(@database), method: :delete, class: "btn btn-danger", form: { data: { turbo_confirm: t(".confirm_delete", name: @database.name) } } %>
+            <%= button_to t(".delete_data"), database_path(@database), method: :delete, params: { delete_data: "1" }, class: "btn btn-danger", form: { data: { turbo_confirm: t(".confirm_delete_data", name: @database.name, volume: @database.volume_name) } } %>
+          </div>
+        </div>
+      <% else %>
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <p class="text-sm text-muted"><%= t(".delete_registered_hint") %></p>
+          <%= button_to t("common.delete"), database_path(@database), method: :delete, class: "btn btn-danger", form: { data: { turbo_confirm: t(".confirm_delete", name: @database.name) } } %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

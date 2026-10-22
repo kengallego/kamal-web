@@ -28,7 +28,7 @@ module Auditing
 
     # The record the action was about, when the controller loaded one.
     def audit_subject
-      %i[ @run @session @variable @file @server @user @project ]
+      %i[ @run @session @variable @file @attachment @database @server @user @project ]
         .lazy.map { |name| instance_variable_get(name) }.find { |record| record.is_a?(ApplicationRecord) && record.persisted? }
     end
 end

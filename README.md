@@ -45,6 +45,7 @@ English and Spanish. Light and dark themes. Personal accounts with an activity l
 - **Accounts and activity.** Everyone signs in with their own account, optionally with an authenticator app. The Activity page records who deployed, opened a console, changed a secret or a setting, and from which IP.
 - **Notifications.** Slack, Discord or JSON webhooks when an operation finishes or an alert opens or resolves, plus browser notifications.
 - **Deploy webhook.** Trigger deploys from CI or a GitHub/GitLab push.
+- **Databases.** Run PostgreSQL or Redis/Valkey in a container on any of your servers, register one that is already running (such as a Kamal accessory) or link a managed one, such as DigitalOcean's. Attaching an app gives it its own database and user, and stores the URL as one of its environment variables.
 - **Status board.** A read-only page for a TV or for stakeholders, behind a secret URL. It updates live as deploys run and metrics arrive.
 - **English and Spanish, light and dark.** Follows the browser's language and theme, or pick them in the sidebar.
 - **Backups.** Download everything from Settings and restore it in one step, or turn on a daily backup kept in the volume.
@@ -163,6 +164,20 @@ Kamal Web controls your servers, so it's worth more than a password:
 - **Allowed IPs.** `KAMAL_WEB_ALLOWED_IPS=203.0.113.7,198.51.100.0/24` in `.env` makes the dashboard answer only those addresses. The deploy webhook and the status board keep working from anywhere, since they have their own secret URLs.
 
 Sign-in attempts are limited to 10 every 3 minutes per IP, and failed ones show up on the Activity page. Deleting an account, or changing its password, signs it out everywhere.
+
+### Databases
+
+**Databases** in the sidebar lists the PostgreSQL and Redis servers your apps use. Add one in three ways:
+
+- **Created by Kamal Web.** It runs `postgres` or `valkey`/`redis` in a container on the server you pick, on the `kamal` network, with its data in a Docker volume and a generated password. PostgreSQL serves TLS with its own certificate.
+- **Existing container.** A database container already on one of your servers, such as a Kamal accessory. Kamal Web runs `psql` inside it to create databases and users.
+- **External or managed.** Any URL, such as a DigitalOcean managed database. Apps get it as it is.
+
+Attach an app from the database's page. A PostgreSQL app gets its own database and user, which other apps' users can't connect to; a Redis app gets its own database number. The URL becomes an encrypted environment variable of the project (`DATABASE_URL` or `REDIS_URL` by default, per destination if you like). Kamal only hands it to the app if `config/deploy.yml` lists it under `env.secret` and `.kamal/secrets` reads it (`DATABASE_URL=$DATABASE_URL`); the page warns when the config doesn't. Then redeploy.
+
+Apps on the same server connect over the `kamal` network. For apps on other servers, give the database a port for other servers: only the servers of attached apps can reach it, through iptables rules in Docker's `DOCKER-USER` chain that Kamal Web applies again every 5 minutes, since a reboot clears them. This needs root or passwordless `sudo` on the database server.
+
+Detaching an app deletes its variable and stops its user from signing in, but keeps its data, unless you choose to delete it. Deleting a created database can keep its volume.
 
 ### Backups
 

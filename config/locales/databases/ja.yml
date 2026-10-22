@@ -1,0 +1,138 @@
+# データベースと、それに接続したアプリ。
+ja:
+  activerecord:
+    attributes:
+      database:
+        admin_user: スーパーユーザー
+        container_name: コンテナ
+        engine: エンジン
+        image: バージョン
+        name: 名前
+        password: パスワード
+        public_port: 他のサーバー用のポート
+        server: サーバー
+        server_id: サーバー
+        url: 接続URL
+      database_attachment:
+        destination: デスティネーション
+        variable: 変数
+    errors:
+      models:
+        database:
+          attributes:
+            url:
+              wrong_scheme: 'は次のいずれかで始めてください: %{schemes}'
+        database_attachment:
+          attributes:
+            destination:
+              unknown: はこのプロジェクトに設定されていません
+            variable:
+              invalid_name: は有効な環境変数名にしてください
+              taken_by_variable: はすでにプロジェクトの環境変数です。削除するか別の名前にしてください。
+          no_redis_database: Redisのデータベース番号（0–15）がすべて使われています。
+          not_reachable: アプリは別のサーバーで動いていますが、このデータベースは他のサーバーに公開されていません。先に他のサーバー用のポートを設定してください。
+          not_running: データベースが動いていません。確認するか、起動するまで待ってください。
+  common:
+    databases: データベース
+  databases:
+    engines:
+      postgresql: PostgreSQL
+      redis: Redis / Valkey
+    form:
+      admin_user_hint: Kamal Webはコンテナのローカルソケット経由で、このユーザーとしてコンテナ内でpsqlを実行します。公式イメージではpostgresです。
+      container_hint_html: <code>docker ps</code>に表示される名前です。dbという名前のKamal accessoryなら<code>myapp-db</code>のようになります。
+      image_hint: ディスク上のデータがそのバージョンのものなので、メジャーバージョンは後から変更できません。
+      keep_password: 空のままにすると現在のパスワードを使います
+      keep_url: 空のままにすると現在のURLを使います
+      name_hint: 小文字、数字、ハイフン。作成されるコンテナはkamal-web-db-NAMEという名前になります。
+      no_servers_html: 先にサーバーを追加してください。%{link}
+      public_port_hint_created: 使うアプリがすべて同じサーバーにあるなら空のままにします。ポートを指定すると、接続したアプリのサーバーだけがTLSで接続できます。
+      public_port_hint_existing: 他のサーバーのアプリが使う場合、コンテナがすでに公開されているポートです。
+      public_port_placeholder: 同じサーバーのみ
+      redis_password_hint: このRedisサーバーのrequirepass（ある場合）。
+      source_hints:
+        created: Kamal Webがサーバー上のコンテナでデータベースを起動します。kamalネットワーク上で、データはDockerボリュームに置き、パスワードは自動生成します。
+        existing: Kamal accessoryなど、すでにサーバーで動いているデータベースコンテナです。Kamal Webはその中にデータベースとユーザーを作ります。
+        external: DigitalOceanなどのマネージドデータベースや、Kamal WebがURLで到達できるその他のサーバーです。アプリにはそのURLがそのまま渡されます。
+      url_hint: 暗号化して保存します。接続したすべてのアプリがこのURLを受け取るので、アプリ用のユーザーとデータベースを使ってください。
+    index:
+      add: データベースを追加
+      description: アプリが使うPostgreSQLとRedisのサーバー。自分のサーバー上でも、他所のマネージドでも。
+      empty_description: サーバーにPostgreSQLやRedisを作成するか、動いているものを登録するか、マネージドデータベースをリンクします。その後アプリに接続します。
+      empty_title: データベースはまだありません
+      engine: エンジン
+      name: 名前
+      not_attached: 未接続
+      where: 場所
+    new:
+      description: アプリはその後、データベースのページから接続します。
+      engine: エンジン
+      source: 種類
+      title: データベースを追加
+    show:
+      app: アプリ
+      attach: 接続
+      attachments: 接続しているアプリ
+      attachments_hint_postgresql: アプリごとに専用のデータベースとユーザーを作ります。URLはプロジェクトの暗号化された環境変数として保存されます。
+      attachments_hint_postgresql_external: 各アプリは接続URLをプロジェクトの暗号化された環境変数として受け取ります。
+      attachments_hint_redis: アプリごとに専用のデータベース番号を割り当てます。URLはプロジェクトの暗号化された環境変数として保存されます。
+      attachments_hint_redis_external: 各アプリは接続URLをプロジェクトの暗号化された環境変数として受け取ります。
+      check: 確認
+      confirm_delete: '%{name}を削除しますか？'
+      confirm_delete_data: '%{name}とボリューム%{volume}を削除しますか？データは復元できません。'
+      confirm_detach_delete: データベース%{database}とそのユーザーを削除しますか？データは復元できません。
+      confirm_detach_other: '%{project}の接続を解除しますか？変数%{variable}が削除されます。'
+      confirm_detach_postgresql: '%{project}の接続を解除しますか？変数%{variable}が削除され、ユーザーはログインできなくなります。データは残ります。'
+      container: コンテナ
+      delete_created_hint: コンテナを停止して削除します。ボリューム%{volume}は残せるので、同じデータで新しいコンテナを起動できます。
+      delete_data: データごと削除
+      delete_in_use: このデータベースを削除する前に、すべてのアプリの接続を解除してください。
+      delete_keep: 削除してボリュームは残す
+      delete_registered_hint: Kamal Webが登録を削除するだけで、データベース自体は何も変わりません。
+      detach: 接続解除
+      detach_delete: 接続解除してデータを削除
+      details: データベース
+      firewall_hint: ポートは接続したアプリのサーバーからのみ受け付けます（DockerのDOCKER-USERチェーンのiptablesルール。再起動で消えるため5分ごとに再適用します）。
+      firewall_existing_hint: このコンテナのファイアウォールはKamal Webが管理しません。アプリのサーバーだけがポートに届くようにしてください。
+      host: ホスト
+      image: イメージ
+      last_check: 最終確認
+      no_attachments: まだどのアプリも使っていません。
+      no_projects: 接続するプロジェクトを追加してください。
+      not_in_config_html: アプリのdeploy.ymlのenv.secretに%{variable}を、.kamal/secretsに%{line}を追加して、再デプロイしてください。
+      not_published: 非公開
+      other_servers: 他のサーバーから
+      provisioning: コンテナを起動しています。初回はサーバーがイメージをダウンロードするため、1分ほどかかることがあります。
+      remote: 別のサーバーから
+      same_server: 同じサーバーから
+      server: サーバー
+      source: 種類
+      variable: 変数
+    sources:
+      created: Kamal Webが作成
+      existing: 既存のコンテナ
+      external: 外部またはマネージド
+    statuses:
+      external: 未確認
+      failed: 失敗
+      missing: コンテナなし
+      provisioning: 起動中
+      reachable: 到達可能
+      running: 稼働中
+      stopped: 停止
+      unknown: 未確認
+      unreachable: 到達不可
+  flash:
+    databases:
+      attached: '%{project}を%{variable}として接続しました。データベースを使うには再デプロイしてください。'
+      checked: 'データベース: %{status}。'
+      detached: '%{project}の接続を解除しました。データベースの使用をやめるには再デプロイしてください。'
+      failed: '失敗しました: %{error}'
+      in_use: このデータベースを削除する前に、すべてのアプリの接続を解除してください。
+  projects:
+    settings:
+      show:
+        attach_database: データベースを接続
+        databases: データベース
+        databases_hint: データベースのページから接続します。URLはこのプロジェクトの環境変数です。
+        no_databases: 接続しているデータベースはありません。

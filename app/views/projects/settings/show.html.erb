@@ -51,6 +51,33 @@
   <%= render Ui::PanelComponent.new do %>
     <div class="card-header">
       <div>
+        <h2 class="card-title"><%= t(".databases") %></h2>
+        <p class="text-xs text-muted"><%= t(".databases_hint") %></p>
+      </div>
+      <%= link_to t(".attach_database"), databases_path, class: "btn btn-sm" %>
+    </div>
+    <% attachments = @project.database_attachments.includes(:database).order(:variable) %>
+    <% if attachments.empty? %>
+      <p class="px-4 py-6 text-center text-sm text-muted"><%= t(".no_databases") %></p>
+    <% else %>
+      <div class="overflow-x-auto"><table class="table">
+        <thead><tr><th><%= t("common.databases") %></th><th><%= t("common.destination") %></th><th><%= t(".name") %></th></tr></thead>
+        <tbody>
+          <% attachments.each do |attachment| %>
+            <tr>
+              <td><%= link_to attachment.database.name, database_path(attachment.database), class: "font-medium text-foreground hover:underline" %> <span class="text-xs text-muted"><%= t("databases.engines.#{attachment.database.engine}") %></span></td>
+              <td class="text-muted"><%= attachment.destination || t(".all") %></td>
+              <td class="font-mono text-xs text-foreground"><%= attachment.variable %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table></div>
+    <% end %>
+  <% end %>
+
+  <%= render Ui::PanelComponent.new do %>
+    <div class="card-header">
+      <div>
         <h2 class="card-title"><%= t(".files") %></h2>
         <p class="text-xs text-muted"><%= t(".files_hint_html") %></p>
       </div>

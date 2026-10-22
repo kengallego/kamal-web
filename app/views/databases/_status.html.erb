@@ -1,0 +1,2 @@
+<% tone = { "running" => :success, "reachable" => :success, "provisioning" => :warning, "failed" => :danger, "missing" => :danger, "stopped" => :danger, "unreachable" => :danger }.fetch(database.status, :neutral) %>
+<span title="<%= database.status_message %>"><%= render Ui::BadgeComponent.new(label: t("databases.statuses.#{database.status}"), tone: tone, dot: true) %></span>

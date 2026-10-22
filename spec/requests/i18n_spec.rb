@@ -23,6 +23,13 @@ RSpec.describe "Translations" do
     project.health_checks.create!(url: "https://demo.example.com/up", checked_at: 1.minute.ago, status_code: 200, duration_ms: 12, certificate_expires_at: 40.days.from_now)
   end
 
+  let(:database) do
+    Database.create!(name: "main", engine: "postgresql", source: "created", server: Server.find_by!(host: "192.0.2.10"), image: "postgres:17", status: "running", public_port: 25432).tap do |database|
+      DatabaseAttachment.new(database: database, project: project, variable: "DATABASE_URL").tap { |attachment| attachment.save!; attachment.write_variable! }
+    end
+  end
+  let(:external_database) { Database.create!(name: "managed", engine: "redis", source: "external", url: "rediss://default:x@redis.example.com:25061") }
+
   def pages
     run = project.command_runs.first
     [ root_path, new_project_path, project_path(project), edit_project_path(project), project_commands_path(project),
@@ -34,7 +41,9 @@ RSpec.describe "Translations" do
       project_monitoring_path(project, range: "30d"), servers_path, new_server_path,
       server_path(Server.find_by!(host: "192.0.2.10")), edit_server_path(Server.find_by!(host: "192.0.2.10")),
       server_path(Server.find_by!(host: "192.0.2.10"), scan: 1), users_path, new_user_path, edit_account_path, new_two_factor_path,
-      audit_events_path, status_board_path(Setting.instance.status_board_token) ]
+      audit_events_path, status_board_path(Setting.instance.status_board_token), databases_path,
+      new_database_path, new_database_path(source: "existing", engine: "redis"), new_database_path(source: "external"),
+      database_path(database), edit_database_path(database), database_path(external_database) ]
   end
 
   I18n.available_locales.map(&:to_s).each do |locale|

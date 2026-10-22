@@ -1,6 +1,7 @@
 <nav aria-label="<%= t('ui.navigation') %>" class="space-y-1">
   <%= render Ui::NavLinkComponent.new(label: t('common.dashboard'), path: root_path, active: current_page?(root_path), icon: :grid) %>
   <%= render Ui::NavLinkComponent.new(label: t('common.servers'), path: servers_path, active: request.path == servers_path || request.path.start_with?(servers_path + '/'), icon: :server) %>
+  <%= render Ui::NavLinkComponent.new(label: t('common.databases'), path: databases_path, active: request.path == databases_path || request.path.start_with?(databases_path + '/'), icon: :database) %>
   <%= render Ui::NavLinkComponent.new(label: t('common.users'), path: users_path, active: request.path.start_with?(users_path) || request.path.start_with?(audit_events_path), icon: :user) %>
 </nav>
 <div class="mt-8 mb-2 flex items-center justify-between px-3">

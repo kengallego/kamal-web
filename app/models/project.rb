@@ -14,6 +14,8 @@ class Project < ApplicationRecord
   has_many :hourly_metrics, dependent: :delete_all
   has_many :health_checks, dependent: :delete_all
   has_many :alerts, dependent: :delete_all
+  # The users and databases on the database servers stay.
+  has_many :database_attachments, dependent: :delete_all
 
   has_secure_token :deploy_webhook_token, length: 36
   # Proves a deploy webhook call comes from CI or the git host, on top of the

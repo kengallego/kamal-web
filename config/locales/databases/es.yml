@@ -1,0 +1,138 @@
+# Bases de datos y las apps conectadas a ellas.
+es:
+  activerecord:
+    attributes:
+      database:
+        admin_user: Superusuario
+        container_name: Contenedor
+        engine: Motor
+        image: Versión
+        name: Nombre
+        password: Contraseña
+        public_port: Puerto para otros servidores
+        server: Servidor
+        server_id: Servidor
+        url: URL de conexión
+      database_attachment:
+        destination: Destino
+        variable: Variable
+    errors:
+      models:
+        database:
+          attributes:
+            url:
+              wrong_scheme: 'debe empezar por uno de: %{schemes}'
+        database_attachment:
+          attributes:
+            destination:
+              unknown: no está configurado en este proyecto
+            variable:
+              invalid_name: debe ser un nombre de variable de entorno válido
+              taken_by_variable: ya es una de las variables de entorno del proyecto. Bórrala o elige otro nombre.
+          no_redis_database: Todos los números de base de datos de Redis (0–15) están en uso.
+          not_reachable: La app corre en otro servidor y esta base de datos no está publicada para otros servidores. Indica antes un puerto para otros servidores.
+          not_running: La base de datos no está en marcha. Compruébala o espera a que arranque.
+  common:
+    databases: Bases de datos
+  databases:
+    engines:
+      postgresql: PostgreSQL
+      redis: Redis / Valkey
+    form:
+      admin_user_hint: Kamal Web ejecuta psql dentro del contenedor como este usuario, por el socket local del contenedor. postgres en la imagen oficial.
+      container_hint_html: El nombre que sale en <code>docker ps</code>, como <code>myapp-db</code> para un accessory de Kamal llamado db.
+      image_hint: La versión mayor no se puede cambiar después, porque los datos en disco son de esa versión.
+      keep_password: Déjala vacía para mantener la contraseña actual
+      keep_url: Déjala vacía para mantener la URL actual
+      name_hint: Minúsculas, números y guiones. Los contenedores creados se llaman kamal-web-db-NOMBRE.
+      no_servers_html: Añade antes un servidor. %{link}
+      public_port_hint_created: Déjalo vacío si todas las apps que la usan están en el mismo servidor. Con un puerto, solo se conectan los servidores de las apps conectadas, con TLS.
+      public_port_hint_existing: El puerto en el que el contenedor ya está publicado, si la van a usar apps de otros servidores.
+      public_port_placeholder: Solo el mismo servidor
+      redis_password_hint: El requirepass de este Redis, si tiene.
+      source_hints:
+        created: Kamal Web levanta la base de datos en un contenedor del servidor, en la red kamal, con sus datos en un volumen de Docker y una contraseña generada.
+        existing: Un contenedor de base de datos que ya corre en uno de tus servidores, como un accessory de Kamal. Kamal Web crea bases de datos y usuarios dentro.
+        external: Una base de datos managed, como las de DigitalOcean, o cualquier otro servidor al que Kamal Web llega por URL. Las apps reciben esa URL tal cual.
+      url_hint: Se guarda cifrada. Todas las apps conectadas reciben esta URL, así que usa un usuario y una base de datos pensados para ellas.
+    index:
+      add: Añadir base de datos
+      description: Los servidores PostgreSQL y Redis que usan tus apps, en tus servidores o managed en otro sitio.
+      empty_description: Crea un PostgreSQL o un Redis en uno de tus servidores, registra uno que ya esté en marcha o enlaza una base de datos managed. Después conéctala a una app.
+      empty_title: Aún no hay bases de datos
+      engine: Motor
+      name: Nombre
+      not_attached: Sin conectar
+      where: Dónde
+    new:
+      description: Las apps se conectan después, desde su página.
+      engine: Motor
+      source: Tipo
+      title: Añadir base de datos
+    show:
+      app: App
+      attach: Conectar
+      attachments: Apps conectadas
+      attachments_hint_postgresql: Cada app tiene su propia base de datos y su usuario. La URL se guarda como variable de entorno cifrada del proyecto.
+      attachments_hint_postgresql_external: Cada app recibe la URL de conexión como variable de entorno cifrada del proyecto.
+      attachments_hint_redis: Cada app tiene su propio número de base de datos. La URL se guarda como variable de entorno cifrada del proyecto.
+      attachments_hint_redis_external: Cada app recibe la URL de conexión como variable de entorno cifrada del proyecto.
+      check: Comprobar
+      confirm_delete: ¿Eliminar %{name}?
+      confirm_delete_data: ¿Eliminar %{name} y su volumen %{volume}? Sus datos no se podrán recuperar.
+      confirm_detach_delete: ¿Borrar la base de datos %{database} y su usuario? Sus datos no se podrán recuperar.
+      confirm_detach_other: ¿Desconectar %{project}? Se borra su variable %{variable}.
+      confirm_detach_postgresql: ¿Desconectar %{project}? Se borra su variable %{variable} y su usuario ya no podrá entrar. Los datos se quedan.
+      container: Contenedor
+      delete_created_hint: Para y elimina el contenedor. Su volumen %{volume} se puede quedar, para levantar otro con los mismos datos.
+      delete_data: Eliminar con sus datos
+      delete_in_use: Desconecta todas las apps antes de eliminar esta base de datos.
+      delete_keep: Eliminar y mantener el volumen
+      delete_registered_hint: Kamal Web la olvida. No cambia nada en la propia base de datos.
+      detach: Desconectar
+      detach_delete: Desconectar y borrar datos
+      details: Base de datos
+      firewall_hint: El puerto solo acepta a los servidores de las apps conectadas (reglas de iptables en la cadena DOCKER-USER de Docker, que se aplican de nuevo cada 5 minutos porque se pierden al reiniciar).
+      firewall_existing_hint: Kamal Web no gestiona el firewall de este contenedor. Asegúrate de que solo tus servidores de apps llegan a su puerto.
+      host: Host
+      image: Imagen
+      last_check: Última comprobación
+      no_attachments: Ninguna app la usa todavía.
+      no_projects: Añade un proyecto para conectarla.
+      not_in_config_html: Añade %{variable} a env.secret en el deploy.yml de la app y %{line} a .kamal/secrets, y vuelve a desplegar.
+      not_published: Sin publicar
+      other_servers: Desde otros servidores
+      provisioning: Arrancando el contenedor. La primera vez el servidor descarga la imagen, lo que puede tardar un minuto.
+      remote: Desde otro servidor
+      same_server: Desde el mismo servidor
+      server: Servidor
+      source: Tipo
+      variable: Variable
+    sources:
+      created: Creada por Kamal Web
+      existing: Contenedor existente
+      external: Externa o managed
+    statuses:
+      external: sin comprobar
+      failed: falló
+      missing: falta el contenedor
+      provisioning: arrancando
+      reachable: accesible
+      running: en marcha
+      stopped: parada
+      unknown: sin comprobar
+      unreachable: inaccesible
+  flash:
+    databases:
+      attached: '%{project} conectada como %{variable}. Vuelve a desplegarla para que use la base de datos.'
+      checked: 'Base de datos: %{status}.'
+      detached: '%{project} desconectada. Vuelve a desplegarla para que deje de usar la base de datos.'
+      failed: 'Ha fallado: %{error}'
+      in_use: Desconecta todas las apps antes de eliminar esta base de datos.
+  projects:
+    settings:
+      show:
+        attach_database: Conectar base de datos
+        databases: Bases de datos
+        databases_hint: Se conectan desde la página Bases de datos. Sus URLs son variables de entorno de este proyecto.
+        no_databases: Ninguna base de datos conectada.

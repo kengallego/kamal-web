@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_19_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_22_090000) do
   create_table "alerts", force: :cascade do |t|
     t.integer "project_id", null: false
     t.string "kind", null: false
@@ -74,6 +74,46 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_19_090000) do
     t.integer "user_id"
     t.index ["project_id"], name: "index_console_sessions_on_project_id"
     t.index ["user_id"], name: "index_console_sessions_on_user_id"
+  end
+
+  create_table "database_attachments", force: :cascade do |t|
+    t.integer "database_id", null: false
+    t.integer "project_id", null: false
+    t.integer "environment_variable_id"
+    t.string "destination"
+    t.string "variable", null: false
+    t.string "database_name"
+    t.string "username"
+    t.text "password"
+    t.integer "redis_index"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["database_id", "database_name"], name: "index_database_attachments_on_database_id_and_database_name", unique: true, where: "database_name IS NOT NULL"
+    t.index ["database_id"], name: "index_database_attachments_on_database_id"
+    t.index ["environment_variable_id"], name: "index_database_attachments_on_environment_variable_id"
+    t.index ["project_id", "destination", "variable"], name: "idx_on_project_id_destination_variable_9a42ab6bff", unique: true
+    t.index ["project_id"], name: "index_database_attachments_on_project_id"
+  end
+
+  create_table "databases", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "engine", null: false
+    t.string "source", null: false
+    t.integer "server_id"
+    t.string "container_name"
+    t.string "image"
+    t.string "admin_user"
+    t.text "password"
+    t.text "url"
+    t.integer "public_port"
+    t.string "status", default: "unknown", null: false
+    t.text "status_message"
+    t.datetime "checked_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_databases_on_name", unique: true
+    t.index ["server_id", "container_name"], name: "index_databases_on_server_id_and_container_name", unique: true, where: "container_name IS NOT NULL"
+    t.index ["server_id"], name: "index_databases_on_server_id"
   end
 
   create_table "environment_variables", force: :cascade do |t|
@@ -241,6 +281,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_19_090000) do
   add_foreign_key "command_runs", "users", on_delete: :nullify
   add_foreign_key "console_sessions", "projects"
   add_foreign_key "console_sessions", "users", on_delete: :nullify
+  add_foreign_key "database_attachments", "databases"
+  add_foreign_key "database_attachments", "environment_variables", on_delete: :nullify
+  add_foreign_key "database_attachments", "projects"
+  add_foreign_key "databases", "servers"
   add_foreign_key "environment_variables", "projects"
   add_foreign_key "health_checks", "projects"
   add_foreign_key "hourly_metrics", "projects"

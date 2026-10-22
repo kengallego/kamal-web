@@ -1,0 +1,65 @@
+<%= form_with model: database, class: "card card-body max-w-xl space-y-4" do |form| %>
+  <%= form_errors(database) %>
+  <%= form.hidden_field :source %>
+  <div>
+    <%= form.label :name, class: "label" %>
+    <%= form.text_field :name, required: true, class: "input font-mono", placeholder: "main", autocomplete: "off" %>
+    <p class="mt-1 text-xs text-muted"><%= t(".name_hint") %></p>
+  </div>
+  <%= form.hidden_field :engine %>
+  <% unless database.external? %>
+    <div>
+      <%= form.label :server_id, class: "label" %>
+      <% if database.new_record? %>
+        <%= form.collection_select :server_id, Server.ordered, :id, :label, { include_blank: true }, class: "input", required: true %>
+        <% if Server.none? %><p class="mt-1 text-xs text-muted"><%= t(".no_servers_html", link: link_to(t("servers.index.add"), new_server_path, class: "text-accent")) %></p><% end %>
+      <% else %>
+        <p class="font-mono text-sm"><%= database.server.label %></p>
+      <% end %>
+    </div>
+  <% end %>
+  <% if database.created? && database.new_record? %>
+    <div>
+      <%= form.label :image, class: "label" %>
+      <%= form.select :image, Database::IMAGES.fetch(database.engine), {}, class: "input font-mono" %>
+      <p class="mt-1 text-xs text-muted"><%= t(".image_hint") %></p>
+    </div>
+  <% end %>
+  <% if database.existing? %>
+    <div>
+      <%= form.label :container_name, class: "label" %>
+      <%= form.text_field :container_name, required: true, class: "input font-mono", placeholder: "myapp-db", autocomplete: "off" %>
+      <p class="mt-1 text-xs text-muted"><%= t(".container_hint_html") %></p>
+    </div>
+    <% if database.postgresql? %>
+      <div>
+        <%= form.label :admin_user, class: "label" %>
+        <%= form.text_field :admin_user, class: "input font-mono", placeholder: "postgres", autocomplete: "off" %>
+        <p class="mt-1 text-xs text-muted"><%= t(".admin_user_hint") %></p>
+      </div>
+    <% else %>
+      <div>
+        <%= form.label :password, class: "label" %>
+        <%= form.password_field :password, value: nil, class: "input font-mono", autocomplete: "new-password", placeholder: database.persisted? && database.password.present? ? t(".keep_password") : "" %>
+        <p class="mt-1 text-xs text-muted"><%= t(".redis_password_hint") %></p>
+      </div>
+    <% end %>
+  <% end %>
+  <% if database.external? %>
+    <div>
+      <%= form.label :url, class: "label" %>
+      <%= form.password_field :url, value: nil, required: database.new_record?, class: "input font-mono", autocomplete: "off", placeholder: database.persisted? ? t(".keep_url") : (database.postgresql? ? "postgres://doadmin:…@db-postgresql-ams3-12345.db.ondigitalocean.com:25060/defaultdb?sslmode=require" : "rediss://default:…@db-redis-ams3-12345.db.ondigitalocean.com:25061") %>
+      <p class="mt-1 text-xs text-muted"><%= t(".url_hint") %></p>
+    </div>
+  <% else %>
+    <div>
+      <%= form.label :public_port, class: "label" %>
+      <%= form.number_field :public_port, min: 1024, max: 65_535, class: "input font-mono", placeholder: t(".public_port_placeholder") %>
+      <p class="mt-1 text-xs text-muted"><%= database.created? ? t(".public_port_hint_created") : t(".public_port_hint_existing") %></p>
+    </div>
+  <% end %>
+  <div class="flex gap-3">
+    <%= form.submit t("common.save"), class: "btn btn-primary" %>
+    <%= link_to t("common.cancel"), database.persisted? ? database_path(database) : databases_path, class: "btn" %>
+  </div>
+<% end %>

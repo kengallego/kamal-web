@@ -1,0 +1,3 @@
+<% content_for :title, t("common.edit") %>
+<%= render Ui::PageHeaderComponent.new(title: @database.name) %>
+<%= render "form", database: @database %>
