@@ -1,0 +1,33 @@
+Quiero que a las 18:30 (en adelante) crees una tarea para commitear todo, pushear y deployear este proyecto. No lo hagas si ha pasado de las 22:00
+
+---
+
+Tarea programada en /Users/ken/Developer/Personal/kamal_web: commitear todo, pushear y deployear. PRIMERO ejecuta `date`: si son las 22:00 o más tarde (hora local), NO hagas nada y avisa al usuario de que se ha saltado la tarea por la hora. Si es antes de las 22:00: 1) `git status` y revisa el diff; si hay cambios, `git add -A` (sin incluir secretos como .env) y commitea con un mensaje descriptivo terminado en "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"; 2) `git push origin main`; 3) `bin/kamal deploy`. Informa del resultado de cada paso, y si algo falla, detente y explica el error con su salida.
+
+---
+
+Bien, quita esa tardea
+
+---
+
+Commitea todos los cambios actuales, pushea y deployea
+
+---
+
+Que es en lo ultimo en lo que hemos hecho cambios?
+
+---
+
+Era mas que nada seguridad no? Recuerdo que mencionamos un problema de seguridad de acceso root en los contenedores
+
+---
+
+Bien, hazlo si crees  que es relevante
+
+---
+
+Quiero que agreguemos debajo de "Servidores" y encima de "usuarios" un panel de "Bases de datos". Y podamos attachear bases de datos en la misma maquina (o remotas por ssh) a aplicaciones existentes. (Un poco lo que hace hatchbox), tambien puedes linkar bases de datos managed como por ejemplo las de digitalocean
+
+---
+
+Si
